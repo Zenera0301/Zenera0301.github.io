@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Linux的系统编程-进程控制 | DinDin&#39;s Blog</title>
+  <title>创建守护进程模型 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
+  <meta name="description" content="生存期长，常在系统引导装入时启动，仅在系统关闭时才终止； 没有控制终端，在后台运行。  创建子进程，父进程退出  在子进程中创建新会话 setsid()函数；使子进程完全独立出来，脱离控制  改变当前目录为根目录 chdir()函数；防止占用可卸载的文件系统；也可以换成其他路径  重设文件权限掩码 umask()函数；防止继承的文件创建屏蔽字拒绝某些权限；增加守护进程灵活性  关闭文件描述符 继承">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux的系统编程-进程控制">
-<meta property="og:url" content="http://yoursite.com/2019/09/26/Linux的系统编程-进程控制/index.html">
+<meta property="og:title" content="创建守护进程模型">
+<meta property="og:url" content="http://yoursite.com/2019/09/27/Linux系统编程-守护进程/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
+<meta property="og:description" content="生存期长，常在系统引导装入时启动，仅在系统关闭时才终止； 没有控制终端，在后台运行。  创建子进程，父进程退出  在子进程中创建新会话 setsid()函数；使子进程完全独立出来，脱离控制  改变当前目录为根目录 chdir()函数；防止占用可卸载的文件系统；也可以换成其他路径  重设文件权限掩码 umask()函数；防止继承的文件创建屏蔽字拒绝某些权限；增加守护进程灵活性  关闭文件描述符 继承">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-27T14:36:35.335Z">
+<meta property="og:updated_time" content="2019-09-27T14:37:03.271Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux的系统编程-进程控制">
-<meta name="twitter:description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
+<meta name="twitter:title" content="创建守护进程模型">
+<meta name="twitter:description" content="生存期长，常在系统引导装入时启动，仅在系统关闭时才终止； 没有控制终端，在后台运行。  创建子进程，父进程退出  在子进程中创建新会话 setsid()函数；使子进程完全独立出来，脱离控制  改变当前目录为根目录 chdir()函数；防止占用可卸载的文件系统；也可以换成其他路径  重设文件权限掩码 umask()函数；防止继承的文件创建屏蔽字拒绝某些权限；增加守护进程灵活性  关闭文件描述符 继承">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -158,135 +158,49 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Linux的系统编程-进程控制" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Linux系统编程-守护进程" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Linux的系统编程-进程控制
+      创建守护进程模型
     </h1>
   
 
         
-        <a href="/2019/09/26/Linux的系统编程-进程控制/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+        <a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
+  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1-了解进程相关的概念"><a href="#1-了解进程相关的概念" class="headerlink" title="1 了解进程相关的概念"></a>1 了解进程相关的概念</h3><h5 id="程序："><a href="#程序：" class="headerlink" title="程序："></a>程序：</h5><p>编译好的二进制文件；</p>
-<h5 id="进程："><a href="#进程：" class="headerlink" title="进程："></a>进程：</h5><ul>
-<li>运行着的程序；</li>
-<li>程序员的角度：运行一系列指令的过程</li>
-<li>操作系统的角度：分配系统资源的基本单位</li>
-</ul>
-<h5 id="区别："><a href="#区别：" class="headerlink" title="区别："></a>区别：</h5><ul>
-<li>程序占用磁盘，不占用系统资源；内存占用系统资源；</li>
-<li>一个程序对应多个进程，一个进程对应一个程序；</li>
-<li>程序没有生命周期，进程有生命周期；</li>
-</ul>
-<h5 id="单通道和多通道设计："><a href="#单通道和多通道设计：" class="headerlink" title="单通道和多通道设计："></a>单通道和多通道设计：</h5><p>时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行</p>
-<h5 id="CPU和MMU（了解）"><a href="#CPU和MMU（了解）" class="headerlink" title="CPU和MMU（了解）"></a>CPU和MMU（了解）</h5><p>存储介质：网络—–硬盘—–内存—–高速缓存cache—–寄存器</p>
-<p>CPU：1预取指令—–2译码—–3执行</p>
-<p>MMU（位于CPU内）：</p>
-<p>1虚拟内存和物理内存的映射</p>
-<p>将虚拟内存地址和物理内存地址进行 绑定或叫做映射，比如有个变量i=10存放在物理内存中，先看一下虚拟地址是啥，MMU找到对应的物理地址，取出该数。</p>
-<p>2设置修改内存访问级别</p>
-<p>0&gt;1&gt;2&gt;3</p>
-<p>用户控件映射到物理内存是独立的。</p>
-<p>内核区是映射到同一块地址。</p>
-<h5 id="进程的状态转换"><a href="#进程的状态转换" class="headerlink" title="进程的状态转换"></a>进程的状态转换</h5><p>初始、就绪、运行、挂起、终止</p>
-<p>就绪状态———————-（获得CPU）——————–运行状态</p>
-<p>运行状态—————–（获得的时间片结束）————就绪状态</p>
-<p>运行状态——（因等待其他资源，主动交出CPU）—–挂起状态</p>
-<p>挂起状态———–（等待的非CPU资源到位了）———就绪状态</p>
-<p>就绪|运行|挂起状态———————————————终止状态</p>
-<h5 id="PCB进程控制块"><a href="#PCB进程控制块" class="headerlink" title="PCB进程控制块"></a>PCB进程控制块</h5><p>结构体struct task_struct  位于sched.h文件中</p>
-<ul>
-<li><strong>进程id</strong>，pid_t类型，非负整数</li>
-<li><strong>进程的状态</strong>，初始、就绪、运行、挂起、停止等状态</li>
-<li>进程切换时需要保存和恢复的一些CPU寄存器</li>
-<li>描述虚拟地址空间的信息</li>
-<li>描述控制终端的信息</li>
-<li><strong>当前工作目录</strong></li>
-<li>umask掩码</li>
-<li>文件描述符表，包含很多指向file结构体的指针</li>
-<li>和信号相关的信息</li>
-<li><strong>用户id和组id</strong></li>
-<li>会话（Session）和进程组</li>
-<li>进程可以使用的资源上限  ulimit -a 查看所有资源的上限</li>
-</ul>
-<h5 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h5><p>env查看所有环境变量</p>
-<p><code>key=val</code>    =两边都不能有空格</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">getenv(<span class="string">"HOME"</span>);<span class="comment">//返回一个字符串</span></span><br><span class="line">setenv<span class="comment">//设置环境变量</span></span><br><span class="line">unsetenv<span class="comment">//删除环境变量</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-掌握fork-getpid-getppid函数的使用"><a href="#2-掌握fork-getpid-getppid函数的使用" class="headerlink" title="2 掌握fork/getpid/getppid函数的使用"></a>2 掌握fork/getpid/getppid函数的使用</h3><h4 id="fork-创建一个新的进程"><a href="#fork-创建一个新的进程" class="headerlink" title="fork 创建一个新的进程"></a>fork 创建一个新的进程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pid_t fork(void);</span><br></pre></td></tr></table></figure>
-
-<p>失败返回-1；</p>
-<p>成功两次返回：父进程返回 子进程的id；子进程返回0.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"begin...\n"</span>);</span><br><span class="line">    <span class="keyword">pid_t</span> = fork();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//进程创建失败</span></span><br><span class="line">    <span class="keyword">if</span>(pid &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        perror(<span class="string">"fork err"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//进程创建成功</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am a child，pid=%d，ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//父进程的逻辑</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"childepid=%d,self=%d,ppid=%d\n"</span>,pid,getpid(),getppid());</span><br><span class="line">        sleep(<span class="number">1</span>);<span class="comment">//让父进程缓1s再死，避免孤儿进程</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"End...\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="创建n个子进程："><a href="#创建n个子进程：" class="headerlink" title="创建n个子进程："></a>创建n个子进程：</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n=<span class="number">5</span>;</span><br><span class="line">    <span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)&#123;<span class="comment">//父进程循环结束</span></span><br><span class="line">    	pid = fork();</span><br><span class="line">    	<span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">    		<span class="comment">//son</span></span><br><span class="line">    		<span class="built_in">printf</span>(<span class="string">"I am son,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    		<span class="keyword">break</span>;<span class="comment">//子进程退出循环的接口</span></span><br><span class="line">    	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">    		<span class="comment">//father</span></span><br><span class="line">    		<span class="built_in">printf</span>(<span class="string">"I am father,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//尽量精确控制父子进程的退出顺序</span></span><br><span class="line">    sleep(i);</span><br><span class="line">    <span class="keyword">if</span>(i&lt;<span class="number">5</span>)&#123;</span><br><span class="line">        <span class="comment">//son</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,will exit,pid=%d,ppid=%d"</span>,getpid(),getppid());</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//father</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent,will out pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    &#125;</span><br><span class="line">       </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="父子进程共享"><a href="#父子进程共享" class="headerlink" title="父子进程共享"></a>父子进程共享</h4><p>父子相同点：全局变量、.data、.text、栈、堆、环境变量、用户ID、宿主目录、进程工作目录、信号处理方式</p>
-<p>父子不同点：进程ID、fork返回值、父进程ID、进程运行时间、闹钟（定时器）、未决信号集</p>
-<p>父子进程之间遵循<strong>读时共享，写时复制</strong>原则。节省内存开销。</p>
-<p>父子进程<strong>不共享全局变量</strong></p>
-<h3 id="3-熟练掌握ps-kill命令使用"><a href="#3-熟练掌握ps-kill命令使用" class="headerlink" title="3 熟练掌握ps/kill命令使用"></a>3 熟练掌握ps/kill命令使用</h3><p><code>ps aux</code> 查看进程信息</p>
-<p><code>ps ajx</code>  追溯进程之间的血缘关系   init（进程的祖先）—–sshd—–bash——其他子进程</p>
-<p><code>kill  -9 2890</code>： -9是9号信号SIGKILL；2890是进程id</p>
-<p><code>kill -l</code>：可以查看所有信号共64个</p>
-<p><code>ps aux|grep a.out</code>可以查看当前的进程</p>
-<p><code>ps aux|grep a.out|grep -v grep |wc -l</code>返回数字，表示创建了几个子进程</p>
-<h3 id="4-熟练掌握execl-execlp函数的使用"><a href="#4-熟练掌握execl-execlp函数的使用" class="headerlink" title="4 熟练掌握execl/execlp函数的使用"></a>4 熟练掌握execl/execlp函数的使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//执行其他程序</span><br><span class="line">int execl(const char*path,const char *arg,...);</span><br><span class="line"></span><br><span class="line">//执行程序的时候，使用PATH环境变量，执行的程序可以不用加路径</span><br><span class="line">int execlp(const char*file,const char *arg,...);</span><br></pre></td></tr></table></figure>
-
-<p>exec族函数：底层实现：代码段、数据段替换，进程ID啥的都不变，换核不换壳；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;unistd&gt;</span><br><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line"></span><br><span class="line">	//execlp(&quot;ls&quot;,&quot;ls&quot;,&quot;-l&quot;,&quot;--color=auto&quot;,NULL);</span><br><span class="line">	execl(&quot;/bin/ls&quot;,&quot;ls&quot;,&quot;-l&quot;,&quot;--color=auto&quot;,NULL);</span><br><span class="line"></span><br><span class="line">	//不需要判断返回值</span><br><span class="line">	perror(&quot;exec err&quot;);</span><br><span class="line">	printf(&quot;hello\n&quot;);</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>execl实现自定义程序</p>
-<h3 id="5-说出什么是孤儿进程-什么是僵尸进程"><a href="#5-说出什么是孤儿进程-什么是僵尸进程" class="headerlink" title="5 说出什么是孤儿进程 什么是僵尸进程"></a>5 说出什么是孤儿进程 什么是僵尸进程</h3><p>孤儿进程：父亲死了，子进程被init进程领养。</p>
-<p>僵尸进程：子进程死了，父进程没有回收子进程的资源（PCB）。</p>
-<p>orphan</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;unistd.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line">	pid_t pid = fork();</span><br><span class="line">	if(pid == 0)&#123;</span><br><span class="line">		while(1)&#123;</span><br><span class="line">			printf(&quot;I am child,pid=%d,ppid=%d\n&quot;,getpid(),getppid());</span><br><span class="line">			sleep(1);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;else if(pid&gt;0)&#123;</span><br><span class="line">		printf(&quot;I am parent,pid=%d,ppid=%d\n&quot;,getpid(),getppid());</span><br><span class="line">		sleep(5);</span><br><span class="line">		printf(&quot;I am parent,I will die!\n&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 此时，ctrl+c已经终止不了程序了，因为父进程已经死了，子进程脱离shell管制；此处应有<code>kill -9 childpid</code></p>
-<p>zombie</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">		sleep(<span class="number">5</span>);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am child,I will die!\n"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"I am parent,pid=%d"</span>,getpid());</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>回收僵尸进程：杀死僵尸进程的父亲，僵尸进程由init领养，负责回收，<code>kill -9  parentpid</code>。</p>
-<p>僵尸进程是不能用kill直接清除的。</p>
-<h3 id="6-熟练掌握wait函数的使用"><a href="#6-熟练掌握wait函数的使用" class="headerlink" title="6 熟练掌握wait函数的使用"></a>6 熟练掌握wait函数的使用</h3><p>避免产生僵尸进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//回收子进程，知道子进程的死亡原因</span><br><span class="line">pid_t wait(int * status);//status是传出参数；成功返回终止的子进程id，失败返回-1</span><br></pre></td></tr></table></figure>
-
-<h4 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h4><p>作用：</p>
-<ul>
-<li>阻塞等待 等子进程死亡</li>
-<li>回收子进程资源</li>
-<li>查看死亡原因</li>
-</ul>
-<p>子进程死亡原因：</p>
-<ul>
-<li>正常死亡WIFEXITED，为真，使用WEXITSTATUS得到退出状态；</li>
-<li>非正常死亡WIFSIGNALED，为真，使用WTERMSIG得到信号。</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#inlcude<span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,will die!\n"</span>);</span><br><span class="line">        sleep(<span class="number">2</span>);</span><br><span class="line">        <span class="comment">//while(1)&#123;&#125;//通过外部kill杀死，非正常死亡</span></span><br><span class="line">        <span class="comment">//return 101; //正常死亡</span></span><br><span class="line">        <span class="comment">//exit(102); //正常死亡</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent,wait for child die!\n"</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> status;     </span><br><span class="line">        <span class="keyword">pid_t</span> wpit = wait(&amp;status);      </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"wait ok,wpid=%d,pid=%d\n"</span>,wpid,pid);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//正常死亡</span></span><br><span class="line">        <span class="keyword">if</span>(WIFEXITED(status))&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"child exit with %d\n"</span>,WEXITSTATUS(status));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//非正常死亡</span></span><br><span class="line">        <span class="keyword">if</span>(WIFSIGNALED(status))&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"child killed by %d\n"</span>,WTERMSIG(status));</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>wait回收多个进程：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#inlcude&lt;unistd.h&gt;</span><br><span class="line">#include&lt;sys/types.h&gt;</span><br><span class="line">#include&lt;sys/wait.h&gt;</span><br><span class="line"></span><br><span class="line">int main()&#123;</span><br><span class="line">	int n=5;</span><br><span class="line">	int i=0;</span><br><span class="line"></span><br><span class="line">    pid_t pid; </span><br><span class="line">    for(i=0;i&lt;5;i++)&#123;</span><br><span class="line">    	pid = fork();</span><br><span class="line">    	if(pid==0)&#123;</span><br><span class="line">    		printf(&quot;I am child,pid=%d\n&quot;,getpid());</span><br><span class="line">    		break;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sleep(1);</span><br><span class="line">    if(i==5)&#123;</span><br><span class="line">    	for(i=0;i&lt;5;i++)&#123;</span><br><span class="line">    		pid_t wpid=wait(NULL);//阻塞，直到回收</span><br><span class="line">    		printf(&quot;wpid=%d\n&quot;,wpid);//能到这一步说明已经回收了</span><br><span class="line">    	&#125;</span><br><span class="line">    	while(1)&#123;</span><br><span class="line">            sleep(1);</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-熟练掌握waitpid函数的使用"><a href="#7-熟练掌握waitpid函数的使用" class="headerlink" title="7 熟练掌握waitpid函数的使用"></a>7 熟练掌握waitpid函数的使用</h3><p>避免产生僵尸进程</p>
-<h4 id="waitpid"><a href="#waitpid" class="headerlink" title="waitpid"></a>waitpid</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">pid_t waitpid(pid_t pid,int *status,int options);</span><br><span class="line"></span><br><span class="line">pid:</span><br><span class="line">&lt;-1 组id</span><br><span class="line">-1 回收任意</span><br><span class="line">0 回收和调度进程组id相同组内的子进程</span><br><span class="line">&gt;0 回收指定的pid</span><br><span class="line"></span><br><span class="line">options：</span><br><span class="line">0与wait相同，也会阻塞</span><br><span class="line">WNOHANG如果当前没有子进程退出的，会立刻返回</span><br><span class="line"></span><br><span class="line">返回值：</span><br><span class="line">如果设置了WNOHANG，那么如果没有子进程退出，返回0；</span><br><span class="line">如果有子进程退出，返回退出的pid；如果失败返回-1（没有子进程）；</span><br></pre></td></tr></table></figure>
-
-<p>waitpid回收进程：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">	<span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am child.pid=%d\n"</span>,getpid());</span><br><span class="line">		sleep(<span class="number">2</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am parent,pid=%d\n"</span>,getpid());</span><br><span class="line">		<span class="keyword">int</span> ret;  </span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span>((ret = waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG)) == <span class="number">0</span>)&#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"ret=%d\n"</span>,ret);</span><br><span class="line">        </span><br><span class="line">        ret = waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG);</span><br><span class="line">        <span class="keyword">if</span>(ret&lt;<span class="number">0</span>)&#123;</span><br><span class="line">            perror(<span class="string">"wait err"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">			sleep(<span class="number">1</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>waitpid回收多个进程：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#inlcude<span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n=<span class="number">5</span>;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid; </span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)&#123;</span><br><span class="line">    	pid = fork();</span><br><span class="line">    	<span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">    		</span><br><span class="line">    		<span class="keyword">break</span>;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sleep(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>(i==<span class="number">5</span>)&#123;</span><br><span class="line">    	<span class="comment">//parent 主要用于回收</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent!\n"</span>);</span><br><span class="line">        <span class="comment">//如何使用waitpid回收？  -1代表子进程都死了，都收了</span></span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">pid_t</span> wpid=waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG);<span class="comment">//阻塞，直到回收</span></span><br><span class="line">            <span class="keyword">if</span>(wpid == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(wpid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"wpid=%d\n"</span>,wpid);<span class="comment">//能到这一步说明已经回收了</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="comment">//保持父进程的活性，看有没有僵尸</span></span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    	 </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(i&lt;<span class="number">5</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,i=%d,pid=%d\n"</span>,getpid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+        <p><strong>生存期长</strong>，常在系统引导装入时启动，仅在系统关闭时才终止； <strong>没有控制终端，在后台运行</strong>。</p>
+<ol>
+<li><p>创建子进程，父进程退出</p>
+</li>
+<li><p>在子进程中创建新会话</p>
+<p>setsid()函数；使子进程完全独立出来，脱离控制</p>
+</li>
+<li><p>改变当前目录为根目录</p>
+<p>chdir()函数；防止占用可卸载的文件系统；也可以换成其他路径</p>
+</li>
+<li><p>重设文件权限掩码</p>
+<p>umask()函数；防止继承的文件创建屏蔽字拒绝某些权限；增加守护进程灵活性</p>
+</li>
+<li><p>关闭文件描述符</p>
+<p>继承的打开文件不会用到，浪费系统资源，无法卸载</p>
+</li>
+<li><p>开始执行守护进程核心工作</p>
+</li>
+<li><p>守护进程退出处理程序模型</p>
+</li>
+</ol>
+<p>扩展了解：</p>
+<p>通过nohup指令也可以达到守护进程创建的效果</p>
 
       
 
@@ -366,7 +280,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/26/Linux的系统编程-进程控制/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/27/Linux系统编程-守护进程/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -380,18 +294,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/09/26/Linux的基础用法/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/09/27/Linux系统编程-线程/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Linux的基础语法
+          线程学习
         
       </div>
     </a>
   
   
-    <a href="/2019/09/24/hexo搭建全记录/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">GitHub+Hexo搭建过程记录</div>
+    <a href="/2019/09/27/Linux的系统编程-进程通信/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux的系统编程-进程通信</div>
       <i class="icon-circle-right"></i>
     </a>
   

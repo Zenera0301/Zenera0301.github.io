@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Linux的基础语法 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="###1 vi编辑器 命令行模式 末行模式  编辑模式 2 GCC编译器gcc 整个编译过程hello.c gcc -E hello.c 预处理，头文件展开，宏替换 得到 hello.i gcc -S hello.i 生成汇编代码 hello.s gcc -c hello.s 将汇编编译成二进制文件 hello.o ld 链接，得到可执行文件 a.out gcc参数直接通过gcc hello.c">
+  <meta name="description" content="###1 vi编辑器  命令行模式 末行模式  编辑模式  编辑器操作：【[n]x】删除光标位置后面n个字符【[n]X】删除光标位置前面n个字符【D】删除光标所在位置后面到行尾的所有字符【[n]dd】删除光标所在行及下面n行   剪切【p】在光标下一行粘贴【[n]yy】复制光标所在行及下面n行【dG】删除光标所在行到文件结尾【J】合并光标所在行和下一行 中间用空格连接【.】执行上一次命令行操作【u">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux的基础语法">
 <meta property="og:url" content="http://yoursite.com/2019/09/26/Linux的基础用法/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="###1 vi编辑器 命令行模式 末行模式  编辑模式 2 GCC编译器gcc 整个编译过程hello.c gcc -E hello.c 预处理，头文件展开，宏替换 得到 hello.i gcc -S hello.i 生成汇编代码 hello.s gcc -c hello.s 将汇编编译成二进制文件 hello.o ld 链接，得到可执行文件 a.out gcc参数直接通过gcc hello.c">
+<meta property="og:description" content="###1 vi编辑器  命令行模式 末行模式  编辑模式  编辑器操作：【[n]x】删除光标位置后面n个字符【[n]X】删除光标位置前面n个字符【D】删除光标所在位置后面到行尾的所有字符【[n]dd】删除光标所在行及下面n行   剪切【p】在光标下一行粘贴【[n]yy】复制光标所在行及下面n行【dG】删除光标所在行到文件结尾【J】合并光标所在行和下一行 中间用空格连接【.】执行上一次命令行操作【u">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-27T00:50:25.011Z">
+<meta property="og:updated_time" content="2019-09-27T02:02:14.201Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux的基础语法">
-<meta name="twitter:description" content="###1 vi编辑器 命令行模式 末行模式  编辑模式 2 GCC编译器gcc 整个编译过程hello.c gcc -E hello.c 预处理，头文件展开，宏替换 得到 hello.i gcc -S hello.i 生成汇编代码 hello.s gcc -c hello.s 将汇编编译成二进制文件 hello.o ld 链接，得到可执行文件 a.out gcc参数直接通过gcc hello.c">
+<meta name="twitter:description" content="###1 vi编辑器  命令行模式 末行模式  编辑模式  编辑器操作：【[n]x】删除光标位置后面n个字符【[n]X】删除光标位置前面n个字符【D】删除光标所在位置后面到行尾的所有字符【[n]dd】删除光标所在行及下面n行   剪切【p】在光标下一行粘贴【[n]yy】复制光标所在行及下面n行【dG】删除光标所在行到文件结尾【J】合并光标所在行和下一行 中间用空格连接【.】执行上一次命令行操作【u">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -179,9 +179,15 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>###1 vi编辑器</p>
-<p>命令行模式</p>
-<p>末行模式 </p>
-<p>编辑模式</p>
+<ul>
+<li>命令行模式</li>
+<li>末行模式 </li>
+<li>编辑模式</li>
+</ul>
+<p>编辑器操作：<br>【[n]x】删除光标位置后面n个字符<br>【[n]X】删除光标位置前面n个字符<br>【D】删除光标所在位置后面到行尾的所有字符<br>【[n]dd】删除光标所在行及下面n行   剪切<br>【p】在光标下一行粘贴<br>【[n]yy】复制光标所在行及下面n行<br>【dG】删除光标所在行到文件结尾<br>【J】合并光标所在行和下一行 中间用空格连接<br>【.】执行上一次命令行操作<br>【u】撤销</p>
+<p>编辑器定位：<br>【ctrl+b】回滚 行号减小<br>【ctrl+f】前滚 行号增加<br>【gg】定位在文件第一行行首<br>【G】定位在文件最后一行行首<br>【/.】查找任意一个字符<br>【/*】查找任意多个字符</p>
+<p>编辑器替换：<br>【r】替换光标所在位置的字符<br>【:r 文件名】在光标当前行的下一行插入一个文件 每次添加只能添加一个文件<br>【:s/a/b/g】将光标所在行的a替换为b<br>【:g/a/s//b/g】将文件中所有a替换为b<br>【:n1,n2s/a/b/g】将行区间n1到n2的行中所有的a替换为b</p>
+<p>编辑器设置：<br>【:set ic】搜索时不区分大小写<br>【:set noic】搜索时区分大小写</p>
 <h3 id="2-GCC编译器"><a href="#2-GCC编译器" class="headerlink" title="2 GCC编译器"></a>2 GCC编译器</h3><h4 id="gcc-整个编译过程"><a href="#gcc-整个编译过程" class="headerlink" title="gcc 整个编译过程"></a>gcc 整个编译过程</h4><p>hello.c</p>
 <p>gcc -E hello.c 预处理，头文件展开，宏替换 得到 hello.i</p>
 <p>gcc -S hello.i 生成汇编代码 hello.s</p>
@@ -473,6 +479,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2019/09/27/Linux的系统编程-进程通信/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Linux的系统编程-进程通信
+        
+      </div>
+    </a>
   
   
     <a href="/2019/09/26/Linux的系统编程-进程控制/" id="article-nav-older" class="article-nav-link-wrap">
