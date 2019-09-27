@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>DinDin&#39;s Blog</title>
+  <title>Linux的系统编程-进程控制 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Linux的系统编程-进程控制1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变">
+  <meta name="description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DinDin&#39;s Blog">
+<meta property="og:title" content="Linux的系统编程-进程控制">
 <meta property="og:url" content="http://yoursite.com/2019/09/26/Linux的系统编程-进程控制/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="Linux的系统编程-进程控制1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变">
+<meta property="og:description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-27T00:48:03.511Z">
+<meta property="og:updated_time" content="2019-09-27T00:50:01.059Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="Linux的系统编程-进程控制1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变">
+<meta name="twitter:title" content="Linux的系统编程-进程控制">
+<meta name="twitter:description" content="1 了解进程相关的概念程序：编译好的二进制文件； 进程： 运行着的程序； 程序员的角度：运行一系列指令的过程 操作系统的角度：分配系统资源的基本单位  区别： 程序占用磁盘，不占用系统资源；内存占用系统资源； 一个程序对应多个进程，一个进程对应一个程序； 程序没有生命周期，进程有生命周期；  单通道和多通道设计：时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行 CP">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -161,10 +161,24 @@
             <article id="post-Linux的系统编程-进程控制" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux的系统编程-进程控制
+    </h1>
+  
+
+        
+        <a href="/2019/09/26/Linux的系统编程-进程控制/" class="archive-article-date">
+  	<time datetime="2019-09-26T14:37:49.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<h2 id="Linux的系统编程-进程控制"><a href="#Linux的系统编程-进程控制" class="headerlink" title="Linux的系统编程-进程控制"></a>Linux的系统编程-进程控制</h2><h3 id="1-了解进程相关的概念"><a href="#1-了解进程相关的概念" class="headerlink" title="1 了解进程相关的概念"></a>1 了解进程相关的概念</h3><h5 id="程序："><a href="#程序：" class="headerlink" title="程序："></a>程序：</h5><p>编译好的二进制文件；</p>
+        <h3 id="1-了解进程相关的概念"><a href="#1-了解进程相关的概念" class="headerlink" title="1 了解进程相关的概念"></a>1 了解进程相关的概念</h3><h5 id="程序："><a href="#程序：" class="headerlink" title="程序："></a>程序：</h5><p>编译好的二进制文件；</p>
 <h5 id="进程："><a href="#进程：" class="headerlink" title="进程："></a>进程：</h5><ul>
 <li>运行着的程序；</li>
 <li>程序员的角度：运行一系列指令的过程</li>
@@ -370,14 +384,14 @@
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          Linux的基础语法
         
       </div>
     </a>
   
   
     <a href="/2019/09/24/hexo搭建全记录/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">GitHub+Hexo搭建过程记录</div>
       <i class="icon-circle-right"></i>
     </a>
   
