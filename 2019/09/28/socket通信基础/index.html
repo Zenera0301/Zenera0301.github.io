@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019/9 | DinDin&#39;s Blog</title>
+  <title>Socket通信 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/09/index.html">
+  <meta name="description" content="程序员要做的事：文件操作（内核缓冲区） 1 socket tcp server服务器端的流程 创建套接字socket()  绑定本地IP和端口bind()  监听listen()  等待并接收连接请求accept()    通信 接收数据read / recv 发送数据write / send linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket通信">
+<meta property="og:url" content="http://yoursite.com/2019/09/28/socket通信基础/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="程序员要做的事：文件操作（内核缓冲区） 1 socket tcp server服务器端的流程 创建套接字socket()  绑定本地IP和端口bind()  监听listen()  等待并接收连接请求accept()    通信 接收数据read / recv 发送数据write / send linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-28T14:12:51.723Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="Socket通信">
+<meta name="twitter:description" content="程序员要做的事：文件操作（内核缓冲区） 1 socket tcp server服务器端的流程 创建套接字socket()  绑定本地IP和端口bind()  监听listen()  等待并接收连接请求accept()    通信 接收数据read / recv 发送数据write / send linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,259 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-socket通信基础" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
+    <h1 class="article-title" itemprop="name">
+      Socket通信
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
+        
+        <a href="/2019/09/28/socket通信基础/" class="archive-article-date">
   	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>程序员要做的事：文件操作（内核缓冲区）</p>
+<h3 id="1-socket-tcp-server服务器端的流程"><a href="#1-socket-tcp-server服务器端的流程" class="headerlink" title="1 socket tcp server服务器端的流程"></a>1 socket tcp server服务器端的流程</h3><ul>
+<li><p>创建套接字<strong>socket()</strong></p>
+</li>
+<li><p>绑定本地IP和端口<strong>bind()</strong></p>
+</li>
+<li><p>监听<strong>listen()</strong></p>
+</li>
+<li><p>等待并接收连接请求<strong>accept()</strong></p>
+</li>
+</ul>
+<ul>
+<li><p>通信</p>
+<p>接收数据<strong>read / recv</strong></p>
+<p>发送数据<strong>write / send</strong></p>
+<p>linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束后，把套接字库关闭</p>
+</li>
+<li><p>关闭<strong>close()</strong></p>
+</li>
+</ul>
+<h3 id="2-客户端"><a href="#2-客户端" class="headerlink" title="2 客户端"></a>2 客户端</h3><p>创建套接字 </p>
+<p>int fd = socket</p>
+<p>连接服务器</p>
+<p>struct sockaddr_in server;</p>
+<p>server.port</p>
+<p>server.ip = (int)…</p>
+<p>server.family</p>
+<p>connect (fd,&amp;server,sizeof(server));</p>
+<p>通信</p>
+<p>接收数据：read/recv</p>
+<p>发送数据：write/send</p>
+<p>断开连接</p>
+<p>close(fd);</p>
+<p>操作IP和Port的时候需要将 主机字节序转网络字节序（小端转大端）；接收和发送数据的时候不需要转换。</p>
+<h3 id="3-tcp多进程并发服务器"><a href="#3-tcp多进程并发服务器" class="headerlink" title="3 tcp多进程并发服务器"></a>3 tcp多进程并发服务器</h3><p> 只能处理单链接</p>
+<ul>
+<li>创建套接字–监听</li>
+<li>绑定–bind</li>
+<li>监听–listen(lfd,128)</li>
+<li>接受连接请求———————————父进程sever（默认只有一个进程，认为是父进程）</li>
+<li>通信</li>
+</ul>
+<h4 id="多进程版的并发服务器："><a href="#多进程版的并发服务器：" class="headerlink" title="多进程版的并发服务器："></a>多进程版的并发服务器：</h4><ol>
+<li>父进程只负责等待并且接受连接请求，写到while循环中；</li>
+<li>一旦有连接请求，父进程就fork()出来一个子进程，得到文件描述符，让子进程拿到这个文件描述符去和文件描述符对应的客户端去通信。</li>
+</ol>
+<h4 id="使用多进程的方式-解决服务器处理多连接的问题"><a href="#使用多进程的方式-解决服务器处理多连接的问题" class="headerlink" title="使用多进程的方式, 解决服务器处理多连接的问题:"></a>使用多进程的方式, 解决服务器处理多连接的问题:</h4><p><strong>1.共享</strong></p>
+<p><strong>○ 读时共享, 写时复制</strong> （父进程和子进程都去同一个物理内存中，读取同一个东西，写的时候各写各的）</p>
+<p>读时共享：在父进程里定义了一个变量，子进程里照样有这个变量；</p>
+<p> 写时复制：修改父进程，对子进程没有影响；修改子进程1，对子进程2也没有影响。</p>
+<p><strong>○ 文件描述符</strong> </p>
+<p><strong>○ 内存映射区</strong> – 通过mmap创建出来的 </p>
+<p>mmap能够创建内存映射区，能够实现进程间通信，文件操作，文件复制等</p>
+<p><strong>2. 父进程 的角色是什么?</strong> </p>
+<ol>
+<li>用accept()等待接受客户端连接，有连接的时候accept就不堵塞了，这时用fork()创建一个子进程;</li>
+<li>将用于通信的文件描述符关掉；（避免资源浪费）</li>
+</ol>
+<p><strong>3. 子进程的角色是什么?</strong> </p>
+<ol>
+<li>通信，使用accept返回值fd，拿到文件描述符（由于读时共享，这个文件描述符与父进程中得到的文件描述符相同），就可以对应的客户端做通信了；</li>
+<li>关掉用于监听的文件描述符；（避免资源浪费）</li>
+</ol>
+<p><strong>4. 创建的进程的个数有限制吗?</strong> </p>
+<ol>
+<li>受硬件控制</li>
+<li>文件描述符默认也是有上限的1024 </li>
+</ol>
+<p><strong>5. 子进程资源回收</strong> </p>
+<ol>
+<li>避免孤儿进程和僵尸进程的出现</li>
+<li>调用函数回收：wait/waitpid</li>
+<li>用信号回收：signal,sigaction-推荐</li>
+</ol>
+<h4 id="多进程的伪代码"><a href="#多进程的伪代码" class="headerlink" title="多进程的伪代码"></a>多进程的伪代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">//头文件</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//回调函数，用于进程回收</span><br><span class="line">void recyle(int num)&#123;</span><br><span class="line">    while(waitpid(-1,NULL,wnohang)&gt;0);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//主函数</span><br><span class="line">int main()&#123;</span><br><span class="line"></span><br><span class="line">//创建套接字</span><br><span class="line">int lfd=sock();</span><br><span class="line"></span><br><span class="line">//绑定</span><br><span class="line">bind();</span><br><span class="line"></span><br><span class="line">//设置监听</span><br><span class="line">listen();</span><br><span class="line"></span><br><span class="line">//信号回收子进程</span><br><span class="line">struct sigaction act;</span><br><span class="line">act.sa_handler = recyle;//回调函数</span><br><span class="line">act.sa_falgs=0;</span><br><span class="line">sigemptyset(&amp;act.sa_mask);</span><br><span class="line">sigaction(SIGCHID,&amp;act,NULL);</span><br><span class="line"></span><br><span class="line">//父进程</span><br><span class="line">while(1)&#123;</span><br><span class="line">//判断有没有客户端连接</span><br><span class="line">int cfd = accept();//如果有连接，accept就有返回了，否则阻塞在这，停住</span><br><span class="line">//说明已经建立新的连接</span><br><span class="line">//创建子进程</span><br><span class="line">pid_t pid=fork();</span><br><span class="line">//子进程</span><br><span class="line">if(pid==0)&#123;</span><br><span class="line">	close(lfd);</span><br><span class="line">	//通信</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		int len = read();</span><br><span class="line">		if(len==-1)&#123;</span><br><span class="line">			exit(1);//退出</span><br><span class="line">		&#125;else if(len==0)&#123;//说明对方关闭了连接了</span><br><span class="line">			close(cfd);</span><br><span class="line">			break;</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			write(); </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//退出子进程</span><br><span class="line">	return 0；//或者exit(1);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">	//父进程</span><br><span class="line">	close(cfd);</span><br><span class="line">	while(waitpid(-1,NULL,wnohang)!=-1);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
-          
+<p>完整的多进程实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;sys/types.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">#include &lt;sys/socket.h&gt;</span><br><span class="line">#include &lt;arpa/inet.h&gt;</span><br><span class="line">#include &lt;ctype.h&gt;</span><br><span class="line">#include &lt;signal.h&gt;</span><br><span class="line">#include &lt;sys/wait.h&gt;</span><br><span class="line">#include &lt;errno.h&gt;</span><br><span class="line"></span><br><span class="line">// 进程回收函数</span><br><span class="line">void recyle(int num)</span><br><span class="line">&#123;</span><br><span class="line">    pid_t pid;</span><br><span class="line">    while( (pid = waitpid(-1, NULL, WNOHANG)) &gt; 0 )</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;child died , pid = %d\n&quot;, pid);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    if(argc &lt; 2)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;eg: ./a.out port\n&quot;);</span><br><span class="line">        exit(1);</span><br><span class="line">    &#125;</span><br><span class="line">    struct sockaddr_in serv_addr;</span><br><span class="line">    socklen_t serv_len = sizeof(serv_addr);</span><br><span class="line">    int port = atoi(argv[1]);</span><br><span class="line"></span><br><span class="line">    // 创建套接字</span><br><span class="line">    int lfd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">    // 初始化服务器 sockaddr_in </span><br><span class="line">    memset(&amp;serv_addr, 0, serv_len);</span><br><span class="line">    serv_addr.sin_family = AF_INET;                   // 地址族 </span><br><span class="line">    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);    // 监听本机所有的IP</span><br><span class="line">    serv_addr.sin_port = htons(port);            // 设置端口 </span><br><span class="line">    // 绑定IP和端口</span><br><span class="line">    bind(lfd, (struct sockaddr*)&amp;serv_addr, serv_len);</span><br><span class="line"></span><br><span class="line">    // 设置同时监听的最大个数</span><br><span class="line">    listen(lfd, 36);</span><br><span class="line">    printf(&quot;Start accept ......\n&quot;);</span><br><span class="line"></span><br><span class="line">    // 使用信号回收子进程pcb</span><br><span class="line">    struct sigaction act;</span><br><span class="line">    act.sa_handler = recyle;</span><br><span class="line">    act.sa_flags = 0;</span><br><span class="line">    sigemptyset(&amp;act.sa_mask);</span><br><span class="line">    sigaction(SIGCHLD, &amp;act, NULL);</span><br><span class="line"></span><br><span class="line">    struct sockaddr_in client_addr;</span><br><span class="line">    socklen_t cli_len = sizeof(client_addr);</span><br><span class="line">    while(1)</span><br><span class="line">    &#123;</span><br><span class="line">        // 父进程接收连接请求</span><br><span class="line">        // accept阻塞的时候被信号中断, 处理信号对应的操作之后</span><br><span class="line">        // 回来之后不阻塞了, 直接返回-1, 这时候 errno==EINTR</span><br><span class="line">        int cfd = accept(lfd, (struct sockaddr*)&amp;client_addr, &amp;cli_len);</span><br><span class="line">        while(cfd == -1 &amp;&amp; errno == EINTR)</span><br><span class="line">        &#123;</span><br><span class="line">            cfd = accept(lfd, (struct sockaddr*)&amp;client_addr, &amp;cli_len);</span><br><span class="line">        &#125;</span><br><span class="line">        printf(&quot;connect sucessful\n&quot;);</span><br><span class="line">        // 创建子进程</span><br><span class="line">        pid_t pid = fork();</span><br><span class="line">        if(pid == 0)</span><br><span class="line">        &#123;</span><br><span class="line">            close(lfd);</span><br><span class="line">            // child process</span><br><span class="line">            // 通信</span><br><span class="line">            char ip[64];</span><br><span class="line">            while(1)</span><br><span class="line">            &#123;</span><br><span class="line">                // client ip port</span><br><span class="line">                printf(&quot;client IP: %s, port: %d\n&quot;, </span><br><span class="line">                       inet_ntop(AF_INET, &amp;client_addr.sin_addr.s_addr, ip, sizeof(ip)),</span><br><span class="line">                       ntohs(client_addr.sin_port));</span><br><span class="line">                char buf[1024];</span><br><span class="line">                int len = read(cfd, buf, sizeof(buf));</span><br><span class="line">                if(len == -1)</span><br><span class="line">                &#123;</span><br><span class="line">                    perror(&quot;read error&quot;);</span><br><span class="line">                    exit(1);</span><br><span class="line">                &#125;</span><br><span class="line">                else if(len == 0)</span><br><span class="line">                &#123;</span><br><span class="line">                    printf(&quot;客户端断开了连接\n&quot;);</span><br><span class="line">                    close(cfd);</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                else</span><br><span class="line">                &#123;</span><br><span class="line">                    printf(&quot;recv buf: %s\n&quot;, buf);</span><br><span class="line">                    write(cfd, buf, len);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            // 干掉子进程</span><br><span class="line">            return 0;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        else if(pid &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            // parent process</span><br><span class="line">            close(cfd);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(lfd);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>启用server和client后，客户端给服务器端发送heloo：</p>
+<p>server：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dj@dj:~/dingjing$ gcc process_server.c -o server</span><br><span class="line">dj@dj:~/dingjing$ ./server 9876</span><br><span class="line">Start accept ......</span><br><span class="line">connect sucessful</span><br><span class="line">client IP: 127.0.0.1, port: 35394</span><br><span class="line">recv buf: heloo</span><br><span class="line"></span><br><span class="line">client IP: 127.0.0.1, port: 35394</span><br></pre></td></tr></table></figure>
+
+<p>client：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dj@dj:~$ nc 127.1 9876</span><br><span class="line">heloo</span><br><span class="line">heloo</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-tcp多线程并发服务器"><a href="#4-tcp多线程并发服务器" class="headerlink" title="4.tcp多线程并发服务器"></a>4.tcp多线程并发服务器</h3><p>线程共享：全局数据区的数据，堆区数据，一块有效内存的地址</p>
+<p>主线程做的事情和主进程类似</p>
+<p>伪代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">//头文件</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//回调函数，用于进程回收</span><br><span class="line">void* worker(void* arg)&#123;</span><br><span class="line">    while(1)&#123;</span><br><span class="line">        //打印客户端ip和port</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//定义结构体</span><br><span class="line">typedef struct sockInfo&#123;</span><br><span class="line">	pthread_t id;//定义线程号</span><br><span class="line">    int fd;//文件描述符</span><br><span class="line">    struct sockaddr_in addr;//定义一个结构体变量</span><br><span class="line">&#125;SockInfo;</span><br><span class="line"></span><br><span class="line">//主函数</span><br><span class="line">int main()&#123;</span><br><span class="line"></span><br><span class="line">    //创建套接字</span><br><span class="line">    int lfd=sock();</span><br><span class="line"></span><br><span class="line">    //绑定</span><br><span class="line">    bind();</span><br><span class="line"></span><br><span class="line">    //设置监听</span><br><span class="line">    listen();</span><br><span class="line"></span><br><span class="line">    sockInfo sock[256];</span><br><span class="line">    //父线程</span><br><span class="line">    while(1)&#123;</span><br><span class="line"></span><br><span class="line">        //判断有没有客户端连接</span><br><span class="line">        sock[i].fd = accept(lfd,&amp;client,&amp;len);//如果有连接，accept就有返回了，否则阻塞在这，停住</span><br><span class="line"></span><br><span class="line">        //说明已经建立新的连接</span><br><span class="line">        //创建子线程</span><br><span class="line">        pthread_creat(&amp;sock[i].id,NULL,worker,&amp;sock[i]);//第一个连接</span><br><span class="line">        </span><br><span class="line">        //回收子线程</span><br><span class="line">        pthread_deatch(sock[i].id);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>线程需要去对应一些独立的数据；存储到一块独立的内存里，就独立了；定义一个全局数组。</p>
+<p>进程就不需要，因为，进程创建完就是各自独立的。</p>
+<p>完整的多线程实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;sys/types.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">#include &lt;sys/socket.h&gt;</span><br><span class="line">#include &lt;arpa/inet.h&gt;</span><br><span class="line">#include &lt;ctype.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">// 自定义数据结构</span><br><span class="line">typedef struct SockInfo</span><br><span class="line">&#123;</span><br><span class="line">    int fd; // </span><br><span class="line">    struct sockaddr_in addr;</span><br><span class="line">    pthread_t id;</span><br><span class="line">&#125;SockInfo;</span><br><span class="line"></span><br><span class="line">// 子线程处理函数</span><br><span class="line">void* worker(void* arg)</span><br><span class="line">&#123;</span><br><span class="line">    char ip[64];</span><br><span class="line">    char buf[1024];</span><br><span class="line">    SockInfo* info = (SockInfo*)arg;</span><br><span class="line">    // 通信</span><br><span class="line">    while(1)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;Client IP: %s, port: %d\n&quot;,</span><br><span class="line">               inet_ntop(AF_INET, &amp;info-&gt;addr.sin_addr.s_addr, ip, sizeof(ip)),</span><br><span class="line">               ntohs(info-&gt;addr.sin_port));</span><br><span class="line">        int len = read(info-&gt;fd, buf, sizeof(buf));</span><br><span class="line">        if(len == -1)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(&quot;read error&quot;);</span><br><span class="line">            pthread_exit(NULL);//只退出单个子进程，不影响客户端连接</span><br><span class="line">        &#125;</span><br><span class="line">        else if(len == 0)</span><br><span class="line">        &#123;</span><br><span class="line">            printf(&quot;客户端已经断开了连接\n&quot;);</span><br><span class="line">            close(info-&gt;fd);</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            printf(&quot;recv buf: %s\n&quot;, buf);</span><br><span class="line">            write(info-&gt;fd, buf, len);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    if(argc &lt; 2)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;eg: ./a.out port\n&quot;);</span><br><span class="line">        exit(1);</span><br><span class="line">    &#125;</span><br><span class="line">    struct sockaddr_in serv_addr;</span><br><span class="line">    socklen_t serv_len = sizeof(serv_addr);</span><br><span class="line">    int port = atoi(argv[1]);</span><br><span class="line"></span><br><span class="line">    // 创建套接字</span><br><span class="line">    int lfd = socket(AF_INET, SOCK_STREAM, 0);</span><br><span class="line">    // 初始化服务器 sockaddr_in </span><br><span class="line">    memset(&amp;serv_addr, 0, serv_len);</span><br><span class="line">    serv_addr.sin_family = AF_INET;                   // 地址族 </span><br><span class="line">    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);    // 监听本机所有的IP</span><br><span class="line">    serv_addr.sin_port = htons(port);            // 设置端口 </span><br><span class="line">    // 绑定IP和端口</span><br><span class="line">    bind(lfd, (struct sockaddr*)&amp;serv_addr, serv_len);</span><br><span class="line"></span><br><span class="line">    // 设置同时监听的最大个数</span><br><span class="line">    listen(lfd, 36);</span><br><span class="line">    printf(&quot;Start accept ......\n&quot;);</span><br><span class="line"></span><br><span class="line">    int i = 0;</span><br><span class="line">    SockInfo info[256];</span><br><span class="line">    // 规定 fd == -1  </span><br><span class="line">    for(i=0; i&lt;sizeof(info)/sizeof(info[0]); ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        info[i].fd = -1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    socklen_t cli_len = sizeof(struct sockaddr_in);</span><br><span class="line">    while(1)</span><br><span class="line">    &#123;</span><br><span class="line">        // 选一个没有被使用的, 最小的数组元素</span><br><span class="line">        for(i=0; i&lt;256; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            if(info[i].fd == -1)</span><br><span class="line">            &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if(i == 256)</span><br><span class="line">        &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        // 主线程 - 等待接受连接请求</span><br><span class="line">        info[i].fd = accept(lfd, (struct sockaddr*)&amp;info[i].addr, &amp;cli_len);</span><br><span class="line"></span><br><span class="line">        // 创建子线程 - 通信</span><br><span class="line">        pthread_create(&amp;info[i].id, NULL, worker, &amp;info[i]);</span><br><span class="line">        // 设置线程分离</span><br><span class="line">        pthread_detach(info[i].id);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(lfd);</span><br><span class="line"></span><br><span class="line">    // 只退出主线程</span><br><span class="line">    pthread_exit(NULL);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/28/socket通信基础/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/09/28/内存分区/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          内存分区
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/28/MySQL基础练习/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MySQL基础练习</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的基础用法/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.870Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的基础用法/">Linux的基础语法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2019/09/page/2/">2</a><a class="extend next" rel="next" href="/archives/2019/09/page/2/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +434,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
