@@ -180,30 +180,22 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p><strong>C++的内存划分为栈区、堆区、全局区/静态区、字符串常量和代码区。</strong></p>
-<ol>
-<li><p><strong>栈区：</strong>由<strong>系统</strong>进行内存的管理。</p>
+<p>1</p>
+<p><strong>栈区：</strong>由<strong>系统</strong>进行内存的管理。</p>
 <p>说明：主要存放函数的参数以及局部变量。栈区由系统进行内存管理，在函数完成执行，系统自行释放栈区内存，不需要用户管理。整个程序的栈区的大小可以在编译器中由用户自行设定，默认的栈区大小为3M。</p>
-</li>
-</ol>
-<ol start="2">
-<li><p><strong>全局/静态区：</strong>全局、静态数据存<strong>放在一起</strong>的，<strong>初始化的全局变量</strong>和静态变量是在一起的。<strong>未初始化的全局变量</strong>和静态变量是在相邻的空间中。</p>
+<p>2</p>
+<p><strong>全局/静态区：</strong>全局、静态数据存<strong>放在一起</strong>的，<strong>初始化的全局变量</strong>和静态变量是在一起的。<strong>未初始化的全局变量</strong>和静态变量是在相邻的空间中。</p>
 <p>说明：全局变量和静态全局变量的<strong>存储方式一致</strong>，但是其区别在于<strong>作用域不同</strong>，全局变量在整个源代码中都可以使用，而静态全局变量只能在当前文件中有效。比如我们的一个程序有5个文件，那么某个文件中申请了静态全局变量，这个静态全局变量只能在当前文件中使用，其他四个文件均不可以使用。而某个文件中申请了全局变量，那么其他四个文件中都可以使用该全局变量（只需要通过关键字<strong>extern申明</strong>一下就可以使用了）。事实上static改变了变量的作用范围。</p>
-</li>
-</ol>
-<ol start="3">
-<li><strong>字符串常量区：</strong>存放字符串常量，程序结束后，由<strong>系统</strong>进行释放。比如我们定义char * p = “Hello World”; 这里的“Hello World”就是在字符串常量中，最终系统会自动释放。</li>
-</ol>
-<ol start="4">
-<li><strong>代码区：</strong>存放<strong>程序体的二进制代码</strong>。比如我们写的函数，都是在代码区的。</li>
-</ol>
-<ol start="5">
-<li><p><strong>堆区：</strong>由<strong>用户手动申请，手动释放</strong>。在C中使用malloc，在C++中使用new（当然C++中也可以使用malloc）。</p>
+<p>3</p>
+<p><strong>字符串常量区：</strong>存放字符串常量，程序结束后，由<strong>系统</strong>进行释放。比如我们定义char * p = “Hello World”; 这里的“Hello World”就是在字符串常量中，最终系统会自动释放。</p>
+<p>4</p>
+<p><strong>代码区：</strong>存放<strong>程序体的二进制代码</strong>。比如我们写的函数，都是在代码区的。</p>
+<p>5</p>
+<p><strong>堆区：</strong>由<strong>用户手动申请，手动释放</strong>。在C中使用malloc，在C++中使用new（当然C++中也可以使用malloc）。</p>
 <p>说明：<strong>new操作符本质上还是使用了malloc进行内存的申请</strong>，因此我将<strong>自由存储区</strong>和<strong>堆区</strong>都说成堆区，不过两者还是有很大的差别。</p>
 <p>1）malloc是C语言中的函数，而new是C++中的操作符。</p>
 <p>2）malloc申请之后返回的类型是void*，而new返回的指针带有类型。</p>
 <p>3）malloc只负责内存的分配而不会调用类的构造函数，而new不仅会分配内存，而且会自动调用类的构造函数。</p>
-</li>
-</ol>
 
       
 
