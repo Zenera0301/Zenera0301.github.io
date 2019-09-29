@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>DinDin&#39;s Blog</title>
+  <title>Linux网络编程-poll | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Poll底层是链表 优缺点优点： poll支持的文件描述符数量可以突破1024 缺点：  每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大  同时每次调用select，都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大  不支持跨平台  Select底层是数组，一旦分配写死了，大小就固定了 优缺点优点： 跨平台 缺点：  每次调用select，都需">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DinDin&#39;s Blog">
+<meta property="og:title" content="Linux网络编程-poll">
 <meta property="og:url" content="http://yoursite.com/2019/09/29/Linux网络编程-Poll/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="Poll底层是链表 优缺点优点： poll支持的文件描述符数量可以突破1024 缺点：  每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大  同时每次调用select，都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大  不支持跨平台  Select底层是数组，一旦分配写死了，大小就固定了 优缺点优点： 跨平台 缺点：  每次调用select，都需">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-29T12:44:51.701Z">
+<meta property="og:updated_time" content="2019-09-29T14:48:16.609Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
+<meta name="twitter:title" content="Linux网络编程-poll">
 <meta name="twitter:description" content="Poll底层是链表 优缺点优点： poll支持的文件描述符数量可以突破1024 缺点：  每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大  同时每次调用select，都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大  不支持跨平台  Select底层是数组，一旦分配写死了，大小就固定了 优缺点优点： 跨平台 缺点：  每次调用select，都需">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
@@ -161,6 +161,21 @@
             <article id="post-Linux网络编程-Poll" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux网络编程-poll
+    </h1>
+  
+
+        
+        <a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
+  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="Poll"><a href="#Poll" class="headerlink" title="Poll"></a>Poll</h3><p>底层是链表</p>
@@ -277,7 +292,7 @@
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          Linux网络编程-select
         
       </div>
     </a>
