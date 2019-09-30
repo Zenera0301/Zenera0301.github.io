@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Linux网络编程-UDP通信流程 | DinDin&#39;s Blog</title>
+  <title>DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="服务器端 创建套接字： int fd = socket(af_inet,sock_dgram,0);  绑定本地IP和端口：bind();  通信： 接收数据recvfrom；会保存client的IP和端口 发送数据sendto  关闭套接字：close(fd);   12345678910111213141516171819202122232425262728293031323334353637">
+  <meta name="description" content="xml1 有一个文件头 1&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;ut-8&quot;?&amp;gt;  2 由一系列的标签组成: 逻辑上是树结构  根标签只有一个  一般成对出现 1&amp;lt;hello&amp;gt;&amp;lt;/hello&amp;gt;  不成对:  1&amp;lt;hello/&amp;gt;      3 标签区分大小写 4 标签可以设置属性 1&amp;lt;font color=&amp;quot;red&amp;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux网络编程-UDP通信流程">
-<meta property="og:url" content="http://yoursite.com/2019/09/30/Linux网络编程-UDP通信/index.html">
+<meta property="og:title" content="DinDin&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/XML/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="服务器端 创建套接字： int fd = socket(af_inet,sock_dgram,0);  绑定本地IP和端口：bind();  通信： 接收数据recvfrom；会保存client的IP和端口 发送数据sendto  关闭套接字：close(fd);   12345678910111213141516171819202122232425262728293031323334353637">
+<meta property="og:description" content="xml1 有一个文件头 1&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;ut-8&quot;?&amp;gt;  2 由一系列的标签组成: 逻辑上是树结构  根标签只有一个  一般成对出现 1&amp;lt;hello&amp;gt;&amp;lt;/hello&amp;gt;  不成对:  1&amp;lt;hello/&amp;gt;      3 标签区分大小写 4 标签可以设置属性 1&amp;lt;font color=&amp;quot;red&amp;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-30T14:23:34.873Z">
+<meta property="og:updated_time" content="2019-09-30T08:50:02.749Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux网络编程-UDP通信流程">
-<meta name="twitter:description" content="服务器端 创建套接字： int fd = socket(af_inet,sock_dgram,0);  绑定本地IP和端口：bind();  通信： 接收数据recvfrom；会保存client的IP和端口 发送数据sendto  关闭套接字：close(fd);   12345678910111213141516171819202122232425262728293031323334353637">
+<meta name="twitter:title" content="DinDin&#39;s Blog">
+<meta name="twitter:description" content="xml1 有一个文件头 1&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;ut-8&quot;?&amp;gt;  2 由一系列的标签组成: 逻辑上是树结构  根标签只有一个  一般成对出现 1&amp;lt;hello&amp;gt;&amp;lt;/hello&amp;gt;  不成对:  1&amp;lt;hello/&amp;gt;      3 标签区分大小写 4 标签可以设置属性 1&amp;lt;font color=&amp;quot;red&amp;">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -158,46 +158,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Linux网络编程-UDP通信" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-XML" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Linux网络编程-UDP通信流程
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-UDP通信/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.687Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h4 id="服务器端"><a href="#服务器端" class="headerlink" title="服务器端"></a>服务器端</h4><ol>
-<li><p>创建套接字： <code>int fd = socket(af_inet,sock_dgram,0);</code></p>
-</li>
-<li><p>绑定本地IP和端口：<code>bind();</code></p>
-</li>
-<li><p>通信：</p>
-<p>接收数据<code>recvfrom</code>；会保存client的IP和端口</p>
-<p>发送数据<code>sendto</code></p>
-</li>
-<li><p>关闭套接字：<code>close(fd);</code></p>
-</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 创建套接字</span></span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// fd绑定本地的IP和端口</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv, <span class="number">0</span>, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_port = htons(<span class="number">8765</span>);</span><br><span class="line">    serv.sin_addr.s_addr = htonl(INADDR_ANY);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(fd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> cli_len = <span class="keyword">sizeof</span>(client);</span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> recvlen = recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>,                         									(struct sockaddr*)&amp;client, &amp;cli_len);</span><br><span class="line">        <span class="keyword">if</span>(recvlen == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"recvform error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">        <span class="keyword">char</span> ip[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"New Client IP: %s, Port: %d\n"</span>,</span><br><span class="line">            inet_ntop(AF_INET, &amp;client.sin_addr.s_addr, ip, <span class="keyword">sizeof</span>(ip)),</span><br><span class="line">            ntohs(client.sin_port));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 给客户端发送数据</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>, (struct sockaddr*)&amp;client, <span class="keyword">sizeof</span>(client));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h1 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h1><p>1 有一个文件头</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="ut-8"?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><ol>
-<li>创建套接字： <code>int fd = socket(af_inet,sock_dgram,0);</code></li>
-<li>通信：接收数据<code>recvfrom</code>；发送数据<code>sendto</code></li>
-<li>关闭套接字：<code>close(fd);</code></li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// create socket</span></span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化服务器的IP和端口</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv, <span class="number">0</span>, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_port = htons(<span class="number">8765</span>);</span><br><span class="line">    inet_pton(AF_INET, <span class="string">"127.0.0.1"</span>, &amp;serv.sin_addr.s_addr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>);</span><br><span class="line">        <span class="comment">// 数据的发送 - server - IP port</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待服务器发送数据过来</span></span><br><span class="line">        recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2 由一系列的标签组成: 逻辑上是树结构</p>
+<ul>
+<li><p>根标签只有一个</p>
+</li>
+<li><p>一般成对出现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;hello&gt;&lt;/hello&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不成对: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;hello/&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>3 标签区分大小写</p>
+<p>4 标签可以设置属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;font color=&quot;red&quot;&gt;&lt;/font&gt;</span><br></pre></td></tr></table></figure>
+
+<p>5 注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- xxxx --&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./a.out</span><br><span class="line"></span><br><span class="line">ldd a.out</span><br></pre></td></tr></table></figure>
 
 
       
@@ -278,7 +268,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/30/Linux网络编程-UDP通信/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/30/XML/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -292,7 +282,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/09/30/XML/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/09/30/http协议/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -302,8 +292,8 @@
     </a>
   
   
-    <a href="/2019/09/30/Linux网络编程-本地套接字/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Linux网络编程-本地套接字</div>
+    <a href="/2019/09/30/Linux网络编程-UDP通信/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux网络编程-UDP通信流程</div>
       <i class="icon-circle-right"></i>
     </a>
   

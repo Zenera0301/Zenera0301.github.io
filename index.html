@@ -159,6 +159,253 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Json" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Json"><a href="#Json" class="headerlink" title="Json"></a>Json</h1><p>cjson的使用 </p>
+<p>- 压缩包解压缩，直接使用里边的cJSON.c和cJSON.h即可 </p>
+<p>- 链接时还需要加上-lm 表示链接math库 </p>
+<h2 id="json的格式"><a href="#json的格式" class="headerlink" title="json的格式"></a>json的格式</h2><h4 id="1-json数组"><a href="#1-json数组" class="headerlink" title="1 json数组"></a>1 json数组</h4><ul>
+<li>char array[23] = “slkjflajslfd”; </li>
+<li>中括号，中括号里面可以是下面这些类型，不一定非得是哪一种类型：[整形, 字符串, 布尔类型, json数组, json对象] </li>
+<li>[123, 123.2, true, false, [12, 34, 56, “hello, world”]] </li>
+</ul>
+<h4 id="2-json对象"><a href="#2-json对象" class="headerlink" title="2 json对象"></a>2 json对象</h4><p>由{}表示，是一些键值对 </p>
+<ul>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">    <span class="string">"name"</span>:<span class="string">"zhang3"</span>,  </span><br><span class="line">    <span class="string">"name2"</span>:<span class="string">"li4"</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>key值: 必须是 字符串, 不重复 </p>
+</li>
+<li><p>value值: 整形, 字符串 , 布尔，json对象, json数组</p>
+</li>
+</ul>
+<h4 id="3-json数组-json对象"><a href="#3-json数组-json对象" class="headerlink" title="3 json数组+json对象"></a>3 json数组+json对象</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">    <span class="string">"name1"</span>:<span class="string">"zhang3"</span>,  </span><br><span class="line"></span><br><span class="line">    <span class="string">"name2"</span>:<span class="string">"li4"</span>, </span><br><span class="line"></span><br><span class="line">    <span class="string">"张三"</span>:&#123; </span><br><span class="line"></span><br><span class="line">        <span class="string">"别名"</span>:<span class="string">"老王"</span>, </span><br><span class="line"></span><br><span class="line">        <span class="string">"性别"</span>:<span class="string">"男"</span>, </span><br><span class="line"></span><br><span class="line">        <span class="string">"年龄"</span>:<span class="number">34</span>, </span><br><span class="line"></span><br><span class="line">        <span class="string">"孩子"</span>:[<span class="string">"小红"</span>, <span class="string">"小绿"</span>, <span class="string">"小黑"</span>] </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CJson"><a href="#CJson" class="headerlink" title="CJson"></a>CJson</h3><p>C语言json开源解析库 - cjson </p>
+<p>使用，解压包后，将cJSON.c和cJSON.h两个文件拷贝到自己的项目文件下，编译的时候只需要gcc cJSON.c main.c  -o xxx ，然后./xxx 即可</p>
+<h4 id="生成json文件"><a href="#生成json文件" class="headerlink" title="生成json文件"></a>生成json文件</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">○ 创建一个json对象 </span><br><span class="line"></span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_CreateObject</span><span class="params">(<span class="keyword">void</span>)</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 往json对象中添加数据成员 </span><br><span class="line"></span><br><span class="line">cJSON *object, <span class="comment">// json对象 </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *<span class="built_in">string</span>, <span class="comment">// key值 </span></span><br><span class="line"></span><br><span class="line">cJSON *item <span class="comment">// value值（int，string，array，obj） </span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cJSON_AddItemToObject</span><span class="params">()</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 创建一个整型值 </span><br><span class="line"></span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_CreateNumber</span><span class="params">(<span class="keyword">double</span> num)</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 创建一个字符串 </span><br><span class="line"></span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_CreateString</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *<span class="built_in">string</span>)</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 创建一个json数组 </span><br><span class="line"></span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_CreateArray</span><span class="params">(<span class="keyword">void</span>)</span></span>; -- 空数组 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 创建默认有count个整形值的json数组 </span><br><span class="line"></span><br><span class="line">▪ <span class="keyword">int</span> arry[] = &#123;<span class="number">8</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>&#125;; </span><br><span class="line"></span><br><span class="line">▪ cJSON_CreateIntArray(arry, <span class="number">5</span>); </span><br><span class="line"></span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_CreateIntArray</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> *numbers,<span class="keyword">int</span> count)</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 往json数组中添加数据成员 </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cJSON_AddItemToArray</span><span class="params">(cJSON *<span class="built_in">array</span>, cJSON *item)</span></span>; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 释放jSON结构指针 </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cJSON_Delete</span><span class="params">(cJSON *c)</span> </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line">○ 将JSON结构转化为字符串 </span><br><span class="line"></span><br><span class="line">▪ 返回值需要使用<span class="built_in">free</span>释放 </span><br><span class="line"></span><br><span class="line">▪ FILE* fp = fopen(); </span><br><span class="line"></span><br><span class="line">▪ fwrite(); </span><br><span class="line"></span><br><span class="line">▪ fclose(); </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">cJSON_Print</span><span class="params">(cJSON *item)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>实现下面的json数据格式：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"奔驰"</span>:	&#123;</span><br><span class="line">		<span class="attr">"factory"</span>:	<span class="string">"一汽大众"</span>,</span><br><span class="line">		<span class="attr">"last"</span>:	<span class="number">31</span>,</span><br><span class="line">		<span class="attr">"price"</span>:	<span class="number">83</span>,</span><br><span class="line">		<span class="attr">"sell"</span>:	<span class="number">49</span>,</span><br><span class="line">		<span class="attr">"sum"</span>:	<span class="number">80</span>,</span><br><span class="line">		<span class="attr">"other"</span>:[<span class="number">124</span>, <span class="literal">true</span>, <span class="string">"hello, world"</span>, &#123;<span class="attr">"梅赛德斯奔驰"</span>:<span class="string">"心所向, 持以恒"</span>&#125;]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cJSON.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 创建对象</span></span><br><span class="line">    cJSON* obj = cJSON_CreateObject();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建子对象</span></span><br><span class="line">    cJSON* subObj = cJSON_CreateObject();</span><br><span class="line">    <span class="comment">// 添加key-value</span></span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"factory"</span>, cJSON_CreateString(<span class="string">"一汽大众"</span>));</span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"last"</span>, cJSON_CreateNumber(<span class="number">31</span>));</span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"price"</span>, cJSON_CreateNumber(<span class="number">83</span>));</span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"sell"</span>, cJSON_CreateNumber(<span class="number">49</span>));</span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"sum"</span>, cJSON_CreateNumber(<span class="number">80</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建json数组</span></span><br><span class="line">    cJSON* <span class="built_in">array</span> = cJSON_CreateArray();</span><br><span class="line">    <span class="comment">// array添加元素</span></span><br><span class="line">    cJSON_AddItemToArray(<span class="built_in">array</span>, cJSON_CreateNumber(<span class="number">123</span>));</span><br><span class="line">    cJSON_AddItemToArray(<span class="built_in">array</span>, cJSON_CreateBool(<span class="number">1</span>));</span><br><span class="line">    cJSON_AddItemToArray(<span class="built_in">array</span>, cJSON_CreateString(<span class="string">"hello, world"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数组中的对象</span></span><br><span class="line">    cJSON* subsub = cJSON_CreateObject();</span><br><span class="line">    cJSON_AddItemToObject(subsub, <span class="string">"梅赛德斯奔驰"</span>, </span><br><span class="line">                          cJSON_CreateString(<span class="string">"心所向, 持以恒"</span>));</span><br><span class="line">    cJSON_AddItemToArray(<span class="built_in">array</span>, subsub);</span><br><span class="line"></span><br><span class="line">    cJSON_AddItemToObject(subObj, <span class="string">"other"</span>, <span class="built_in">array</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// obj中添加key - value</span></span><br><span class="line">    cJSON_AddItemToObject(obj, <span class="string">"奔驰"</span>, subObj);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据格式化</span></span><br><span class="line">    <span class="keyword">char</span>* data = cJSON_Print(obj);</span><br><span class="line">    FILE* fp = fopen(<span class="string">"car.json"</span>, <span class="string">"w"</span>);</span><br><span class="line">    fwrite(data, <span class="keyword">sizeof</span>(<span class="keyword">char</span>), <span class="built_in">strlen</span>(data)+<span class="number">1</span>, fp);</span><br><span class="line">    fclose(fp);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="解析json文件"><a href="#解析json文件" class="headerlink" title="解析json文件"></a>解析json文件</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">○ 将字符串解析为JSON结构</span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_Parse</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *value)</span></span>;</span><br><span class="line">返回值需要使用cJSON_Delete释放</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">○ 根据键值查找json节点</span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_GetObjectItem</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    cJSON *object, <span class="comment">// 当前json对象</span></span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">const</span> <span class="keyword">char</span> *<span class="built_in">string</span> <span class="comment">// key值</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"></span><br><span class="line">○ 获取json数组中元素的个数</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cJSON_GetArraySize</span><span class="params">(cJSON *<span class="built_in">array</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">○ 根据数组下标找到对应的数组元素</span><br><span class="line"><span class="function">cJSON *<span class="title">cJSON_GetArrayItem</span><span class="params">(cJSON *<span class="built_in">array</span>, <span class="keyword">int</span> index)</span></span>;</span><br><span class="line"></span><br><span class="line">○ 判断是否有可以值对应的键值对</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">cJSON_HasObjectItem</span><span class="params">(cJSON *object, <span class="keyword">const</span> <span class="keyword">char</span> *<span class="built_in">string</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>解析代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cJSON.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"./a.out jsonfile\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载json文件 </span></span><br><span class="line">    FILE* fp = fopen(argv[<span class="number">1</span>], <span class="string">"r"</span>);</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    fread(buf, <span class="number">1</span>, <span class="keyword">sizeof</span>(buf), fp);</span><br><span class="line">    cJSON* root = cJSON_Parse(buf);</span><br><span class="line"></span><br><span class="line">    cJSON* subobj = cJSON_GetObjectItem(root, <span class="string">"奔驰"</span>);</span><br><span class="line">    <span class="comment">// 判断对象是否存在</span></span><br><span class="line">    <span class="keyword">if</span>( subobj )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取子对象</span></span><br><span class="line">        cJSON* factory = cJSON_GetObjectItem(subobj, <span class="string">"factory"</span>);</span><br><span class="line">        cJSON* last = cJSON_GetObjectItem(subobj, <span class="string">"last"</span>);</span><br><span class="line">        cJSON* price = cJSON_GetObjectItem(subobj, <span class="string">"price"</span>);</span><br><span class="line">        cJSON* sell = cJSON_GetObjectItem(subobj, <span class="string">"sell"</span>);</span><br><span class="line">        cJSON* sum = cJSON_GetObjectItem(subobj, <span class="string">"sum"</span>);</span><br><span class="line">        cJSON* other = cJSON_GetObjectItem(subobj, <span class="string">"other"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印value值</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"奔驰：\n"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    factory: %s\n"</span>, cJSON_Print(factory));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    last: %s\n"</span>, cJSON_Print(last));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    price: %s\n"</span>, cJSON_Print(price));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    sell: %s\n"</span>, cJSON_Print(sell));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    sum: %s\n"</span>, cJSON_Print(sum));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印数组内容</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"    other:\n"</span>);</span><br><span class="line">        <span class="keyword">if</span>(other-&gt;type == cJSON_Array)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;cJSON_GetArraySize(other); ++i)</span><br><span class="line">            &#123;</span><br><span class="line">                cJSON* node = cJSON_GetArrayItem(other, i);</span><br><span class="line">                <span class="comment">// 判断数据类型</span></span><br><span class="line">                <span class="keyword">if</span>(node-&gt;type == cJSON_String)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"        %s  \n"</span>, node-&gt;valuestring);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(node-&gt;type == cJSON_Number)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"        %d\n"</span>, node-&gt;valueint);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(node-&gt;type == cJSON_True)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"        %d\n"</span>, node-&gt;valueint);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(node-&gt;type == cJSON_False)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"        %d\n"</span>, node-&gt;valueint);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cJSON_Delete(root);</span><br><span class="line">    fclose(fp);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/30/Json/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-http协议" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="http"><a href="#http" class="headerlink" title="http"></a>http</h1><p>应用层协议</p>
+<h3 id="1-请求消息（Request），浏览器给服务器发送"><a href="#1-请求消息（Request），浏览器给服务器发送" class="headerlink" title="1 请求消息（Request），浏览器给服务器发送"></a>1 请求消息（Request），浏览器给服务器发送</h3><p>http协议包括四部分：</p>
+<ol>
+<li><p><strong>请求行</strong>：请求类型，要访问的资源，使用的http版本，例如：  </p>
+<p><code>GET /1.txt  HTTP/1.1</code>  和<code>POST HTTP/1.1</code></p>
+</li>
+<li><p><strong>请求头</strong>：服务器要使用的附加信息（由键值对组成）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Host: localhost:2222</span><br><span class="line">User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/201001 01 </span><br><span class="line">Firefox/24.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Connection: keep-alive</span><br><span class="line">If-Modified-Since: Fri, 18 Jul 2014 08:36:36 GMT</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>空行</strong>：空行是必须要有的，即使没有请求数据，就是换行：\r\n</p>
+</li>
+<li><p><strong>请求数据</strong>：主体，可以添加任意的其他数据（可以有，可以没有）</p>
+</li>
+</ol>
+<h3 id="2-响应消息（Response），服务器收到请求后给浏览器发"><a href="#2-响应消息（Response），服务器收到请求后给浏览器发" class="headerlink" title="2 响应消息（Response），服务器收到请求后给浏览器发"></a>2 响应消息（Response），服务器收到请求后给浏览器发</h3><p>响应消息包括四部分：</p>
+<ol>
+<li><strong>状态行</strong>：包括http协议版本号，状态码，状态信息</li>
+<li><strong>消息报头</strong>：说明客户端要使用的一些附加信息</li>
+<li><strong>空行</strong>：空行是必须要有的</li>
+<li><strong>响应正文</strong>：服务器返回给客户端的文本信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 Ok</span><br><span class="line">Server: micro_httpd</span><br><span class="line">Date: Fri, 18 Jul 2014 14:34:26 GMT</span><br><span class="line">Content-Type: text/plain; charset=iso-8859-1 (必选项,告诉浏览器发送的数据是什么类型)</span><br><span class="line">Content-Length: 32(发送的数据的长度，或者写-1，或者不写)</span><br><span class="line">Content-Language: zh-CN</span><br><span class="line">Last-Modified: Fri, 18 Jul 2014 08:36:36 GMT</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main(void)&#123;</span><br><span class="line">    printf(&quot;hello world!\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Get和Post的区别"><a href="#3-Get和Post的区别" class="headerlink" title="3 Get和Post的区别"></a>3 Get和Post的区别</h3><h4 id="Get："><a href="#Get：" class="headerlink" title="Get："></a>Get：</h4><ul>
+<li>请求数据的时候，用户名和密码等敏感信息会显示在地址栏中，不够安全，不适用敏感信息</li>
+<li>url的长度有限，不同浏览器限制不同，能显示的消息有限，适用于小数据量</li>
+<li>get产生一个包，header和request body放在一起发送出去，服务器收到后返回200 ok</li>
+</ul>
+<h4 id="Post："><a href="#Post：" class="headerlink" title="Post："></a>Post：</h4><ul>
+<li>提交数据的时候，数据不显示在地址栏里，隐藏起来的，相对更安全，提交敏感信息用post</li>
+<li>post对于文件大小没有限定，适合大数据量</li>
+<li>post产生两个包：一个header，一个request body；发送header后，服务器返回100 continue；发送body后，服务器返回200 ok</li>
+</ul>
+<h3 id="4-浏览器使用get方法向服务器请求数据："><a href="#4-浏览器使用get方法向服务器请求数据：" class="headerlink" title="4 浏览器使用get方法向服务器请求数据："></a>4 浏览器使用get方法向服务器请求数据：</h3><p>浏览器地址栏：192.168.1.115/hello.c</p>
+<p>浏览器封装一个http请求协议：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get /hello.c http/1.1</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">\r\n</span><br></pre></td></tr></table></figure>
+
+<p>服务器解析这个请求：</p>
+<p>分析请求行，根据资源目录，找到所需资源hello.c，用open打开文件，read读取文件内容，发送给浏览器</p>
+<h3 id="5-HTTP常用状态码"><a href="#5-HTTP常用状态码" class="headerlink" title="5  HTTP常用状态码"></a>5  HTTP常用状态码</h3><p>状态代码由3位数字组成，第一个数字定义了响应的类别，共分5种类别: </p>
+<p>○ 1xx：<strong>指示信息</strong>–表示请求已接收，继续处理 </p>
+<p>○ 2xx：<strong>成功</strong>–表示请求已被成功接收、理解、接受 </p>
+<p>○ 3xx：<strong>重定向</strong>–要完成请求必须进行更进一步的操作 </p>
+<p>○ 4xx：<strong>客户端错误</strong>–请求有语法错误或请求无法实现 </p>
+<p>○ 5xx：<strong>服务器端错误</strong>–服务器未能实现合法的请求 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">常见状态码：</span><br><span class="line"> 200 OK 客户端请求成功</span><br><span class="line"> 400 Bad Request 客户端请求有语法错误，不能被服务器所理解</span><br><span class="line"> 401 Unauthorized 请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用 </span><br><span class="line"> 403 Forbidden 服务器收到请求，但是拒绝提供服务</span><br><span class="line"> 404 Not Found 请求资源不存在，eg：输入了错误的URL</span><br><span class="line"> 500 Internal Server Error 服务器发生不可预期的错误</span><br><span class="line"> 503 Server Unavailable 服务器当前不能处理客户端的请求，一段时间后可能恢复正常</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/30/http协议/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-XML" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h1><p>1 有一个文件头</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="ut-8"?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2 由一系列的标签组成: 逻辑上是树结构</p>
+<ul>
+<li><p>根标签只有一个</p>
+</li>
+<li><p>一般成对出现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;hello&gt;&lt;/hello&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不成对: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;hello/&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>3 标签区分大小写</p>
+<p>4 标签可以设置属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;font color=&quot;red&quot;&gt;&lt;/font&gt;</span><br></pre></td></tr></table></figure>
+
+<p>5 注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- xxxx --&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./a.out</span><br><span class="line"></span><br><span class="line">ldd a.out</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/30/XML/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Linux网络编程-UDP通信" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -742,272 +989,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/29/Linux网络编程-端口复用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-常识方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-常识方法/">Linux网络编程-常识方法</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-常识方法/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.602Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="1-netstat"><a href="#1-netstat" class="headerlink" title="1 netstat"></a>1 netstat</h3><p>查看网络相关状态信息</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -apn | grep 8888</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-nc"><a href="#2-nc" class="headerlink" title="2  nc"></a>2  nc</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 127.0.0.1 8888 //连接到这个IP和端口</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-常识方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-Socket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-Socket/">Linux网络编程-socket</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-Socket/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.599Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>程序员要做的事：操作文件（内核缓冲区）</p>
-<p>工作模式：</p>
-<ul>
-<li>创建一个文件描述符fd</li>
-<li>这个fd对应一块内核缓冲区</li>
-<li>这个内核缓冲区是分为两部分的：一部分专门用于读；一部分专门用于写</li>
-<li>read的时候是读内核缓冲区中的数据；write的时候是往这块内核缓冲区写数据</li>
-<li>内核缓冲区负责写的部分若有数据，数据就直接发送出去了</li>
-</ul>
-<h3 id="服务器流程："><a href="#服务器流程：" class="headerlink" title="服务器流程："></a>服务器流程：</h3><ol>
-<li><p>创建套接字 </p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> lfd = socket;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>绑定本地IP和端口</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">socketaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.port = htons(port); <span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">serv.IP = htons(INADDR_ANY);<span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">bind(lfd,&amp;serv,<span class="keyword">sizeof</span>(serv));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>监听</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen(lfd,<span class="number">128</span>);<span class="comment">//128是同时连接到服务器上的个数</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>等待并接收连接请求</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个结构体，用于保存：连接到服务器上的客户端的IP和端口</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd,&amp;client,&amp;len); <span class="comment">//cfd 是用于通信的</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通信</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>关闭</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(lfd);<span class="comment">//用于监听的文件描述符</span></span><br><span class="line">close(cfd);<span class="comment">//用于通信的文件描述符</span></span><br></pre></td></tr></table></figure>
-
-<p>linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束后，把套接字库关闭</p>
-</li>
-</ol>
-<h3 id="客户端流程"><a href="#客户端流程" class="headerlink" title="客户端流程"></a>客户端流程</h3><ol>
-<li><p>创建套接字</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> fd = socket;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>连接服务器</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">server</span>;</span></span><br><span class="line">server.port</span><br><span class="line">server.ip = (<span class="keyword">int</span>)...</span><br><span class="line">server.family</span><br><span class="line">connect(fd,&amp;server,<span class="keyword">sizeof</span>(server));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通信</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>断开连接</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">close(fd);</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-Socket/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-Select" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-Select/">Linux网络编程-select</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-Select/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.596Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><p>调用select函数，select函数会委托内核帮我们做检测，需要给到内核一些数据，这些数据就是select的参数。</p>
-<p>参数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds,        <span class="comment">//maxfd+1</span></span></span></span><br><span class="line"><span class="function"><span class="params">           fd_set* readfds, <span class="comment">//传入传出参数，读集合</span></span></span></span><br><span class="line"><span class="function"><span class="params">           fd_set*writefds,</span></span></span><br><span class="line"><span class="function"><span class="params">           fd_set* exceptfds,</span></span></span><br><span class="line"><span class="function"><span class="params">           struct timeval * timeout)</span></span>;</span><br><span class="line"></span><br><span class="line">fd_set:是个集合的类型，有<span class="number">1024</span>个标志位；验证方法：<span class="keyword">sizeof</span>(fd_set)=<span class="number">128</span>，<span class="number">128</span>个字节*<span class="number">8</span>=<span class="number">1024</span>个bit位</span><br><span class="line">NO1参数：遍历的总个数。maxfd是最大编号，从<span class="number">0</span>开始数的话，总个数是maxfd+<span class="number">1</span>;</span><br><span class="line">No2参数：读集合，被动的，并不知道什么时候有数据，委托内核帮助检测；reads是传入传出参数</span><br><span class="line">No3参数：写集合，主动的，想啥时候写就啥时候写</span><br><span class="line">No4参数：异常集合，一般传<span class="literal">NULL</span>，特殊需求可以捕捉了看看</span><br><span class="line">No5参数：阻塞时长，设为<span class="literal">NULL</span>则为永久阻塞，<span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">val</span>=&#123;</span><span class="number">1</span>,<span class="number">0</span>&#125;;阻塞<span class="number">1</span>s</span><br><span class="line">select(maxfd+<span class="number">1</span>, &amp;read, &amp;write, &amp;expt,timeout);</span><br></pre></td></tr></table></figure>
-
-<p>思路：</p>
-<p>创建套接字；绑定；监听；</p>
-<p>将待检测的数据初始化到fd_set集合中</p>
-<p>文件描述符集类型：fd_set rdset;</p>
-<p>文件描述符操作函数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FD_ZERO(fd_set*);<span class="comment">//全部清空</span></span><br><span class="line">FD_SET(fd,fd_set*);<span class="comment">//从集合中删除某一项</span></span><br><span class="line">FD_ISSET(fd,fd_set*);<span class="comment">//将某个文件描述符添加到集合，会自动找位置，不需要自己找位置</span></span><br><span class="line">FD_CLR(fd,fd_set*);<span class="comment">//判断某个文件描述符对应的标志位是否为1==判断某个文件描述符是否在集合中</span></span><br></pre></td></tr></table></figure>
-
-<p>循环委托内核区做检测</p>
-<p>等待并接受连接请求（此处调用select函数，委托内核帮助检测）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">    select();</span><br><span class="line">    <span class="comment">//判断fd是否是监听的</span></span><br><span class="line">    <span class="comment">//如果不是监听的，那就是已经连接的客户端发送来的数据</span></span><br><span class="line">    <span class="keyword">for</span>()&#123;</span><br><span class="line">        fd_isset(i,&amp;reads);<span class="comment">//判断i号文件描述符是否在reads里，如果在，说明，这个文件描述符对应的客户端确实给我发数据了；如果不在，就说明没有发数据</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="优缺点分析"><a href="#优缺点分析" class="headerlink" title="优缺点分析"></a>优缺点分析</h4><p>底层是数组，一旦分配写死了，大小就固定了</p>
-<p>优点： 跨平台</p>
-<p>缺点：</p>
-<ul>
-<li>每次调用select，<strong>都需要把fd集合从用户态拷贝到内核态</strong>，这个开销在fd很多时会很大 </li>
-<li>同时每次调用select，<strong>都需要在内核遍历传递进来的所有fd</strong>，这个开销在fd很多时也很大 </li>
-<li>select<strong>支持的文件描述符数量太小了</strong>，默认是<strong>1024</strong></li>
-</ul>
-<h4 id="select多路转接伪代码："><a href="#select多路转接伪代码：" class="headerlink" title="select多路转接伪代码："></a>select多路转接伪代码：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> lfd = socket();</span><br><span class="line">    bind();</span><br><span class="line">    listen();</span><br><span class="line">    </span><br><span class="line">    fd_st reads ,temp;</span><br><span class="line">    fd_zero(&amp;reads);</span><br><span class="line">    fd_set(lfd,&amp;reads);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> maxfd = lfd;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="comment">//委托检测</span></span><br><span class="line">        temp = reads;</span><br><span class="line">        <span class="keyword">int</span> ret = select(maxfd+<span class="number">1</span>,&amp;reads,<span class="literal">NULL</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);<span class="comment">//当有内核缓冲区变化，跳出这个语句</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//是不是新的连接到达</span></span><br><span class="line">        <span class="keyword">if</span>(fd_isset(lfd,&amp;temp))&#123;</span><br><span class="line">            <span class="keyword">int</span> cfd = accept();<span class="comment">//接受新连接</span></span><br><span class="line">            fd_set(cfd,&amp;reads);<span class="comment">//把cfd加入读集合</span></span><br><span class="line">            maxfd = maxfd&gt;cfd?cfd:maxfd;<span class="comment">//更新maxfd</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//客户端发送数据</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = lfd+<span class="number">1</span>;i&lt;=maxfd;++i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(fd_isset(i,&amp;temp))&#123;</span><br><span class="line">                <span class="keyword">int</span> len = read();</span><br><span class="line">                <span class="keyword">if</span>(len==<span class="number">0</span>)&#123;<span class="comment">//对方断开连接</span></span><br><span class="line">                    fd_clr(i,&amp;reads);<span class="comment">//把断开的客户端从表中删除</span></span><br><span class="line">                &#125;</span><br><span class="line">                write();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="select多路转接代码："><a href="#select多路转接代码：" class="headerlink" title="select多路转接代码："></a>select多路转接代码：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"eg: ./a.out port\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv_addr</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> serv_len = <span class="keyword">sizeof</span>(serv_addr);</span><br><span class="line">    <span class="keyword">int</span> port = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建套接字</span></span><br><span class="line">    <span class="keyword">int</span> lfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 初始化服务器 sockaddr_in </span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv_addr, <span class="number">0</span>, serv_len);</span><br><span class="line">    serv_addr.sin_family = AF_INET;                   <span class="comment">// 地址族 </span></span><br><span class="line">    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);    <span class="comment">// 监听本机所有的IP</span></span><br><span class="line">    serv_addr.sin_port = htons(port);            <span class="comment">// 设置端口 </span></span><br><span class="line">    <span class="comment">// 绑定IP和端口</span></span><br><span class="line">    bind(lfd, (struct sockaddr*)&amp;serv_addr, serv_len);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置同时监听的最大个数</span></span><br><span class="line">    listen(lfd, <span class="number">36</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Start accept ......\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client_addr</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> cli_len = <span class="keyword">sizeof</span>(client_addr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最大的文件描述符</span></span><br><span class="line">    <span class="keyword">int</span> maxfd = lfd;</span><br><span class="line">    <span class="comment">// 文件描述符读集合</span></span><br><span class="line">    fd_set reads, temp;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    FD_ZERO(&amp;reads);</span><br><span class="line">    FD_SET(lfd, &amp;reads);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 委托内核做IO检测</span></span><br><span class="line">        temp = reads;</span><br><span class="line">        <span class="keyword">int</span> ret = select(maxfd+<span class="number">1</span>, &amp;temp, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"select error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 客户端发起了新的连接</span></span><br><span class="line">        <span class="keyword">if</span>(FD_ISSET(lfd, &amp;temp))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 接受连接请求 - accept不阻塞</span></span><br><span class="line">            <span class="keyword">int</span> cfd = accept(lfd, (struct sockaddr*)&amp;client_addr, &amp;cli_len);</span><br><span class="line">            <span class="keyword">if</span>(cfd == <span class="number">-1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                perror(<span class="string">"accept error"</span>);</span><br><span class="line">                <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">char</span> ip[<span class="number">64</span>];</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"new client IP: %s, Port: %d\n"</span>, </span><br><span class="line">                   inet_ntop(AF_INET, &amp;client_addr.sin_addr.s_addr, ip, <span class="keyword">sizeof</span>(ip)),</span><br><span class="line">                   ntohs(client_addr.sin_port));</span><br><span class="line">            <span class="comment">// 将cfd加入到待检测的读集合中 - 下一次就可以检测到了</span></span><br><span class="line">            FD_SET(cfd, &amp;reads);</span><br><span class="line">            <span class="comment">// 更新最大的文件描述符</span></span><br><span class="line">            maxfd = maxfd &lt; cfd ? cfd : maxfd;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 已经连接的客户端有数据到达</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=lfd+<span class="number">1</span>; i&lt;=maxfd; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(FD_ISSET(i, &amp;temp))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">                <span class="keyword">int</span> len = recv(i, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">                <span class="keyword">if</span>(len == <span class="number">-1</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    perror(<span class="string">"recv error"</span>);</span><br><span class="line">                    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(len == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"客户端已经断开了连接\n"</span>);</span><br><span class="line">                    close(i);</span><br><span class="line">                    <span class="comment">// 从读集合中删除</span></span><br><span class="line">                    FD_CLR(i, &amp;reads);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">                    send(i, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(lfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-Select/">展开全文 >></a>
         </p>
       
 
