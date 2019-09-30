@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>Linux网络编程-web服务器开发 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/2/index.html">
+  <meta name="description" content="服务器端伪代码： 123456789101112131415161718192021222324252627282930313233343536373839404142434445void main()&amp;#123;    //修改进程的工作目录（path从命令行传入）    chdir(path);    //创建监听套接字    int lfd = socket(af_inet,sock_str">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux网络编程-web服务器开发">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/Linux网络编程-Web服务器开发/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="服务器端伪代码： 123456789101112131415161718192021222324252627282930313233343536373839404142434445void main()&amp;#123;    //修改进程的工作目录（path从命令行传入）    chdir(path);    //创建监听套接字    int lfd = socket(af_inet,sock_str">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-30T14:22:38.615Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="Linux网络编程-web服务器开发">
+<meta name="twitter:description" content="服务器端伪代码： 123456789101112131415161718192021222324252627282930313233343536373839404142434445void main()&amp;#123;    //修改进程的工作目录（path从命令行传入）    chdir(path);    //创建监听套接字    int lfd = socket(af_inet,sock_str">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,166 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Linux网络编程-Web服务器开发" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux网络编程-web服务器开发
+    </h1>
+  
+
+        
+        <a href="/2019/09/30/Linux网络编程-Web服务器开发/" class="archive-article-date">
+  	<time datetime="2019-09-30T14:19:31.619Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>服务器端伪代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//修改进程的工作目录（path从命令行传入）</span></span><br><span class="line">    chdir(path);</span><br><span class="line">    <span class="comment">//创建监听套接字</span></span><br><span class="line">    <span class="keyword">int</span> lfd = socket(af_inet,sock_stream,<span class="number">0</span>);</span><br><span class="line">    <span class="comment">//绑定</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.family = af_inet;</span><br><span class="line">    serv.port = htons(<span class="number">8989</span>);</span><br><span class="line">    <span class="comment">//监听</span></span><br><span class="line">    listen();</span><br><span class="line">    <span class="comment">//阻塞等待请求</span></span><br><span class="line">    <span class="keyword">int</span> cfd = accept();</span><br><span class="line">    <span class="comment">//读数据</span></span><br><span class="line">    read(cfd,buf,<span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="comment">//将buf（请求行，请求头，空行，数据）中的请求行拿出来  GET /hello.c http/1.1</span></span><br><span class="line">    <span class="keyword">char</span> method[<span class="number">12</span>],path[<span class="number">1024</span>],protocol[<span class="number">12</span>];</span><br><span class="line">    <span class="comment">//得到完整的文件名（跳过斜线）</span></span><br><span class="line">    <span class="keyword">char</span> * file = path + <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//打开文件</span></span><br><span class="line">    <span class="keyword">int</span> fdd = open(file,O_RFONLY);</span><br><span class="line">    <span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//把响应头发送出去</span></span><br><span class="line">    http_respond_head(cfd,<span class="string">"text/plain"</span>);</span><br><span class="line">    <span class="comment">//循环读数据</span></span><br><span class="line">    <span class="keyword">while</span>((len=read(fdd,buf,<span class="keyword">sizeof</span>(buf)))&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//数据发送给浏览器（套接字通信）</span></span><br><span class="line">        write(fdd,buf,len);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//服务器回复给客户端的相应消息</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">http_respond_head</span><span class="params">(<span class="keyword">int</span> cfd, <span class="keyword">char</span>* type)</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="comment">//状态行</span></span><br><span class="line">    <span class="built_in">sprintf</span>(buf,<span class="string">"http/1.1 200 OK\r\n"</span>);</span><br><span class="line">    write(cfd,buf,<span class="built_in">strlen</span>(buf));</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//消息报头</span></span><br><span class="line">    <span class="built_in">sprintf</span>(buf,<span class="string">"Content-Type:%s\r\n"</span>,tpye);</span><br><span class="line">    write(cfd,buf,<span class="built_in">strlen</span>(buf));</span><br><span class="line">       </span><br><span class="line">    <span class="comment">//空行</span></span><br><span class="line">    write(cfd,<span class="string">"\r\n"</span>,<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Poll/">Linux网络编程-poll</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/30/Linux网络编程-Web服务器开发/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/09/30/Linux网络编程-心跳包/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Linux网络编程-心跳包
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/30/Linux网络编程-Epoll/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux网络编程-epoll</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2019/page/3/">3</a><a class="extend next" rel="next" href="/archives/2019/page/3/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +341,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

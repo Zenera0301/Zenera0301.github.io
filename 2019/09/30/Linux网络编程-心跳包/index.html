@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>Linux网络编程-心跳包 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/2/index.html">
+  <meta name="description" content="作用：判断客户端和服务器是否处于连接状态  心跳机制  不会携带大量的数据 每隔一定时间服务器-&amp;gt;客户端/客户端-&amp;gt;服务器发送一个数据包     心跳包看成一个协议 ：应用层协议    判断网络是否断开  有多个连续的心跳包没收到/没有回复  关闭通信的套接字     重连  重新初始套接字  继续发送心跳包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux网络编程-心跳包">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/Linux网络编程-心跳包/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="作用：判断客户端和服务器是否处于连接状态  心跳机制  不会携带大量的数据 每隔一定时间服务器-&amp;gt;客户端/客户端-&amp;gt;服务器发送一个数据包     心跳包看成一个协议 ：应用层协议    判断网络是否断开  有多个连续的心跳包没收到/没有回复  关闭通信的套接字     重连  重新初始套接字  继续发送心跳包">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-30T14:21:43.927Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="Linux网络编程-心跳包">
+<meta name="twitter:description" content="作用：判断客户端和服务器是否处于连接状态  心跳机制  不会携带大量的数据 每隔一定时间服务器-&amp;gt;客户端/客户端-&amp;gt;服务器发送一个数据包     心跳包看成一个协议 ：应用层协议    判断网络是否断开  有多个连续的心跳包没收到/没有回复  关闭通信的套接字     重连  重新初始套接字  继续发送心跳包">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,185 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Linux网络编程-心跳包" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux网络编程-心跳包
+    </h1>
+  
+
+        
+        <a href="/2019/09/30/Linux网络编程-心跳包/" class="archive-article-date">
+  	<time datetime="2019-09-30T14:19:31.621Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作用：判断客户端和服务器是否处于连接状态</p>
+<ol>
+<li><p>心跳机制 </p>
+<p>不会携带大量的数据</p>
+<p>每隔一定时间服务器-&gt;客户端/客户端-&gt;服务器发送一个数据包 </p>
+</li>
+</ol>
+<ol start="2">
+<li>心跳包看成一个协议 ：应用层协议 </li>
+</ol>
+<ol start="3">
+<li><p>判断网络是否断开 </p>
+<p>有多个连续的心跳包没收到/没有回复 </p>
+<p>关闭通信的套接字 </p>
+</li>
+</ol>
+<ol start="4">
+<li><p>重连 </p>
+<p>重新初始套接字 </p>
+<p>继续发送心跳包 </p>
+</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Poll/">Linux网络编程-poll</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/30/Linux网络编程-心跳包/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/09/30/Linux网络编程-本地套接字/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Linux网络编程-本地套接字
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/30/Linux网络编程-Web服务器开发/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux网络编程-web服务器开发</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2019/page/3/">3</a><a class="extend next" rel="next" href="/archives/2019/page/3/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +360,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

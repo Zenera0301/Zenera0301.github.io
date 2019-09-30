@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>Linux网络编程-epoll | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/2/index.html">
+  <meta name="description" content="函数1该函数生成一个epoll专用的文件描述符  size: epoll上能关注的最大描述符数，随便传一个差不过大小的就行；超出会自动扩展，类似vector的自动扩容 1int epoll_create(int size);  函数2用于控制某个epoll文件描述符事件，可以注册、修改、删除 epfd: epoll_create生成的epoll专用描述符 op: EPOLL_CTL_ADD – 注">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux网络编程-epoll">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/Linux网络编程-Epoll/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="函数1该函数生成一个epoll专用的文件描述符  size: epoll上能关注的最大描述符数，随便传一个差不过大小的就行；超出会自动扩展，类似vector的自动扩容 1int epoll_create(int size);  函数2用于控制某个epoll文件描述符事件，可以注册、修改、删除 epfd: epoll_create生成的epoll专用描述符 op: EPOLL_CTL_ADD – 注">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-30T14:22:54.125Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="Linux网络编程-epoll">
+<meta name="twitter:description" content="函数1该函数生成一个epoll专用的文件描述符  size: epoll上能关注的最大描述符数，随便传一个差不过大小的就行；超出会自动扩展，类似vector的自动扩容 1int epoll_create(int size);  函数2用于控制某个epoll文件描述符事件，可以注册、修改、删除 epfd: epoll_create生成的epoll专用描述符 op: EPOLL_CTL_ADD – 注">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,219 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Linux网络编程-Epoll" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux网络编程-epoll
+    </h1>
+  
+
+        
+        <a href="/2019/09/30/Linux网络编程-Epoll/" class="archive-article-date">
+  	<time datetime="2019-09-30T14:19:31.616Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="函数1"><a href="#函数1" class="headerlink" title="函数1"></a>函数1</h3><p>该函数生成一个epoll专用的文件描述符</p>
+<p> size: epoll上能关注的最大描述符数，随便传一个差不过大小的就行；超出会自动扩展，类似vector的自动扩容</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="函数2"><a href="#函数2" class="headerlink" title="函数2"></a>函数2</h3><p>用于控制某个epoll文件描述符事件，可以注册、修改、删除</p>
+<p>epfd: epoll_create生成的epoll专用描述符</p>
+<p>op: EPOLL_CTL_ADD – 注册；  EPOLL_CTL_MOD – 修改；  EPOLL_CTL_DEL – 删除 </p>
+<p>fd: 关联的文件描述符 </p>
+<p>event: 告诉内核要监听什么事件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd,struct epoll_event *event)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>fd 的解释：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> epoll_data &#123;</span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="keyword">uint32_t</span> u32;</span><br><span class="line">    <span class="keyword">uint64_t</span> u64;</span><br><span class="line">&#125; <span class="keyword">epoll_data_t</span>;</span><br></pre></td></tr></table></figure>
+
+<p>event: 告诉内核要监听什么事件 解释：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> &#123;</span> </span><br><span class="line"></span><br><span class="line">	<span class="keyword">uint32_t</span> events;  </span><br><span class="line"></span><br><span class="line">	<span class="keyword">epoll_data_t</span> data; </span><br><span class="line"></span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line">events：</span><br><span class="line">- EPOLLIN - 读 </span><br><span class="line">- EPOLLOUT - 写 </span><br><span class="line">- EPOLLERR - 异常</span><br></pre></td></tr></table></figure>
+
+<h3 id="函数3"><a href="#函数3" class="headerlink" title="函数3"></a>函数3</h3><p>等待IO事件发生 - 可以设置阻塞的函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> epfd,</span></span></span><br><span class="line"><span class="function"><span class="params">    struct epoll_event* events, <span class="comment">// 数组</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> maxevents,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>epfd: 要检测的句柄 </p>
+<p>events：用于回传待处理事件的数组 </p>
+<p>maxevents：告诉内核这个events的大小 </p>
+<p>timeout：为超时时间 </p>
+<ul>
+<li>-1: 永久阻塞 ，当节点上的 文件描述符对应的 内核缓冲区中 有数据变化的时候，函数返回</li>
+<li>0: 立即返回 </li>
+<li>大于0：是多少就是多少毫秒</li>
+</ul>
+<h3 id="三种工作模式"><a href="#三种工作模式" class="headerlink" title="三种工作模式"></a>三种工作模式</h3><h4 id="1-水平触发模式-（LT）"><a href="#1-水平触发模式-（LT）" class="headerlink" title="1 水平触发模式 （LT）"></a>1 水平触发模式 （LT）</h4><ul>
+<li>只要fd对应的缓冲区有数据，epoll_wait就返回</li>
+<li>返回的次数与发送数据的次数没有关系</li>
+<li>是epoll的默认工作模式</li>
+</ul>
+<h4 id="2-边沿触发模式-（ET）"><a href="#2-边沿触发模式-（ET）" class="headerlink" title="2 边沿触发模式 （ET）"></a>2 边沿触发模式 （ET）</h4><ul>
+<li>客户端给server端发数据：发一次数据，server的epoll_wait返回一次</li>
+<li>不在乎数据是否读完</li>
+<li>为了提高效率</li>
+</ul>
+<p>修改为边沿触发模式其实很简单，将event后面加上一个宏（EPOLLET）就行了</p>
+<p> 数据读不完，如何读完？while(recv());数据读完之后recv会阻塞，如何解决阻塞问题</p>
+<h4 id="3-边沿非阻塞模式"><a href="#3-边沿非阻塞模式" class="headerlink" title="3 边沿非阻塞模式"></a>3 边沿非阻塞模式</h4><ol>
+<li>效率最高</li>
+<li>设置非阻塞 </li>
+</ol>
+<ul>
+<li>open()设置flags；必须<code>O_WDRW|O_NONBLOCK</code></li>
+<li>fcntl：<code>int flag = fcntl(fd,F_GETFL);  flag |= O_NONBLOCK; fcntl(fd,F_SETFL,flag);</code></li>
+<li>将缓冲区的全部数据都读出 <code>while(recv&gt;0){printf();}</code> 当缓冲区数据读完之后，返回是否为0？</li>
+</ul>
+<h3 id="实现伪代码"><a href="#实现伪代码" class="headerlink" title="实现伪代码"></a>实现伪代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> lfd = socket();<span class="comment">// 创建监听的套接字</span></span><br><span class="line">    bind();<span class="comment">// 绑定</span></span><br><span class="line">    listen();<span class="comment">// 监听</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> epfd = epoll_create(<span class="number">3000</span>);<span class="comment">// epoll树根节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">all</span>[3000];</span><span class="comment">// 存储发生变化的fd对应信息</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    <span class="comment">// 监听的lfd挂到epoll树上</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">ev</span>;</span></span><br><span class="line">    <span class="comment">// 在ev中init lfd信息</span></span><br><span class="line">    ev.events = EPOLLIN ;</span><br><span class="line">    ev.data.fd = lfd;</span><br><span class="line">    epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &amp;ev);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="comment">// 委托内核检测事件</span></span><br><span class="line">        <span class="keyword">int</span> ret = epoll_wait(epfd, all, <span class="number">3000</span>, <span class="number">-1</span>);</span><br><span class="line">        <span class="comment">// 根据ret遍历all数组</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;ret; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> fd = all[i].data.fd;</span><br><span class="line">            <span class="comment">// 有新的连接</span></span><br><span class="line">            <span class="keyword">if</span>( fd == lfd)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 接收连接请求 - accept不阻塞</span></span><br><span class="line">                <span class="keyword">int</span> cfd = accept();</span><br><span class="line">                <span class="comment">// cfd上树</span></span><br><span class="line">                ev.events = EPOLLIN;</span><br><span class="line">                ev.data.fd = cfd;</span><br><span class="line">                epoll_ctl(epfd, epoll_ctl_add, cfd, &amp;ev);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 已经连接的客户端有数据发送过来</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 只处理客户端发来的数据</span></span><br><span class="line">                <span class="keyword">if</span>(!all[i].events &amp; EPOLLIN)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 读数据</span></span><br><span class="line">                <span class="keyword">int</span> len = recv();</span><br><span class="line">                <span class="keyword">if</span>(len == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    close(fd);</span><br><span class="line">                    <span class="comment">// 检测的fd从树上删除</span></span><br><span class="line">                    epoll_ctl(epfd, epoll_ctl_del, fd, <span class="literal">NULL</span>);</span><br><span class="line">                &#125;      </span><br><span class="line">                <span class="comment">// 写数据</span></span><br><span class="line">                send();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="完整代码："><a href="#完整代码：" class="headerlink" title="完整代码："></a>完整代码：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"eg: ./a.out port\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv_addr</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> serv_len = <span class="keyword">sizeof</span>(serv_addr);</span><br><span class="line">    <span class="keyword">int</span> port = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建套接字</span></span><br><span class="line">    <span class="keyword">int</span> lfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 初始化服务器 sockaddr_in </span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv_addr, <span class="number">0</span>, serv_len);</span><br><span class="line">    serv_addr.sin_family = AF_INET;                   <span class="comment">// 地址族 </span></span><br><span class="line">    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);    <span class="comment">// 监听本机所有的IP</span></span><br><span class="line">    serv_addr.sin_port = htons(port);            <span class="comment">// 设置端口 </span></span><br><span class="line">    <span class="comment">// 绑定IP和端口</span></span><br><span class="line">    bind(lfd, (struct sockaddr*)&amp;serv_addr, serv_len);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置同时监听的最大个数</span></span><br><span class="line">    listen(lfd, <span class="number">36</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Start accept ......\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client_addr</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> cli_len = <span class="keyword">sizeof</span>(client_addr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建epoll树根节点</span></span><br><span class="line">    <span class="keyword">int</span> epfd = epoll_create(<span class="number">2000</span>);</span><br><span class="line">    <span class="comment">// 初始化epoll树</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">ev</span>;</span></span><br><span class="line">    ev.events = EPOLLIN;</span><br><span class="line">    ev.data.fd = lfd;</span><br><span class="line">    epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &amp;ev);</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">all</span>[2000];</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 使用epoll通知内核fd 文件IO检测</span></span><br><span class="line">        <span class="keyword">int</span> ret = epoll_wait(epfd, all, <span class="keyword">sizeof</span>(all)/<span class="keyword">sizeof</span>(all[<span class="number">0</span>]), <span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历all数组中的前ret个元素</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;ret; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> fd = all[i].data.fd;</span><br><span class="line">            <span class="comment">// 判断是否有新连接</span></span><br><span class="line">            <span class="keyword">if</span>(fd == lfd)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 接受连接请求</span></span><br><span class="line">                <span class="keyword">int</span> cfd = accept(lfd, (struct sockaddr*)&amp;client_addr, &amp;cli_len);</span><br><span class="line">                <span class="keyword">if</span>(cfd == <span class="number">-1</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    perror(<span class="string">"accept error"</span>);</span><br><span class="line">                    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 将新得到的cfd挂到树上</span></span><br><span class="line">                <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">temp</span>;</span></span><br><span class="line">                temp.events = EPOLLIN;</span><br><span class="line">                temp.data.fd = cfd;</span><br><span class="line">                epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &amp;temp);</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 打印客户端信息</span></span><br><span class="line">                <span class="keyword">char</span> ip[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"New Client IP: %s, Port: %d\n"</span>,</span><br><span class="line">                    inet_ntop(AF_INET, &amp;client_addr.sin_addr.s_addr, ip, <span class="keyword">sizeof</span>(ip)),</span><br><span class="line">                    ntohs(client_addr.sin_port));</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 处理已经连接的客户端发送过来的数据</span></span><br><span class="line">                <span class="keyword">if</span>(!all[i].events &amp; EPOLLIN) </span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 读数据</span></span><br><span class="line">                <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">                <span class="keyword">int</span> len = recv(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">                <span class="keyword">if</span>(len == <span class="number">-1</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    perror(<span class="string">"recv error"</span>);</span><br><span class="line">                    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(len == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"client disconnected ....\n"</span>);</span><br><span class="line">                    close(fd);</span><br><span class="line">                    <span class="comment">// fd从epoll树上删除</span></span><br><span class="line">                    epoll_ctl(epfd, EPOLL_CTL_DEL, fd, <span class="literal">NULL</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">" recv buf: %s\n"</span>, buf);</span><br><span class="line">                    write(fd, buf, len);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(lfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="完整代码加强版："><a href="#完整代码加强版：" class="headerlink" title="完整代码加强版："></a>完整代码加强版：</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">sockinfo</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">sock</span>;</span></span><br><span class="line">&#125;SockInfo;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"./a.out port\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> lfd, cfd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv_addr</span>, <span class="title">clien_addr</span>;</span></span><br><span class="line">    <span class="keyword">int</span> serv_len, clien_len;</span><br><span class="line">    <span class="keyword">int</span> port = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建套接字</span></span><br><span class="line">    lfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 初始化服务器 sockaddr_in </span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv_addr, <span class="number">0</span>, <span class="keyword">sizeof</span>(serv_addr));</span><br><span class="line">    serv_addr.sin_family = AF_INET;                   <span class="comment">// 地址族 </span></span><br><span class="line">    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);    <span class="comment">// 监听本机所有的IP</span></span><br><span class="line">    serv_addr.sin_port = htons(port);            <span class="comment">// 设置端口 </span></span><br><span class="line">    serv_len = <span class="keyword">sizeof</span>(serv_addr);</span><br><span class="line">    <span class="comment">// 绑定IP和端口</span></span><br><span class="line">    bind(lfd, (struct sockaddr*)&amp;serv_addr, serv_len);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置同时监听的最大个数</span></span><br><span class="line">    listen(lfd, <span class="number">36</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Start accept ......\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建红黑树根节点</span></span><br><span class="line">    <span class="keyword">int</span> epfd = epoll_create(<span class="number">2000</span>);</span><br><span class="line">    <span class="keyword">if</span>(epfd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"epoll_create error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// lfd添加到监听列表</span></span><br><span class="line">    SockInfo* sinfo = (SockInfo*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(SockInfo));</span><br><span class="line">    sinfo-&gt;sock = serv_addr;</span><br><span class="line">    sinfo-&gt;fd = lfd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">ev</span>;</span></span><br><span class="line">    ev.data.ptr = sinfo;</span><br><span class="line">    ev.events = EPOLLIN;</span><br><span class="line">    <span class="keyword">int</span> ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &amp;ev);</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"epoll_ctl error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">res</span>[2000];</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;            </span><br><span class="line">        <span class="comment">// 设置监听</span></span><br><span class="line">        ret = epoll_wait(epfd, res, <span class="keyword">sizeof</span>(res)/<span class="keyword">sizeof</span>(res[<span class="number">0</span>]), <span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"epoll_wait error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历前ret个元素</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;ret; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> fd = ((SockInfo*)res[i].data.ptr)-&gt;fd;</span><br><span class="line">            <span class="keyword">if</span>(res[i].events != EPOLLIN)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 判断文件描述符是否为lfd</span></span><br><span class="line">            <span class="keyword">if</span>(fd == lfd)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">char</span> ipbuf[<span class="number">64</span>];</span><br><span class="line">                SockInfo *info = (SockInfo*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(SockInfo));</span><br><span class="line">                clien_len = <span class="keyword">sizeof</span>(clien_addr);</span><br><span class="line">                cfd = accept(lfd, (struct sockaddr*)&amp;clien_addr, &amp;clien_len);</span><br><span class="line">                <span class="comment">// cfd 添加到监听树</span></span><br><span class="line">                info-&gt;fd = cfd;</span><br><span class="line">                info-&gt;sock = clien_addr;</span><br><span class="line">                <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">ev</span>;</span></span><br><span class="line">                ev.events = EPOLLIN;</span><br><span class="line">                ev.data.ptr = (<span class="keyword">void</span>*)info;</span><br><span class="line">                epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &amp;ev);</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"client connected, fd = %d, IP = %s, Port = %d\n"</span>, cfd, </span><br><span class="line">                       inet_ntop(AF_INET, &amp;clien_addr.sin_addr.s_addr, ipbuf, <span class="keyword">sizeof</span>(ipbuf)), </span><br><span class="line">                       ntohs(clien_addr.sin_port));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 通信</span></span><br><span class="line">                <span class="keyword">char</span> ipbuf[<span class="number">64</span>];</span><br><span class="line">                <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">                <span class="keyword">int</span> len = recv(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">                SockInfo* p = (SockInfo*)res[i].data.ptr;</span><br><span class="line">                <span class="keyword">if</span>(len == <span class="number">-1</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    perror(<span class="string">"recv error"</span>);</span><br><span class="line">                    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(len == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// ip</span></span><br><span class="line">                    inet_ntop(AF_INET, &amp;p-&gt;sock.sin_addr.s_addr, ipbuf, <span class="keyword">sizeof</span>(ipbuf));</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"client %d 已经断开连接, Ip = %s, Port = %d\n"</span>, </span><br><span class="line">                           fd, ipbuf, ntohs(p-&gt;sock.sin_port));</span><br><span class="line">                    <span class="comment">// 节点从树上删除</span></span><br><span class="line">                    epoll_ctl(epfd, EPOLL_CTL_DEL, fd, <span class="literal">NULL</span>);</span><br><span class="line">                    close(fd);</span><br><span class="line">                    <span class="built_in">free</span>(p);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"Recv data from client %d, Ip = %s, Port = %d\n"</span>, </span><br><span class="line">                           fd, ipbuf, ntohs(p-&gt;sock.sin_port));</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">"    === buf = %s\n"</span>, buf);</span><br><span class="line">                    send(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(lfd);</span><br><span class="line">    <span class="built_in">free</span>(sinfo);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Poll/">Linux网络编程-poll</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/30/Linux网络编程-Epoll/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/09/30/Linux网络编程-Web服务器开发/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Linux网络编程-web服务器开发
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/29/Linux网络编程-多路IO转接/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux网络编程-多路IO转接</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2019/page/3/">3</a><a class="extend next" rel="next" href="/archives/2019/page/3/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +394,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
