@@ -159,6 +159,77 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-libevent" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/06/libevent/">libevent</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/06/libevent/" class="archive-article-date">
+  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">main&#123;</span><br><span class="line">    </span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
+<li>自己创建事件，把事件添加到base框架中</li>
+<li>启动base中的事件循环</li>
+<li>启动后，base就会自动检测已有事件，时间处理完了这个循环就结束了</li>
+<li>结束之后就要释放资源</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/06/libevent/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-线程池" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -211,77 +282,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/10/06/线程池/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-libevent" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/06/libevent/">libevent</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/06/libevent/" class="archive-article-date">
-  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">main&#123;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
-<li>自己创建事件，把事件添加到base框架中</li>
-<li>启动base中的事件循环</li>
-<li>启动后，base就会自动检测已有事件，时间处理完了这个循环就结束了</li>
-<li>结束之后就要释放资源</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/06/libevent/">展开全文 >></a>
         </p>
       
 

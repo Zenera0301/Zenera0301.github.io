@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>libevent | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="123456789101112131415161718192021main&amp;#123;	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffere">
+  <meta name="description" content="123456789101112131415161718main&amp;#123;    	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffereve">
 <meta property="og:type" content="article">
 <meta property="og:title" content="libevent">
 <meta property="og:url" content="http://yoursite.com/2019/10/06/libevent/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="123456789101112131415161718192021main&amp;#123;	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffere">
+<meta property="og:description" content="123456789101112131415161718main&amp;#123;    	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffereve">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-06T07:12:58.781Z">
+<meta property="og:updated_time" content="2019-10-06T07:14:55.802Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="libevent">
-<meta name="twitter:description" content="123456789101112131415161718192021main&amp;#123;	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffere">
+<meta name="twitter:description" content="123456789101112131415161718main&amp;#123;    	struct event_base *base = event_base_new();//事件处理框架    //创建事件        //不带buffer的    struct envent*ev = event_new();    event_add();    //带buffer的    buffereve">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -178,7 +178,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">main&#123;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">main&#123;</span><br><span class="line">    </span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol>
 <li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
@@ -280,18 +280,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/10/06/线程池/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          线程池
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/09/30/Json/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Json</div>
+    <a href="/2019/10/06/线程池/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">线程池</div>
       <i class="icon-circle-right"></i>
     </a>
   
