@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | DinDin&#39;s Blog</title>
+  <title>线程池 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/page/2/index.html">
+  <meta name="description" content="1 初始化一些线程 管理者线程不处理任务  工作的线程只负责处理任务 去任务队列中领任务并处理  初始化的时候给定一个最小线程数  2 需要有一个管理者线程 每隔一段时间去判断一次 什么时候需要创建指定一个峰值：工作的线程超过85%，工作/存活 &amp;gt; 0.85 超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建  什么时候需要销毁工作的线程/存活的线程 &amp;lt; 20%，大">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程池">
+<meta property="og:url" content="http://yoursite.com/2019/10/06/线程池/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="1 初始化一些线程 管理者线程不处理任务  工作的线程只负责处理任务 去任务队列中领任务并处理  初始化的时候给定一个最小线程数  2 需要有一个管理者线程 每隔一段时间去判断一次 什么时候需要创建指定一个峰值：工作的线程超过85%，工作/存活 &amp;gt; 0.85 超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建  什么时候需要销毁工作的线程/存活的线程 &amp;lt; 20%，大">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-06T07:12:49.346Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="线程池">
+<meta name="twitter:description" content="1 初始化一些线程 管理者线程不处理任务  工作的线程只负责处理任务 去任务队列中领任务并处理  初始化的时候给定一个最小线程数  2 需要有一个管理者线程 每隔一段时间去判断一次 什么时候需要创建指定一个峰值：工作的线程超过85%，工作/存活 &amp;gt; 0.85 超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建  什么时候需要销毁工作的线程/存活的线程 &amp;lt; 20%，大">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,173 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-线程池" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      线程池
+    </h1>
+  
+
+        
+        <a href="/2019/10/06/线程池/" class="archive-article-date">
+  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="1-初始化一些线程"><a href="#1-初始化一些线程" class="headerlink" title="1 初始化一些线程"></a>1 初始化一些线程</h4><ol>
+<li><h5 id="管理者线程"><a href="#管理者线程" class="headerlink" title="管理者线程"></a>管理者线程</h5><p>不处理任务</p>
+</li>
+<li><h5 id="工作的线程"><a href="#工作的线程" class="headerlink" title="工作的线程"></a>工作的线程</h5><p>只负责处理任务</p>
+<p>去任务队列中领任务并处理</p>
+</li>
+<li><h5 id="初始化的时候给定一个最小线程数"><a href="#初始化的时候给定一个最小线程数" class="headerlink" title="初始化的时候给定一个最小线程数"></a>初始化的时候给定一个最小线程数</h5></li>
+</ol>
+<h4 id="2-需要有一个管理者线程"><a href="#2-需要有一个管理者线程" class="headerlink" title="2 需要有一个管理者线程"></a>2 需要有一个管理者线程</h4><ol>
+<li><h5 id="每隔一段时间去判断一次"><a href="#每隔一段时间去判断一次" class="headerlink" title="每隔一段时间去判断一次"></a>每隔一段时间去判断一次</h5></li>
+<li><h5 id="什么时候需要创建"><a href="#什么时候需要创建" class="headerlink" title="什么时候需要创建"></a>什么时候需要创建</h5><p>指定一个峰值：工作的线程超过85%，工作/存活 &gt; 0.85</p>
+<p>超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建</p>
+</li>
+<li><h5 id="什么时候需要销毁"><a href="#什么时候需要销毁" class="headerlink" title="什么时候需要销毁"></a>什么时候需要销毁</h5><p>工作的线程/存活的线程 &lt; 20%，大部分都在歇着</p>
+<p>按照一定比例去杀死不干活的线程</p>
+</li>
+</ol>
+<h4 id="3-线程池API"><a href="#3-线程池API" class="headerlink" title="3 线程池API"></a>3 线程池API</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建线程池，池里最小3个线程，最大100个，队列最大100</span></span><br><span class="line"><span class="keyword">threadpool_t</span> * thp = threadpool_create(<span class="number">3</span>,<span class="number">100</span>,<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//向线程池添加任务；thp是线程池，process是回调函数（模拟处理业务），(void*)&amp;num[i]是给process传参</span></span><br><span class="line">threadpool_add(thp, process, (<span class="keyword">void</span>*) &amp; num[i]);</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-多路IO转接/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.606Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-多路IO转接/">Linux网络编程-多路IO转接</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/06/线程池/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-端口复用/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.604Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/10/06/libevent/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">libevent</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-端口复用/">Linux网络编程-端口复用</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-常识方法/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.602Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-常识方法/">Linux网络编程-常识方法</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Socket/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.599Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Socket/">Linux网络编程-socket</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Select/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.596Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Select/">Linux网络编程-select</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Poll/">Linux网络编程-poll</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +348,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

@@ -159,6 +159,158 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-线程池" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/06/线程池/">线程池</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/06/线程池/" class="archive-article-date">
+  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="1-初始化一些线程"><a href="#1-初始化一些线程" class="headerlink" title="1 初始化一些线程"></a>1 初始化一些线程</h4><ol>
+<li><h5 id="管理者线程"><a href="#管理者线程" class="headerlink" title="管理者线程"></a>管理者线程</h5><p>不处理任务</p>
+</li>
+<li><h5 id="工作的线程"><a href="#工作的线程" class="headerlink" title="工作的线程"></a>工作的线程</h5><p>只负责处理任务</p>
+<p>去任务队列中领任务并处理</p>
+</li>
+<li><h5 id="初始化的时候给定一个最小线程数"><a href="#初始化的时候给定一个最小线程数" class="headerlink" title="初始化的时候给定一个最小线程数"></a>初始化的时候给定一个最小线程数</h5></li>
+</ol>
+<h4 id="2-需要有一个管理者线程"><a href="#2-需要有一个管理者线程" class="headerlink" title="2 需要有一个管理者线程"></a>2 需要有一个管理者线程</h4><ol>
+<li><h5 id="每隔一段时间去判断一次"><a href="#每隔一段时间去判断一次" class="headerlink" title="每隔一段时间去判断一次"></a>每隔一段时间去判断一次</h5></li>
+<li><h5 id="什么时候需要创建"><a href="#什么时候需要创建" class="headerlink" title="什么时候需要创建"></a>什么时候需要创建</h5><p>指定一个峰值：工作的线程超过85%，工作/存活 &gt; 0.85</p>
+<p>超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建</p>
+</li>
+<li><h5 id="什么时候需要销毁"><a href="#什么时候需要销毁" class="headerlink" title="什么时候需要销毁"></a>什么时候需要销毁</h5><p>工作的线程/存活的线程 &lt; 20%，大部分都在歇着</p>
+<p>按照一定比例去杀死不干活的线程</p>
+</li>
+</ol>
+<h4 id="3-线程池API"><a href="#3-线程池API" class="headerlink" title="3 线程池API"></a>3 线程池API</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建线程池，池里最小3个线程，最大100个，队列最大100</span></span><br><span class="line"><span class="keyword">threadpool_t</span> * thp = threadpool_create(<span class="number">3</span>,<span class="number">100</span>,<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//向线程池添加任务；thp是线程池，process是回调函数（模拟处理业务），(void*)&amp;num[i]是给process传参</span></span><br><span class="line">threadpool_add(thp, process, (<span class="keyword">void</span>*) &amp; num[i]);</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/06/线程池/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-libevent" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/06/libevent/">libevent</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/06/libevent/" class="archive-article-date">
+  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">main&#123;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
+<li>自己创建事件，把事件添加到base框架中</li>
+<li>启动base中的事件循环</li>
+<li>启动后，base就会自动检测已有事件，时间处理完了这个循环就结束了</li>
+<li>结束之后就要释放资源</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/06/libevent/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Json" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -874,166 +1026,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/30/Linux网络编程-Epoll/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-多路IO转接" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-多路IO转接/">Linux网络编程-多路IO转接</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-多路IO转接/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.606Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="IO操作方式"><a href="#IO操作方式" class="headerlink" title="IO操作方式"></a>IO操作方式</h3><h4 id="（1）阻塞等待"><a href="#（1）阻塞等待" class="headerlink" title="（1）阻塞等待"></a>（1）阻塞等待</h4><ul>
-<li>好处: 不占用cpu宝贵的时间片</li>
-<li>缺点: 同一时刻只能处理一个操作, 效率低 </li>
-</ul>
-<h4 id="（2）非阻塞，忙轮询"><a href="#（2）非阻塞，忙轮询" class="headerlink" title="（2）非阻塞，忙轮询"></a>（2）非阻塞，忙轮询</h4><ul>
-<li>优点：提高了程序的执行效率</li>
-<li>缺点：需要占用更多的CPU和系统资源</li>
-</ul>
-<h4 id="（3）使用IO多路转接技术-select-poll-epoll"><a href="#（3）使用IO多路转接技术-select-poll-epoll" class="headerlink" title="（3）使用IO多路转接技术 select/poll/epoll"></a>（3）使用IO多路转接技术 select/poll/<strong>epoll</strong></h4><ul>
-<li><p>select/poll：内核只告诉有多少个，具体是哪几个，得自己去遍历查找</p>
-</li>
-<li><p>epoll：内核告诉你是哪几个，不需要自己去遍历了</p>
-</li>
-<li><p>数据存在线性表中，调用select的时候，内核遍历线性表；调用epoll的时候，内核遍历的是红黑树。</p>
-</li>
-</ul>
-<h3 id="什么是I-O多路转接技术"><a href="#什么是I-O多路转接技术" class="headerlink" title="什么是I/O多路转接技术"></a>什么是I/O多路转接技术</h3><p>实质是委托内核做事情</p>
-<ol>
-<li><p>先构造一张有关<strong>文件描述符</strong>的列表，将要监听的文件描述符添加到该表中；</p>
-</li>
-<li><p>然后调用一个函数，监听该表中的文件描述符，直到这些描述符表中的一个进行I/O操作时，该函数才返回； </p>
-<p>该函数为阻塞函数 </p>
-<p>函数对文件描述符的检测操作是由内核完成的 </p>
-</li>
-<li><p>在返回时，它告诉进程有多少(哪些)描述符要进行 I/O操作。 </p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-多路IO转接/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-端口复用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-端口复用/">Linux网络编程-端口复用</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-端口复用/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.604Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="端口复用最常用的用途是"><a href="#端口复用最常用的用途是" class="headerlink" title="端口复用最常用的用途是:"></a>端口复用最常用的用途是:</h3><ul>
-<li>防止服务器重启时之前绑定的端口还未释放 </li>
-<li>程序突然退出而系统没有释放端口</li>
-</ul>
-<h3 id="设置方法"><a href="#设置方法" class="headerlink" title="设置方法:"></a>设置方法:</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> opt = <span class="number">1</span>;  </span><br><span class="line"></span><br><span class="line">setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (<span class="keyword">const</span> <span class="keyword">void</span> *)&amp;opt, <span class="keyword">sizeof</span>(opt));</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意事项: 绑定之前设置端口复用的属性！</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-端口复用/">展开全文 >></a>
         </p>
       
 
