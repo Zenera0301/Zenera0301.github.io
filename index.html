@@ -159,6 +159,641 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-操作系统-运行环境与运行机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/13/操作系统-运行环境与运行机制/">操作系统-运行环境与运行机制</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/13/操作系统-运行环境与运行机制/" class="archive-article-date">
+  	<time datetime="2019-10-13T14:05:59.473Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="操作系统-运行环境与运行机制"><a href="#操作系统-运行环境与运行机制" class="headerlink" title="操作系统-运行环境与运行机制"></a>操作系统-运行环境与运行机制</h3><p>和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制）</p>
+<p>和软件接触的：操作胸痛运行机制（系统调用）</p>
+<h4 id="1-处理器状态（模式）："><a href="#1-处理器状态（模式）：" class="headerlink" title="1 处理器状态（模式）："></a>1 处理器状态（模式）：</h4><p>处理器由运算器、控制器、一系列的<strong>寄存器</strong>以及高速缓存构成</p>
+<p>两类寄存器：用户可见寄存器+<strong>控制和状态寄存器</strong>（由操作系统代码使用）</p>
+<p>常见控制和状态寄存器：</p>
+<ul>
+<li>程序计数器，PC，记录将要取出的指令的地址</li>
+<li>指令寄存器，IR，记录最近取出的指令</li>
+<li>程序状态字，PSW，记录处理器的运行状态，包括条件码、模式、控制位等信息</li>
+</ul>
+<h5 id="操作系统的需要–保护"><a href="#操作系统的需要–保护" class="headerlink" title="操作系统的需要–保护"></a>操作系统的需要–保护</h5><p>操作系统要保证：并发和共享时，1用户程序和用户程序之间互不干扰；2用户程序对操作系统不干扰</p>
+<p>需要硬件提供基本运行机制：1处理器具有特权级别，能在不同的特权级运行的不同指令集合；2硬件机制可将OS与用户程序隔离（用户不能访问操作系统空间；操作系统能访问用户空间）</p>
+<p>处理器的状态（模式MODE）：特权指令（只有操作系统能用），非特权指令（操作系统和用户都能使用）</p>
+<p>操作系统需要两种CPU状态：内核态（运行操作系统程序）；用户态（运行用户程序）</p>
+<p>特权指令：启动I/O，内存清零，修改程序状态字，设置时钟，允许/禁止中断，停机</p>
+<p>非特权指令：控制转移，算术运算，取数指令，访管指令（从用户态陷入内核态）</p>
+<h5 id="实例：X86系列处理器"><a href="#实例：X86系列处理器" class="headerlink" title="实例：X86系列处理器"></a>实例：X86系列处理器</h5><p>支持4个处理器特权级别，特权环：R0（内核态）,R1,R2（受保护的共享的代码，语言编译环境）,R3（用户态），不同级别能够运行的指令集不同。</p>
+<p>目前大多数基于X86处理器的操作系统，<strong>只用了R0和R3两个特权级别</strong>。</p>
+<h5 id="CPU状态之间的转换"><a href="#CPU状态之间的转换" class="headerlink" title="CPU状态之间的转换"></a>CPU状态之间的转换</h5><p>用户态—转—-内核态：唯一途径是：中断、异常、陷入机制</p>
+<p>内核态—转—用户态：设置程序状态字PSW；访管指令（陷入指令）用于调用操作系统的功能或服务，int，trap，syscall，sysenter/sysexit</p>
+<h4 id="2-中断与异常机制介绍"><a href="#2-中断与异常机制介绍" class="headerlink" title="2 中断与异常机制介绍"></a>2 中断与异常机制介绍</h4><p>中断/异常对于操作系统来说，像汽车的发动机，像飞机的引擎操作系统是由中断驱动的，或由事件触动的</p>
+<p>概念：中断与异常是CPU对于系统发生的某个事件做出的一种反应。CPU暂停正在执行的程序，保留现场，然后自动转去执行相应事件的处理程序，处理完成后返回断点，继续执行被打断的程序。事件的发生改变了处理器的控制流。</p>
+<p>中断的引入：为了支持CPU和设备之间的并行操作；</p>
+<p>异常的引入：表示CPU执行指令时本身出现的问题。</p>
+<p>事件：</p>
+<p>中断（外中断）：I/O中断、时钟中断、硬件故障；</p>
+<p>异常（内中断）：系统调用、页故障/页错误、保护性异常、断点指令、其他程序性异常(算术溢出等)；</p>
+<p>中断是外部事件，正在运行的程序所不希望的；异常是内部事件，是正在运行的程序所引发的；</p>
+<h4 id="3-中断与异常机制工作原理"><a href="#3-中断与异常机制工作原理" class="headerlink" title="3 中断与异常机制工作原理"></a>3 中断与异常机制工作原理</h4><p>硬件软件相互配合完成。</p>
+<p>硬件：中断异常响应，捕获中断/异常请求，以一定的响应，将处理器控制权交给特定的处理程序。</p>
+<p>软件：中断异常处理程序，识别中断/异常类型，并完成相应的处理。</p>
+<p>中断响应：发现中断，接收中断的过程，由中断硬件部件完成。</p>
+<p>取指令，执行指令，每条指令执行周期的最后扫描中断寄存器，查看是否有中断信号，若有中断，中断硬件将该中断触发器内容按规定内容编码送入PSW的相应位，成为中断码，通过查<strong>中断向量表</strong>引出中断处理程序。</p>
+<p>中断向量表</p>
+<p>中断向量：一个内存单元，存放中断处理程序入口地址和程序运行时所需的处理机状态字。</p>
+<p>执行流程按中断号/异常类型的不同，通过中断向量表转移控制权给中断处理程序。</p>
+<p>硬件部分，中断响应过程：</p>
+<ul>
+<li>设备发送中断信号</li>
+<li>硬件保存现场（PSW，PC）</li>
+<li>根据中断码查表</li>
+<li>把中断处理程序入口地址等推送到响应的寄存器</li>
+<li>执行中断处理程序</li>
+</ul>
+<p>软件部分，中断处理程序：</p>
+<ul>
+<li>设计操作系统时，为每一类中断/异常事件编好响应的处理程序，并设置好中断向量表；</li>
+<li>系统运行时若响应中断，中断硬件部件将CPU控制权转给中断处理程序：保存相关寄存器信息，分析中断异常的具体原因，执行对应的处理功能，恢复现场，返回被事件打断的程序。</li>
+</ul>
+<p>软件提前设置好，硬件部件来执行。</p>
+<p>中断/异常机制：</p>
+<p>以设备输入输出中断为例：</p>
+<ul>
+<li>（硬件）打印机给CPU发出中断信号</li>
+<li>（硬件）CPU处理完当前指令后检测到中断，判断出中断来源并向相关设备发确认信号</li>
+<li>（硬件）CPU开始为软件处理中断做准备：处理器状态被切换到内核态，在系统栈中保存被中断程序的重要的上下文环境，主要是程序计数器PC和程序状态字PSW</li>
+<li>（硬件）CPU根据中断码查询中断向量表，获得与这个中断相关的处理程序的入口地址，并将PC设置成该地址，新的指令周期开始时，CPU控制转移到中断处理程序</li>
+<li>（<strong>软件</strong>）中断处理程序开始工作：在系统栈中保存现场信息；检查I/O设备的状态信息，操纵I/O设备或者在设备和内存之间传送数据等</li>
+<li>（硬件）中断处理结束时，CPU检测到中断返回指令，从系统栈中恢复被中断程序的上下文环境，CPU状态恢复成原来的状态，PSW和PC恢复成中断前的值，CPU开始一个新的指令周期。</li>
+</ul>
+<p>I/O中断处理程序：分为两类：</p>
+<ul>
+<li>I/O操作正常结束，如果有程序等待此次I/O的结果，将其唤醒；如果要继续I/O操作，需要准备好数据重新启动I/O。</li>
+<li>I/O操作出现错误，重复执行数次，次数有上限，达到时系统将判定硬件故障。</li>
+</ul>
+<h4 id="4-系统调用机制"><a href="#4-系统调用机制" class="headerlink" title="4 系统调用机制"></a>4 系统调用机制</h4><p>系统调用：用户在编程时可以调用的操作系统功能</p>
+<p>系统调用作用：是操作系统提供给编程人员的唯一接口，使CPU状态从用户态陷入内核态</p>
+<p>每个操作系统都提供几百种系统调用（进程控制，进程通信，文件使用，目录操作，设备管理，信息维护等）</p>
+<p>区分概念：</p>
+<p><strong>内核函数</strong>是系统调用的处理程序，<strong>C函数库/API接口</strong>是封装起来的函数接口，暴露给<strong>应用程序</strong>供其调用的。</p>
+<p>参数传递，用户程序的参数传递给内核：</p>
+<p>常用3方法：</p>
+<ul>
+<li>由陷入指令自带参数；</li>
+<li>通过寄存器传递参数；</li>
+<li>在内存中开辟专用堆栈区传参；</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(<span class="number">1</span>,<span class="built_in">string</span>,<span class="number">7</span>);<span class="comment">//1表示把结果送到标准输出设备，送的内容放到字符串里头，长度是7</span></span><br></pre></td></tr></table></figure>
+
+<p>系统调用的执行过程：当CPU执行到特殊的陷入指令时：</p>
+<ul>
+<li>中断/异常机制：硬件保护现场，通过查中断向量表把控制权转给系统调用总入口程序</li>
+<li>系统调用总入口程序</li>
+<li>执行系统调用例程</li>
+<li>恢复现场，返回用户程序</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/13/操作系统-运行环境与运行机制/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-进程线程模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/13/操作系统-进程线程模型/">操作系统-进程线程模型</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/13/操作系统-进程线程模型/" class="archive-article-date">
+  	<time datetime="2019-10-13T14:05:59.442Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="操作系统-进程线程模型"><a href="#操作系统-进程线程模型" class="headerlink" title="操作系统-进程线程模型"></a>操作系统-进程线程模型</h3><ol>
+<li><p>多道程序设计</p>
+</li>
+<li><p>并发环境与并发程序</p>
+</li>
+<li><p>进程的定义</p>
+</li>
+<li><p>进程控制块PCB（进程描述符，进程属性），一个专门的数据结构（用于管理控制进程），记录进程的各种属性，描述进程的动态变化过程，PCB是系统感知进程存在的唯一标志，进程与PCB是一一对应的，所有进程的PCB集合是进程表。包括进程描述信息、进程控制信息、CPU现场信息。</p>
+</li>
+<li><p>进程的三种基本状态：运行态、就绪态、等待态；</p>
+<p>进程的其他状态：创建、终止；</p>
+</li>
+<li><p>Linux状态示意图：包括6种：就绪、占有CPU执行、浅度睡眠、深度睡眠、暂停、死亡但户口未注销</p>
+</li>
+<li><p>进程队列：操作系统为每一类进程建立一个或多个队列；队列元素是PCB；伴随进程状态的改变，其PCB从一个队列进入另一个队列</p>
+</li>
+<li><p>进程控制：进程各个状态之间的转换，由原语完成，进程创建原语，进程撤销原语，阻塞原语，唤醒原语，挂起原语，激活原语，改变进程优先级。。。原语是源自操作，执行必须是连续的，执行过程中不允许被中断。</p>
+</li>
+<li><p>进程的创建：给新进程分配一个唯一标识，以及进程控制块；为进程分配地址空间；初始化进程控制块（设置默认值）；设置相应的队列指针（把新进程加到就绪队列链表中）</p>
+</li>
+<li><p>进程的撤销：收回进程所占有的资源（关闭打开的文件，断开网络连接，UI手分配的内存）；撤销该进程的PCB</p>
+</li>
+<li><p>进程阻塞：等待某一事件发生时，进程自己执行阻塞原语</p>
+</li>
+<li><p>UNIX的几个进程控制操作：</p>
+<p>fork()通过<strong>复制调用进程</strong>来创建新的进程，是最基本的进程创建过程；</p>
+<p>exec()包括一系列系统调用，都是通过用一段新的程序代码去覆盖原来的地址空间，实现进程<strong>执行代码的转换</strong>；</p>
+<p>wait()提供初级进程同步操作，能使一个进程等待另一个进程的结束；</p>
+<p>exit()用来终止一个进程的运行；</p>
+</li>
+<li><p>UNIX的fork()实现：</p>
+<p>为子进程分配一个空闲的进程描述符；</p>
+<p>分配给子进程唯一标识pid</p>
+<p><strong>以一次一页的方式复制父进程地址空间</strong>（Linux采用写时复制技术加快创建进程）</p>
+<p>从父进程处继承共享资源，如打开的文件和当前工作目录等</p>
+<p>将子进程的状态设为就绪，插入到就绪队列</p>
+<p>对子进程返回标识符0</p>
+<p>向父进程返回子进程的pid</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/typesh&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> * argv[])</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    pid = fork();<span class="comment">//创建一个子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid&lt;<span class="number">0</span>)&#123;<span class="comment">//出错</span></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"fork failed"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;<span class="comment">//子进程</span></span><br><span class="line">        execlp(<span class="string">"/bin/ls"</span>,<span class="string">"ls"</span>,<span class="literal">NULL</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">//父进程</span></span><br><span class="line">        wait(<span class="literal">NULL</span>);<span class="comment">//父进程等待子进程结束</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"child complete"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进程分类：系统进程，用户进程；前台进程，后台进程；CPU密集型进程，I/O密集型进程。</p>
+</li>
+<li><p>进程层次结构：UNIX进程家族树：init为跟；Windows：地位相同。</p>
+</li>
+<li><p>进程和程序的区别：</p>
+<p>进程更能准确刻画并发，程序不能；</p>
+<p>程序是静态的，进程是<strong>动态的</strong>；</p>
+<p><strong>进程有生命周期</strong>，有诞生有消亡，是短暂的；而程序是相对长久的；</p>
+<p>一个程序可对应多个进程；</p>
+<p>进程具有创建其他进程的功能。</p>
+</li>
+<li><p>进程地址空间：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> myval;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span>*argv[])</span></span>&#123;</span><br><span class="line">    myval=atoi(argv[<span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"myval is %d,loc 0x%lx\n"</span>,myval,(<span class="keyword">long</span>)&amp;myval);<span class="comment">//./myval 7</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>开启两个终端，一个 ./myval 7   ，另一个./myval 8，运行时发现数字不同，但是地址却相同，因为地址是虚拟地址。</p>
+</li>
+<li><p>进程映像：对进程执行活动全过程的静态描述</p>
+<p>进程地址空间内容、硬件寄存器内容、与该进程相关的内核数据结构、内核栈组成</p>
+<p>用户相关：进程地址空间（包括代码段、数据段、堆、栈、共享库。。。）</p>
+<p>寄存器相关：程序计数器、指令计数器、程序状态寄存器、栈指针、通用寄存器等的值</p>
+<p>内核相关：静态部分：PCB及各种资源数据结构；动态部分：内核栈（不同进程在进入内核后使用不同的内核栈）</p>
+</li>
+<li><p>上下文（context）切换</p>
+<p>将CPU硬件状态从一个进程换到另一个进程的过程，称为上下文切换；</p>
+<p>进程运行时，其硬件状态保存在CPU上的寄存器中，寄存器：程序计数器，程序状态计数器，栈指针，通用寄存器，其他控制寄存器的值</p>
+<p>进程不运行时，这些寄存器的值保存在进程控制块PCB中，因为只有一套寄存器。当操作系统要运行一个新的进程时，将PCB中的相关值送到对应的寄存器中。</p>
+</li>
+<li><p>线程的引入：应用的需要，开销的考虑，性能的考虑</p>
+</li>
+<li><p><strong>多线程web服务器</strong>：分派线程，监听客户端，客户端有请求就把请求读进来，但它不完成客户端的请求，他把请求分派给工作线程去完成，有一堆工作线程在web服务器上，用于完成用户的请求。工作线程收到任务后，去网页缓存里找，看看网页是不是在里面，如果在里面就把这个网页返回给客户端，如果不在里面，就启动磁盘，去磁盘上搜寻网页。去磁盘上搜寻网页，是个阻塞的I/O，他就被阻塞等待了，但是没关系，还有其他的线程可以接其他的活。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//分派线程</span></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    get_next_request(&amp;buf);</span><br><span class="line">    handoff_work(&amp;buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//工作线程</span></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    wait_for_work(&amp;buf);</span><br><span class="line">    look_for_page_in_cache(&amp;buf,&amp;page);</span><br><span class="line">    <span class="keyword">if</span>(page_not_in_cache(&amp;page))&#123;</span><br><span class="line">        read_page_from_disk(&amp;buf,&amp;page);</span><br><span class="line">    &#125;</span><br><span class="line">    return_page(&amp;page);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构造服务器的三种方法：</p>
+<p><strong>多线程：有并发、阻塞系统调用</strong></p>
+<p>单线程进程：无并发、阻塞系统调用</p>
+<p>有限状态机：有并发、非阻塞系统调用、中断</p>
+</li>
+<li><p>开销的考虑：</p>
+<p>进程相关的操作：创建进程、撤销进程、进程通信、进程切换，时间空间开销大，限制了并发度的提高；</p>
+<p>线程的开销小：创建和撤销一个线程花费时间少，两个线程切换花费时间少，线程之间相互通信无需调用内核（同一进程内的线程共享内存和文件）</p>
+</li>
+<li><p>性能的考虑</p>
+<p>多个线程，有的计算，有的I/O，多个处理器，提高软件运行性能</p>
+</li>
+<li><p>线程的基本概念：进程的两个基本属性：资源的拥有者，CPU的调度单位；有了线程后，进程还是资源的拥有者，线程继承了CPU调度单位这一属性；故，线程是进程中 一个运行实体，是CPU的调度单位，有时将线程称为<strong>轻量级进程</strong>。在同一个进程中增加了多个执行序列（线程）。</p>
+</li>
+<li><p>线程的属性：</p>
+<p>有标识符ID</p>
+<p>有状态及状态转换，需要提供一些操作</p>
+<p>不运行时需要保存的上下文，有上下文环境：程序计数器等寄存器</p>
+<p>有自己的<strong>栈和栈指针</strong></p>
+<p><strong>共享所在进程的地址空间和其他资源</strong></p>
+<p>可以创建、撤销另一个线程。程序开始是以一个单线程进程方式运行的</p>
+</li>
+<li><p>线程机制的实现方式</p>
+<p>用户级线程</p>
+<p>核心级线程</p>
+<p>混合-两者结合方法</p>
+</li>
+<li><p>用户级线程</p>
+<p>在用户空间建立线程库：提供一组管理线程的过程</p>
+<p><strong>运行时系统</strong>：<strong>完成线程的管理工作（操作、线程表）</strong></p>
+<p>内核管理的还是进程，不知道线程的存在（内核只看到进程的数据结构）</p>
+<p>线程切换不需要内核态特权</p>
+<p>例子：UNIX（遵循POSIX规范）</p>
+<p>POSIX线程库——pthread</p>
+<p>多线程编程接口，以线程库方式提供给用户</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pthread_create 创建一个新的线程</span><br><span class="line">pthread_exit  关闭当前线程</span><br><span class="line">pthread_join  等待一个指定的线程退出</span><br><span class="line">pthread_yield 线程自愿让出CPU，线程感受不到时钟中断，时钟中断是针对进程的</span><br><span class="line">pthread_attr_init</span><br><span class="line">pthread_attr_destroy</span><br></pre></td></tr></table></figure>
+
+<p>用户级线程优点：线程切换快；调度算法是应用程序特定的；用户级线程可运行在任何操作系统上（只需要实现线程库）；</p>
+<p>缺点：内核只将处理器（CPU）分配给进程，同一个进程中的两个线程不能同时运行于两个处理器上；大多数系统调用是阻塞的，因此，由于内核阻塞进程，故进程中所有线程也被阻塞（解决方法就是在外面包一层，调用系统调用之前先判断，调用了这个系统调用，是否会导致进程阻塞，如果会阻塞就赶快换一个线程）</p>
+</li>
+<li><p>核心级线程</p>
+<p><strong>内核管理所有线程管理</strong>，并向应用程序提供API接口</p>
+<p>内核维护进程和线程的上下文（内核里既存了进程的数据结构又存了线程的数据结构）</p>
+<p>线程的切换需要内核支持</p>
+<p>以线程为基础进行调度</p>
+<p>例子：Windows</p>
+</li>
+<li><p>混合模型</p>
+<p>线程创建在用户空间完成</p>
+<p>线程调度等在核心态完成</p>
+<p>例子：Solaris</p>
+<p>多个用户级线程，通过多路复用，来复用多个内核级线程（核外的用户空间线程通过一个机制和核内的一个内核线程对应起来，调度内核这个线程上CPU其实就是调度核外对应的线程上CPU。</p>
+</li>
+<li><p>进程：</p>
+<p>并发性：任何进程都可以和其他进程一起向前推进</p>
+<p>动态性：进程是正在执行程序的实例（进程是动态产生动态消亡的，进程在其生命周期内，在三种基本状态之间转换）</p>
+<p>独立性：进程是资源分配的一个独立单位，各进程的地址空间相互独立</p>
+<p>交互性：指进程在执行过程中可能与其他进程产生直接或间接的关系</p>
+<p>异步性：每个进程都以其相对独立的、不可预知的速度向前推进</p>
+<p>进程映像：程序+数据+栈（用户栈、内核栈）+PCB</p>
+</li>
+<li><p>线程：</p>
+<p>多线程应用场景</p>
+<p>线程基本概念、属性</p>
+<p>线程实现机制</p>
+</li>
+<li><p>可再入程序（可重入）：</p>
+<p>可被多个进程同时调用的程序，具有如下性质：它是纯代码的，即在执行过程中自身不改变；调用它的进程应该提供数据区</p>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/13/操作系统-进程线程模型/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-概述" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/12/操作系统-概述/">操作系统-概述</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/12/操作系统-概述/" class="archive-article-date">
+  	<time datetime="2019-10-12T07:35:41.727Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-操作系统做了什么？"><a href="#1-操作系统做了什么？" class="headerlink" title="1 操作系统做了什么？"></a>1 操作系统做了什么？</h3><p>helloworld.c的执行过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//程序作用：在显示器上打印hello world</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"hello world"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>(1)启动程序执行（用户要告诉操作系统执行helloworld程序）</p>
+<ul>
+<li>命令行键入执行命令，鼠标双击helloworld程序的图标</li>
+</ul>
+<p>(2)操作系统准备</p>
+<ul>
+<li>操作系统：根据文件名，找到helloworld程序的相关信息，检查类型是否是可执行文件；并通过程序首部信息，确定代码和数据在可执行文件中的位置，并计算出对应的磁盘块地址（可执行文件 ，Windows下是pe格式，Linux下是elf格式）；</li>
+<li>操作系统：<strong>创建一个新的进程</strong>，并将helloworld可执行文件映射到该进程结构，表示由该进程执行helloworld程序；</li>
+<li>操作系统：为helloworld程序设置CPU上下文环境，并跳到程序的开始处（假设调度程序选中helloworld程序）；</li>
+</ul>
+<p>(3)开始执行这个可执行文件</p>
+<ul>
+<li>执行helloworld程序的第一条指令，发生<strong>缺页异常</strong>；</li>
+<li>操作系统：分配一页物理内存，将代码从磁盘读入内存，然后继续执行helloworld程序；</li>
+<li>helloworld程序执行puts函数（系统调用，故而控制权又转回给了操作系统），想在显示器上写出字符串；</li>
+<li>操作系统：找到要将字符串送往的显示设备，通常设备是由一个进程控制的，所以操作系统把要显示的字符串送给该进程；</li>
+</ul>
+<p>(4)字符串显示过程</p>
+<ul>
+<li>操作系统：控制设备的进程告诉设备的窗口系统它要显示字符串，窗口系统确定这是一个合法操作，然后将字符串转换为像素，将像素写入设备的存储映像区；</li>
+<li>视频硬件将像素转换成显示器可以接受的一组控制/数据信号；</li>
+<li>显示器解释信号，激发液晶屏；</li>
+<li>我们在屏幕上看到了hello world。</li>
+</ul>
+<p>角度一：</p>
+<p>用户程序———-创建进程————-OS进程管理</p>
+<p>执行用户程序——-发生缺页异常——-OS存储管理</p>
+<p>用户程序继续执行——-执行puts函数—–OS</p>
+<p>角度二：</p>
+<p>OS进程管理—–调度—-helloworld程序———-程序执行过程中会陷入OS</p>
+<p>OS存储管理——再次调度helloworld程序——程序再次陷入OS</p>
+<p><strong>操作系统负责程序启动、执行过程，在执行过程中提供各种支持。</strong></p>
+<hr>
+<h3 id="2-操作系统的定义与作用"><a href="#2-操作系统的定义与作用" class="headerlink" title="2 操作系统的定义与作用"></a>2 操作系统的定义与作用</h3><h4 id="操作系统是什么？"><a href="#操作系统是什么？" class="headerlink" title="操作系统是什么？"></a>操作系统是什么？</h4><p>操作系统是计算机系统的一个系统软件，是一些程序模块的集合——</p>
+<ul>
+<li>它们能以尽量<strong>有效、合理</strong>的方式组织和管理计算机的软硬件资源；</li>
+<li>合理地组织计算机的工作流程，控制程序的执行并向用户提供各种服务功能；</li>
+<li>使得用户能够灵活、<strong>方便</strong>地使用计算机，使整个计算机系统高效率运行</li>
+</ul>
+<p>解读关键词：</p>
+<ul>
+<li>有效：系统效率，资源利用率（CPU利用率充足与否？I/O设备是否忙碌？）</li>
+<li>合理：各种软硬件资源的管理是否公平合理？（如果不公平不合理，则可能产生什么问题？）</li>
+<li>方便使用：两种角度：用户界面（使用者） 与 程序接口（程序员）</li>
+</ul>
+<h4 id="操作系统三个作用："><a href="#操作系统三个作用：" class="headerlink" title="操作系统三个作用："></a>操作系统三个作用：</h4><ul>
+<li><p>资源的管理者（有效）—有效地管理资源</p>
+</li>
+<li><p>向用户提供各种服务（方便使用）—通过命令接口、编程接口等为用户提供各种功能服务</p>
+</li>
+<li><p>对硬件机器的扩展（扩展能力）—屏蔽硬件细节，为用户提供扩展的虚拟机器</p>
+</li>
+</ul>
+<h4 id="（1）OS是资源的管理者"><a href="#（1）OS是资源的管理者" class="headerlink" title="（1）OS是资源的管理者"></a>（1）OS是资源的管理者</h4><p>自底向上看，就是从OS自身看，OS是资源的管理者</p>
+<p>硬件资源：CPU、内存、设备（I/O设备、磁盘、时钟、网络卡等）</p>
+<p>软件资源：磁盘上的文件、各类管理信息等</p>
+<h5 id="怎样管理资源？"><a href="#怎样管理资源？" class="headerlink" title="怎样管理资源？"></a>怎样管理资源？</h5><ul>
+<li><p>跟踪记录资源的使用状况（用数据结构记录：哪些资源空闲，分配给谁使用，允许用多长时间）</p>
+</li>
+<li><p>确定资源分配策略（算法）</p>
+<p>—静态分配策略（一次性集齐所有的资源，再开始执行，执行过程中不需要其他资源，一次性执行完成；但在执行过程中有时候不需要再用资源，导致资源浪费）</p>
+<p>—动态分配策略（进程执行过程中，何时需要资源何时提出申请，OS根据系统当前资源使用状况，即数据结构决定这个资源是否分配给它，资源利用率得到充分提高）</p>
+</li>
+<li><p>实施资源的分配和回收</p>
+<p>页式存储系统，用位示图Bitmap这个数据结构来记录物理内存的使用情况，一位对应物理内存的一页，如果该页空闲，对应的位记为0，分配出去了，对应的位就记为1；</p>
+<p>分配过程，就是按照资源分配策略，选中要分配资源给哪个进程，决定要分配给它多少，然后修改对应的数据结构，把原来的0改成1；</p>
+<p>回收过程，也要修改相应的数据结构，把1改为0；</p>
+</li>
+<li><p>提高资源利用率</p>
+</li>
+<li><p>保护资源的使用</p>
+</li>
+<li><p>协调多个进程对资源请求的冲突</p>
+</li>
+</ul>
+<h5 id="从资源管理的角度–OS五大基本功能"><a href="#从资源管理的角度–OS五大基本功能" class="headerlink" title="从资源管理的角度–OS五大基本功能"></a>从资源管理的角度–OS五大基本功能</h5><ul>
+<li><p>进程/线程管理（CPU管理）</p>
+<p>进程线程状态、控制、同步互斥、通信、调度</p>
+</li>
+<li><p>存储管理</p>
+<p>分配/回收、地址转换、存储保护、内存扩充</p>
+</li>
+<li><p>文件管理</p>
+<p>文件目录、文件操作、磁盘空间、文件存取控制</p>
+</li>
+<li><p>设备管理</p>
+<p>设备驱动、分配回收、缓冲技术</p>
+</li>
+<li><p>用户接口</p>
+<p>系统命令、典型接口</p>
+</li>
+</ul>
+<h4 id="（2）OS是各种系统服务的提供者"><a href="#（2）OS是各种系统服务的提供者" class="headerlink" title="（2）OS是各种系统服务的提供者"></a>（2）OS是各种系统服务的提供者</h4><ul>
+<li>在操作系统之上，从用户角度看：操作系统为用户提供了一组功能强大、方便易用的<strong>命令或系统调用</strong></li>
+<li>典型的服务：进程的创建、执行；文件和目录的操作；I/O设备的使用；各类统计信息</li>
+</ul>
+<h4 id="（3）OS是对硬件机器的扩展"><a href="#（3）OS是对硬件机器的扩展" class="headerlink" title="（3）OS是对硬件机器的扩展"></a>（3）OS是对硬件机器的扩展</h4><p>os是硬件之上的第一层软件：硬件—（物理机器界面）—-操作系统—–（虚拟机器界面）—-应用程序</p>
+<p>为什么要把硬件屏蔽，因为与硬件相关的工作是复杂、繁琐的</p>
+<ul>
+<li>操作系统在应用程序与硬件之间建立了一个等价的扩展机器（虚拟机）</li>
+<li>对硬件抽象，提高可移植性；比底层硬件更容易编程</li>
+</ul>
+<hr>
+<h3 id="3-操作系统的主要特征"><a href="#3-操作系统的主要特征" class="headerlink" title="3 操作系统的主要特征"></a>3 操作系统的主要特征</h3><p>4个主要特征：并发、共享、虚拟、随机。</p>
+<h4 id="（1）OS特征–并发"><a href="#（1）OS特征–并发" class="headerlink" title="（1）OS特征–并发"></a>（1）OS特征–并发</h4><p><strong>并发</strong>：处理多个同时性活动的能力</p>
+<p>由于并发会引发很多的问题：活动切换、保护、相互依赖的活动间的同步</p>
+<p>在计算机系统中同时存在多个程序运行，单CPU上：</p>
+<p>宏观上，这些程序在同时执行；</p>
+<p>微观上，任何时刻只有一个程序真正在执行，即这些程序在CPU上是轮流执行的</p>
+<p><strong>并行</strong>：与并发相似，但多指不同程序同时在多个硬件部件上执行</p>
+<h4 id="（2）OS特征–共享"><a href="#（2）OS特征–共享" class="headerlink" title="（2）OS特征–共享"></a>（2）OS特征–共享</h4><p>共享：操作系统与多个用户的程序共同使用计算机系统中的资源（共享有限的系统资源）</p>
+<p>操作系统要对系统资源进行合理分配，和使用资源在一个时间段内交替被多个进程所用</p>
+<ul>
+<li>互斥共享（如打印机）</li>
+<li>同时共享（如可重入代码、磁盘文件）</li>
+</ul>
+<p>问题：资源分配难以达到最优化，如何保护资源，使得不同进程之间不会互相干扰？</p>
+<h4 id="（3）OS特征–虚拟"><a href="#（3）OS特征–虚拟" class="headerlink" title="（3）OS特征–虚拟"></a>（3）OS特征–虚拟</h4><ul>
+<li>一个物理实体（CPU或内存）映射为若干个对应的逻辑实体—-分时（把时间分成很多片段）或分空间（把空间分成很多区域）</li>
+<li>虚拟是操作系统管理系统资源的重要手段，可提高资源利用率</li>
+</ul>
+<h5 id="操作系统中的虚拟性体现："><a href="#操作系统中的虚拟性体现：" class="headerlink" title="操作系统中的虚拟性体现："></a>操作系统中的虚拟性体现：</h5><ul>
+<li>CPU——每个进程的”虚处理机“（这是宏观上看到的，其实微观上每个时刻只有一个进程在跑）</li>
+<li>存储器——每个进程都有独立的虚拟地址空间（代码+数据+堆栈）（逻辑上，每个进程都有自己的地址空间，但物理上，进程们共用一块物理内存）</li>
+<li>显示设备——多窗口或虚拟终端</li>
+</ul>
+<h4 id="（4）OS特征–随机"><a href="#（4）OS特征–随机" class="headerlink" title="（4）OS特征–随机"></a>（4）OS特征–随机</h4><p>操作系统必须随时对<strong>以不可预测的次序</strong>发生的事件进行响应并处理</p>
+<ul>
+<li>进程的运行速度不可预知：多个进程并发执行，走走停停，无法预知每个进程的运行推进的快慢</li>
+<li>难以重现系统在某个时刻的状态（包括重现运行中的错误）</li>
+</ul>
+<hr>
+<h3 id="4-典型操作系统的架构"><a href="#4-典型操作系统的架构" class="headerlink" title="4 典型操作系统的架构"></a>4 典型操作系统的架构</h3><h4 id="Windows操作系统的体系架构："><a href="#Windows操作系统的体系架构：" class="headerlink" title="Windows操作系统的体系架构："></a>Windows操作系统的体系架构：</h4><ol>
+<li>用户态：动态链接库（DLL）、系统进程、服务进程、用户进程、环境子系统（如Win32）</li>
+<li>内核态：<strong>硬件抽象层</strong>（HAL）（相同体系结构的不同计算机区分依据）、<strong>内核</strong>（不同体系结构的区分依据），这两层是和硬件相关的；设备驱动程序、执行体、图形与窗口模块、内核态可调用接口、系统服务分发器</li>
+<li>物理硬件：硬件</li>
+</ol>
+<p>Windows操作系统体系架构抽象如下：</p>
+<ul>
+<li>应用程序</li>
+<li>系统功能调用</li>
+<li>操作系统</li>
+<li>计算机硬件</li>
+</ul>
+<h4 id="UNIX操作系统"><a href="#UNIX操作系统" class="headerlink" title="UNIX操作系统"></a>UNIX操作系统</h4><p>同心圆环，从内到外：硬件—-内核—-系统调用接口—-命令和库</p>
+<p>有用户态和内核态</p>
+<p>内核结构：</p>
+<ul>
+<li>进程控制子系统：调度、进程通信、存储管理内存管理</li>
+<li>设备驱动程序：块设备的设备驱动、字符设备的设备驱动</li>
+<li>硬件控制层</li>
+<li>系统调用接口：提供给用户程序，程序可<strong>直接</strong>和系统调用接口打交道，也可以<strong>通过函数库</strong>和系统调用接口打交道</li>
+</ul>
+<h4 id="Linux内核组件"><a href="#Linux内核组件" class="headerlink" title="Linux内核组件"></a>Linux内核组件</h4><ul>
+<li>进程和调度</li>
+<li>虚拟内存管理、物理内存管理</li>
+<li>文件系统</li>
+<li>设备驱动程序（字符、块、网络 设备驱动程序）</li>
+<li>陷入和异常的处理、中断处理（对硬件异常处理）</li>
+<li>系统调用接口</li>
+</ul>
+<h4 id="Android操作系统的架构"><a href="#Android操作系统的架构" class="headerlink" title="Android操作系统的架构"></a>Android操作系统的架构</h4><p>从底到上：Linux内核—-系统库和Android运行时系统—-应用程序框架—-Android应用程序</p>
+<p>其中，内核里包括一些进程管理、内存管理、安全、网络、驱动这些东西</p>
+<hr>
+<h3 id="5-操作系统的分类"><a href="#5-操作系统的分类" class="headerlink" title="5 操作系统的分类"></a>5 操作系统的分类</h3><p>操作系统发展，随着硬件的发展，应用需求的发展，软件新技术的出现而发展，因为操作系统必须要充分利用硬件，给用户提供更好的服务。</p>
+<p>大型计算机——个人计算机——网络——移动计算——-云计算——泛在计算（物联网）——机器人</p>
+<h4 id="传统操作系统分类"><a href="#传统操作系统分类" class="headerlink" title="传统操作系统分类"></a>传统操作系统分类</h4><h4 id="1-批处理操作系统"><a href="#1-批处理操作系统" class="headerlink" title="1 批处理操作系统"></a>1 批处理操作系统</h4><p>大型公司可能会用，<strong>追求目标</strong>：提高资源利用率，增加作业处理吞吐量</p>
+<p><strong>工作方式</strong>：</p>
+<ul>
+<li>用户将作业交给系统操作员</li>
+<li>系统操作员把许多用户的作业组成一批作业，输入到计算机系统中，在系统中形成一个自动转接的连续作业流</li>
+<li>启动操作系统</li>
+<li>由操作员将作业结果交给用户</li>
+</ul>
+<p><strong>简单细节</strong>：</p>
+<p>作业：包括了用户程序，程序中用到的数据，作业说明书，就是说明作业怎么样处理的</p>
+<p>成批：主要是批，就是一批作业由若干个作业组成，用户提交作业后只能等待处理结果，不能干预自己作业的执行</p>
+<p>批作业处理：对一批作业中的每个作业进行相同的处理：从磁带读入用户作业和编译链接程序，编译链接用户作业以生成可执行程序；启动执行；执行并输出结果</p>
+<p><strong>典型的FMS JOB结构</strong></p>
+<h4 id="3-实时操作系统"><a href="#3-实时操作系统" class="headerlink" title="3 实时操作系统"></a>3 实时操作系统</h4><p><strong>概念</strong>：指计算机能及时响应外部事件的请求，在规定的严格时间内，完成对该事件的处理，并控制所有实施设备和实时任务协调一致地工作</p>
+<p><strong>分类</strong>：第一类，实时过程控制（工业控制，航空，军事控制）；第二类，实时通信/信息处理（电讯自动交换机，银行，飞机订票，股市行情）</p>
+<p><strong>追求目标</strong>：对外部请求在<strong>严格时间范围内</strong>做出响应；<strong>高可靠性</strong></p>
+<p><strong>特征</strong>：关键参数是时间，硬实时系统（某个动作必须要在固定时刻或时间范围内完成），软实时系统（接受偶尔违反最终时限，音频视频的播放）</p>
+<h4 id="4-个人计算机操作系统"><a href="#4-个人计算机操作系统" class="headerlink" title="4 个人计算机操作系统"></a>4 个人计算机操作系统</h4><p>计算机在某一时间内为单用户服务</p>
+<p>追求目标：界面友好，使用方便；丰富应用软件</p>
+<h4 id="5-网络操作系统"><a href="#5-网络操作系统" class="headerlink" title="5 网络操作系统"></a>5 网络操作系统</h4><p>计算机联网，各个计算机各有自己的操作系统，这些操作系统必须支持（按网络体系结构协议标准开发的）网络模块</p>
+<p><strong>功能</strong>：网络管理，通信，安全，资源共享，和各种网络应用</p>
+<p><strong>追求</strong>：相互通信，资源共享</p>
+<h4 id="6-分布式操作系统"><a href="#6-分布式操作系统" class="headerlink" title="6 分布式操作系统"></a>6 分布式操作系统</h4><p><strong>分布式系统</strong>：或以计算机网络为基础，或以多处理机为基础，基本特征是处理分布在不同计算机上</p>
+<p><strong>分布式操作系统</strong>：是一个统一的操作系统，允许若干台计算机相互协作，共同完成一项任务。操作系统可将各种系统任务在分布式系统中任何处理机上运行，自动实现全系统范围内的任务分配、自动调度、均衡各个处理机的工作负载。</p>
+<p><strong>特点</strong>：处理能力强，速度更快，可靠性增强，具有透明性</p>
+<h4 id="7-嵌入式操作系统"><a href="#7-嵌入式操作系统" class="headerlink" title="7 嵌入式操作系统"></a>7 嵌入式操作系统</h4><p><strong>嵌入式系统</strong>：在各种设备、装置或系统中，完成特定功能的软硬件系统；大的设备、装置中的一个部分；工作在反应式或对处理时间有严格要求的环境中。</p>
+<p><strong>嵌入式操作系统</strong>：运行在嵌入式系统环境中，对整个嵌入式系统和它所操作、控制的各种部件装置等等资源进行统一协调、调度、指挥和控制的系统软件</p>
+<h4 id="操作系统的另一种分类-TANENBAUM"><a href="#操作系统的另一种分类-TANENBAUM" class="headerlink" title="操作系统的另一种分类 TANENBAUM"></a>操作系统的另一种分类 TANENBAUM</h4><ul>
+<li>大型机操作系统</li>
+<li>服务器操作系统</li>
+<li>多处理机操作系统</li>
+<li>个人计算机操作系统</li>
+<li>掌上计算机操作系统</li>
+<li>嵌入式操作系统</li>
+<li>传感器节点操作系统</li>
+<li>实时操作系统</li>
+<li>智能卡操作系统</li>
+</ul>
+<h5 id="举个小例子：智能卡操作系统"><a href="#举个小例子：智能卡操作系统" class="headerlink" title="举个小例子：智能卡操作系统"></a>举个小例子：智能卡操作系统</h5><p>智能卡：一种包含有一块CPU芯片的卡片</p>
+<ul>
+<li>特点：非常严格的运行能耗和存储空间限制；有些智能卡只有单项功能，如电子支付；</li>
+<li>专用的操作系统</li>
+</ul>
+<p><strong>重点内容</strong>：</p>
+<p>掌握操作系统的概念</p>
+<ul>
+<li>理解操作系统的不同作用</li>
+<li>理解操作系统的主要特征</li>
+</ul>
+<p>掌握重要的操作系统技术Spooling技术</p>
+<p>了解操作系统架构</p>
+<p>了解操作系统的分类</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/12/操作系统-概述/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-C++11新特性" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -346,77 +981,6 @@
 
 
   
-    <article id="post-libevent" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/06/libevent/">libevent</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/06/libevent/" class="archive-article-date">
-  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">main&#123;</span><br><span class="line">    </span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
-<li>自己创建事件，把事件添加到base框架中</li>
-<li>启动base中的事件循环</li>
-<li>启动后，base就会自动检测已有事件，时间处理完了这个循环就结束了</li>
-<li>结束之后就要释放资源</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/06/libevent/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-线程池" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -469,6 +1033,77 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/10/06/线程池/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-libevent" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/06/libevent/">libevent</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/06/libevent/" class="archive-article-date">
+  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">main&#123;</span><br><span class="line">    </span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">event_base</span> *<span class="title">base</span> = <span class="title">event_base_new</span>();</span><span class="comment">//事件处理框架</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建事件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//不带buffer的</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">envent</span>*<span class="title">ev</span> = <span class="title">event_new</span>();</span></span><br><span class="line">    event_add();</span><br><span class="line">    <span class="comment">//带buffer的</span></span><br><span class="line">    bufferevent_socket_new();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//事件循环</span></span><br><span class="line">    event_base_dispatch(base);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//释放资源</span></span><br><span class="line">    xxxxx_free();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>libevent创建事件处理框架base（base中有事件循环，可以帮助处理事件）</li>
+<li>自己创建事件，把事件添加到base框架中</li>
+<li>启动base中的事件循环</li>
+<li>启动后，base就会自动检测已有事件，时间处理完了这个循环就结束了</li>
+<li>结束之后就要释放资源</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/06/libevent/">展开全文 >></a>
         </p>
       
 
@@ -873,260 +1508,9 @@
 
 
   
-    <article id="post-Linux网络编程-本地套接字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/Linux网络编程-本地套接字/">Linux网络编程-本地套接字</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-本地套接字/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.623Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-文件格式"><a href="#1-文件格式" class="headerlink" title="1 文件格式"></a>1 文件格式</h2><p>管道：p</p>
-<p>套接字：s</p>
-<p>伪文件，不管写什么，大小都是0，其实是保存在内核缓冲区   </p>
-<h2 id="2-服务器端"><a href="#2-服务器端" class="headerlink" title="2 服务器端"></a>2 服务器端</h2><p>创建套接字：socket（AF_LOCKAL，sock_stream,0);</p>
-<p>绑定：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(serv.sun_path,<span class="string">"server.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">bind(lfd,(struct sockaddr8)&amp;serv,len);<span class="comment">//绑定成功套接字文件被创建</span></span><br></pre></td></tr></table></figure>
-
-<p>设置监听：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen();</span><br></pre></td></tr></table></figure>
-
-<p>等待接收连接请求：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd,&amp;client,&amp;len);</span><br></pre></td></tr></table></figure>
-
-<p>通信：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send</span><br><span class="line">recv</span><br></pre></td></tr></table></figure>
-
-<p>断开连接：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(cfd);</span><br><span class="line">close(lfd);</span><br></pre></td></tr></table></figure>
-
-<p>代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> lfd = socket(AF_LOCAL, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(lfd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果套接字文件存在, 删除套接字文件</span></span><br><span class="line">    unlink(<span class="string">"server.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(serv.sun_path, <span class="string">"server.sock"</span>);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(lfd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 监听</span></span><br><span class="line">    ret = listen(lfd, <span class="number">36</span>);</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"listen error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待接收连接请求</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line">    <span class="keyword">int</span> cfd = accept(lfd, (struct sockaddr*)&amp;client, &amp;len);</span><br><span class="line">    <span class="keyword">if</span>(cfd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"accept error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"======client bind file: %s\n"</span>, client.sun_path);</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span> recvlen = recv(cfd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span>(recvlen == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"recv error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(recvlen == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"clietn disconnect ....\n"</span>);</span><br><span class="line">            close(cfd);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">            send(cfd, buf, recvlen, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(cfd);</span><br><span class="line">    close(lfd);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-客户端"><a href="#3-客户端" class="headerlink" title="3 客户端"></a>3 客户端</h3><p>创建套接字：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> fd = socket(af_local,sock_stream,<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-
-<p>绑定一个套接字文件：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">client.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(client.sun_path,<span class="string">"client.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">bind(fd,(struct sockaddr8)&amp;serv,len);<span class="comment">//绑定成功套接</span></span><br></pre></td></tr></table></figure>
-
-<p>连接服务器</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(serv.sun_path,<span class="string">"server.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">connect(fd,&amp;serv,<span class="keyword">sizeof</span>(server));</span><br></pre></td></tr></table></figure>
-
-<p> 通信：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send</span><br><span class="line">recv</span><br></pre></td></tr></table></figure>
-
-<p>关闭：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">close</span><br></pre></td></tr></table></figure>
-
-<p>代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_LOCAL, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    unlink(<span class="string">"client.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ================================</span></span><br><span class="line">    <span class="comment">// 给客户端绑定一个套接字文件</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">    client.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(client.sun_path, <span class="string">"client.sock"</span>);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(fd, (struct sockaddr*)&amp;client, <span class="keyword">sizeof</span>(client));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化server信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(serv.sun_path, <span class="string">"server.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连接服务器</span></span><br><span class="line">    connect(fd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>);</span><br><span class="line">        send(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接收数据</span></span><br><span class="line">        recv(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/Linux网络编程-本地套接字/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-心跳包" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/Linux网络编程-心跳包/">Linux网络编程-心跳包</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-心跳包/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.621Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>作用：判断客户端和服务器是否处于连接状态</p>
-<ol>
-<li><p>心跳机制 </p>
-<p>不会携带大量的数据</p>
-<p>每隔一定时间服务器-&gt;客户端/客户端-&gt;服务器发送一个数据包 </p>
-</li>
-</ol>
-<ol start="2">
-<li>心跳包看成一个协议 ：应用层协议 </li>
-</ol>
-<ol start="3">
-<li><p>判断网络是否断开 </p>
-<p>有多个连续的心跳包没收到/没有回复 </p>
-<p>关闭通信的套接字 </p>
-</li>
-</ol>
-<ol start="4">
-<li><p>重连 </p>
-<p>重新初始套接字 </p>
-<p>继续发送心跳包 </p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/Linux网络编程-心跳包/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-Web服务器开发" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/Linux网络编程-Web服务器开发/">Linux网络编程-web服务器开发</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-Web服务器开发/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.619Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>服务器端伪代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//修改进程的工作目录（path从命令行传入）</span></span><br><span class="line">    chdir(path);</span><br><span class="line">    <span class="comment">//创建监听套接字</span></span><br><span class="line">    <span class="keyword">int</span> lfd = socket(af_inet,sock_stream,<span class="number">0</span>);</span><br><span class="line">    <span class="comment">//绑定</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.family = af_inet;</span><br><span class="line">    serv.port = htons(<span class="number">8989</span>);</span><br><span class="line">    <span class="comment">//监听</span></span><br><span class="line">    listen();</span><br><span class="line">    <span class="comment">//阻塞等待请求</span></span><br><span class="line">    <span class="keyword">int</span> cfd = accept();</span><br><span class="line">    <span class="comment">//读数据</span></span><br><span class="line">    read(cfd,buf,<span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="comment">//将buf（请求行，请求头，空行，数据）中的请求行拿出来  GET /hello.c http/1.1</span></span><br><span class="line">    <span class="keyword">char</span> method[<span class="number">12</span>],path[<span class="number">1024</span>],protocol[<span class="number">12</span>];</span><br><span class="line">    <span class="comment">//得到完整的文件名（跳过斜线）</span></span><br><span class="line">    <span class="keyword">char</span> * file = path + <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//打开文件</span></span><br><span class="line">    <span class="keyword">int</span> fdd = open(file,O_RFONLY);</span><br><span class="line">    <span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//把响应头发送出去</span></span><br><span class="line">    http_respond_head(cfd,<span class="string">"text/plain"</span>);</span><br><span class="line">    <span class="comment">//循环读数据</span></span><br><span class="line">    <span class="keyword">while</span>((len=read(fdd,buf,<span class="keyword">sizeof</span>(buf)))&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//数据发送给浏览器（套接字通信）</span></span><br><span class="line">        write(fdd,buf,len);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//服务器回复给客户端的相应消息</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">http_respond_head</span><span class="params">(<span class="keyword">int</span> cfd, <span class="keyword">char</span>* type)</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="comment">//状态行</span></span><br><span class="line">    <span class="built_in">sprintf</span>(buf,<span class="string">"http/1.1 200 OK\r\n"</span>);</span><br><span class="line">    write(cfd,buf,<span class="built_in">strlen</span>(buf));</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//消息报头</span></span><br><span class="line">    <span class="built_in">sprintf</span>(buf,<span class="string">"Content-Type:%s\r\n"</span>,tpye);</span><br><span class="line">    write(cfd,buf,<span class="built_in">strlen</span>(buf));</span><br><span class="line">       </span><br><span class="line">    <span class="comment">//空行</span></span><br><span class="line">    write(cfd,<span class="string">"\r\n"</span>,<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/Linux网络编程-Web服务器开发/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 

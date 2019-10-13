@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="My personal blog">
 <meta property="og:type" content="website">
 <meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/3/index.html">
+<meta property="og:url" content="http://yoursite.com/page/4/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="My personal blog">
 <meta property="og:locale" content="zh-CN">
@@ -159,292 +159,390 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Linux的系统编程-进程控制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/26/Linux的系统编程-进程控制/">Linux的系统编程-进程控制</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/26/Linux的系统编程-进程控制/" class="archive-article-date">
+  	<time datetime="2019-09-26T14:37:49.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+</a>
+        
+      </header>
     
-    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-了解进程相关的概念"><a href="#1-了解进程相关的概念" class="headerlink" title="1 了解进程相关的概念"></a>1 了解进程相关的概念</h3><h5 id="程序："><a href="#程序：" class="headerlink" title="程序："></a>程序：</h5><p>编译好的二进制文件；</p>
+<h5 id="进程："><a href="#进程：" class="headerlink" title="进程："></a>进程：</h5><ul>
+<li>运行着的程序；</li>
+<li>程序员的角度：运行一系列指令的过程</li>
+<li>操作系统的角度：分配系统资源的基本单位</li>
+</ul>
+<h5 id="区别："><a href="#区别：" class="headerlink" title="区别："></a>区别：</h5><ul>
+<li>程序占用磁盘，不占用系统资源；内存占用系统资源；</li>
+<li>一个程序对应多个进程，一个进程对应一个程序；</li>
+<li>程序没有生命周期，进程有生命周期；</li>
+</ul>
+<h5 id="单通道和多通道设计："><a href="#单通道和多通道设计：" class="headerlink" title="单通道和多通道设计："></a>单通道和多通道设计：</h5><p>时间片轮转，执行速度ns级别，人只能感受到ms级别的变化，宏观上并发，微观上串行</p>
+<h5 id="CPU和MMU（了解）"><a href="#CPU和MMU（了解）" class="headerlink" title="CPU和MMU（了解）"></a>CPU和MMU（了解）</h5><p>存储介质：网络—–硬盘—–内存—–高速缓存cache—–寄存器</p>
+<p>CPU：1预取指令—–2译码—–3执行</p>
+<p>MMU（位于CPU内）：</p>
+<p>1虚拟内存和物理内存的映射</p>
+<p>将虚拟内存地址和物理内存地址进行 绑定或叫做映射，比如有个变量i=10存放在物理内存中，先看一下虚拟地址是啥，MMU找到对应的物理地址，取出该数。</p>
+<p>2设置修改内存访问级别</p>
+<p>0&gt;1&gt;2&gt;3</p>
+<p>用户控件映射到物理内存是独立的。</p>
+<p>内核区是映射到同一块地址。</p>
+<h5 id="进程的状态转换"><a href="#进程的状态转换" class="headerlink" title="进程的状态转换"></a>进程的状态转换</h5><p>初始、就绪、运行、挂起、终止</p>
+<p>就绪状态———————-（获得CPU）——————–运行状态</p>
+<p>运行状态—————–（获得的时间片结束）————就绪状态</p>
+<p>运行状态——（因等待其他资源，主动交出CPU）—–挂起状态</p>
+<p>挂起状态———–（等待的非CPU资源到位了）———就绪状态</p>
+<p>就绪|运行|挂起状态———————————————终止状态</p>
+<h5 id="PCB进程控制块"><a href="#PCB进程控制块" class="headerlink" title="PCB进程控制块"></a>PCB进程控制块</h5><p>结构体struct task_struct  位于sched.h文件中</p>
+<ul>
+<li><strong>进程id</strong>，pid_t类型，非负整数</li>
+<li><strong>进程的状态</strong>，初始、就绪、运行、挂起、停止等状态</li>
+<li>进程切换时需要保存和恢复的一些CPU寄存器</li>
+<li>描述虚拟地址空间的信息</li>
+<li>描述控制终端的信息</li>
+<li><strong>当前工作目录</strong></li>
+<li>umask掩码</li>
+<li>文件描述符表，包含很多指向file结构体的指针</li>
+<li>和信号相关的信息</li>
+<li><strong>用户id和组id</strong></li>
+<li>会话（Session）和进程组</li>
+<li>进程可以使用的资源上限  ulimit -a 查看所有资源的上限</li>
+</ul>
+<h5 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h5><p>env查看所有环境变量</p>
+<p><code>key=val</code>    =两边都不能有空格</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">getenv(<span class="string">"HOME"</span>);<span class="comment">//返回一个字符串</span></span><br><span class="line">setenv<span class="comment">//设置环境变量</span></span><br><span class="line">unsetenv<span class="comment">//删除环境变量</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-掌握fork-getpid-getppid函数的使用"><a href="#2-掌握fork-getpid-getppid函数的使用" class="headerlink" title="2 掌握fork/getpid/getppid函数的使用"></a>2 掌握fork/getpid/getppid函数的使用</h3><h4 id="fork-创建一个新的进程"><a href="#fork-创建一个新的进程" class="headerlink" title="fork 创建一个新的进程"></a>fork 创建一个新的进程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pid_t fork(void);</span><br></pre></td></tr></table></figure>
+
+<p>失败返回-1；</p>
+<p>成功两次返回：父进程返回 子进程的id；子进程返回0.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"begin...\n"</span>);</span><br><span class="line">    <span class="keyword">pid_t</span> = fork();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//进程创建失败</span></span><br><span class="line">    <span class="keyword">if</span>(pid &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        perror(<span class="string">"fork err"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//进程创建成功</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am a child，pid=%d，ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//父进程的逻辑</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"childepid=%d,self=%d,ppid=%d\n"</span>,pid,getpid(),getppid());</span><br><span class="line">        sleep(<span class="number">1</span>);<span class="comment">//让父进程缓1s再死，避免孤儿进程</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"End...\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建n个子进程："><a href="#创建n个子进程：" class="headerlink" title="创建n个子进程："></a>创建n个子进程：</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n=<span class="number">5</span>;</span><br><span class="line">    <span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)&#123;<span class="comment">//父进程循环结束</span></span><br><span class="line">    	pid = fork();</span><br><span class="line">    	<span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">    		<span class="comment">//son</span></span><br><span class="line">    		<span class="built_in">printf</span>(<span class="string">"I am son,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    		<span class="keyword">break</span>;<span class="comment">//子进程退出循环的接口</span></span><br><span class="line">    	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">    		<span class="comment">//father</span></span><br><span class="line">    		<span class="built_in">printf</span>(<span class="string">"I am father,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//尽量精确控制父子进程的退出顺序</span></span><br><span class="line">    sleep(i);</span><br><span class="line">    <span class="keyword">if</span>(i&lt;<span class="number">5</span>)&#123;</span><br><span class="line">        <span class="comment">//son</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,will exit,pid=%d,ppid=%d"</span>,getpid(),getppid());</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//father</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent,will out pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">    &#125;</span><br><span class="line">       </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="父子进程共享"><a href="#父子进程共享" class="headerlink" title="父子进程共享"></a>父子进程共享</h4><p>父子相同点：全局变量、.data、.text、栈、堆、环境变量、用户ID、宿主目录、进程工作目录、信号处理方式</p>
+<p>父子不同点：进程ID、fork返回值、父进程ID、进程运行时间、闹钟（定时器）、未决信号集</p>
+<p>父子进程之间遵循<strong>读时共享，写时复制</strong>原则。节省内存开销。</p>
+<p>父子进程<strong>不共享全局变量</strong></p>
+<h3 id="3-熟练掌握ps-kill命令使用"><a href="#3-熟练掌握ps-kill命令使用" class="headerlink" title="3 熟练掌握ps/kill命令使用"></a>3 熟练掌握ps/kill命令使用</h3><p><code>ps aux</code> 查看进程信息</p>
+<p><code>ps ajx</code>  追溯进程之间的血缘关系   init（进程的祖先）—–sshd—–bash——其他子进程</p>
+<p><code>kill  -9 2890</code>： -9是9号信号SIGKILL；2890是进程id</p>
+<p><code>kill -l</code>：可以查看所有信号共64个</p>
+<p><code>ps aux|grep a.out</code>可以查看当前的进程</p>
+<p><code>ps aux|grep a.out|grep -v grep |wc -l</code>返回数字，表示创建了几个子进程</p>
+<h3 id="4-熟练掌握execl-execlp函数的使用"><a href="#4-熟练掌握execl-execlp函数的使用" class="headerlink" title="4 熟练掌握execl/execlp函数的使用"></a>4 熟练掌握execl/execlp函数的使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//执行其他程序</span><br><span class="line">int execl(const char*path,const char *arg,...);</span><br><span class="line"></span><br><span class="line">//执行程序的时候，使用PATH环境变量，执行的程序可以不用加路径</span><br><span class="line">int execlp(const char*file,const char *arg,...);</span><br></pre></td></tr></table></figure>
+
+<p>exec族函数：底层实现：代码段、数据段替换，进程ID啥的都不变，换核不换壳；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;unistd&gt;</span><br><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line"></span><br><span class="line">	//execlp(&quot;ls&quot;,&quot;ls&quot;,&quot;-l&quot;,&quot;--color=auto&quot;,NULL);</span><br><span class="line">	execl(&quot;/bin/ls&quot;,&quot;ls&quot;,&quot;-l&quot;,&quot;--color=auto&quot;,NULL);</span><br><span class="line"></span><br><span class="line">	//不需要判断返回值</span><br><span class="line">	perror(&quot;exec err&quot;);</span><br><span class="line">	printf(&quot;hello\n&quot;);</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>execl实现自定义程序</p>
+<h3 id="5-说出什么是孤儿进程-什么是僵尸进程"><a href="#5-说出什么是孤儿进程-什么是僵尸进程" class="headerlink" title="5 说出什么是孤儿进程 什么是僵尸进程"></a>5 说出什么是孤儿进程 什么是僵尸进程</h3><p>孤儿进程：父亲死了，子进程被init进程领养。</p>
+<p>僵尸进程：子进程死了，父进程没有回收子进程的资源（PCB）。</p>
+<p>orphan</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;unistd.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line">	pid_t pid = fork();</span><br><span class="line">	if(pid == 0)&#123;</span><br><span class="line">		while(1)&#123;</span><br><span class="line">			printf(&quot;I am child,pid=%d,ppid=%d\n&quot;,getpid(),getppid());</span><br><span class="line">			sleep(1);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;else if(pid&gt;0)&#123;</span><br><span class="line">		printf(&quot;I am parent,pid=%d,ppid=%d\n&quot;,getpid(),getppid());</span><br><span class="line">		sleep(5);</span><br><span class="line">		printf(&quot;I am parent,I will die!\n&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 此时，ctrl+c已经终止不了程序了，因为父进程已经死了，子进程脱离shell管制；此处应有<code>kill -9 childpid</code></p>
+<p>zombie</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,pid=%d,ppid=%d\n"</span>,getpid(),getppid());</span><br><span class="line">		sleep(<span class="number">5</span>);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am child,I will die!\n"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"I am parent,pid=%d"</span>,getpid());</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>回收僵尸进程：杀死僵尸进程的父亲，僵尸进程由init领养，负责回收，<code>kill -9  parentpid</code>。</p>
+<p>僵尸进程是不能用kill直接清除的。</p>
+<h3 id="6-熟练掌握wait函数的使用"><a href="#6-熟练掌握wait函数的使用" class="headerlink" title="6 熟练掌握wait函数的使用"></a>6 熟练掌握wait函数的使用</h3><p>避免产生僵尸进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//回收子进程，知道子进程的死亡原因</span><br><span class="line">pid_t wait(int * status);//status是传出参数；成功返回终止的子进程id，失败返回-1</span><br></pre></td></tr></table></figure>
+
+<h4 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h4><p>作用：</p>
+<ul>
+<li>阻塞等待 等子进程死亡</li>
+<li>回收子进程资源</li>
+<li>查看死亡原因</li>
+</ul>
+<p>子进程死亡原因：</p>
+<ul>
+<li>正常死亡WIFEXITED，为真，使用WEXITSTATUS得到退出状态；</li>
+<li>非正常死亡WIFSIGNALED，为真，使用WTERMSIG得到信号。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#inlcude<span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,will die!\n"</span>);</span><br><span class="line">        sleep(<span class="number">2</span>);</span><br><span class="line">        <span class="comment">//while(1)&#123;&#125;//通过外部kill杀死，非正常死亡</span></span><br><span class="line">        <span class="comment">//return 101; //正常死亡</span></span><br><span class="line">        <span class="comment">//exit(102); //正常死亡</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent,wait for child die!\n"</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> status;     </span><br><span class="line">        <span class="keyword">pid_t</span> wpit = wait(&amp;status);      </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"wait ok,wpid=%d,pid=%d\n"</span>,wpid,pid);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//正常死亡</span></span><br><span class="line">        <span class="keyword">if</span>(WIFEXITED(status))&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"child exit with %d\n"</span>,WEXITSTATUS(status));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//非正常死亡</span></span><br><span class="line">        <span class="keyword">if</span>(WIFSIGNALED(status))&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"child killed by %d\n"</span>,WTERMSIG(status));</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>wait回收多个进程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#inlcude&lt;unistd.h&gt;</span><br><span class="line">#include&lt;sys/types.h&gt;</span><br><span class="line">#include&lt;sys/wait.h&gt;</span><br><span class="line"></span><br><span class="line">int main()&#123;</span><br><span class="line">	int n=5;</span><br><span class="line">	int i=0;</span><br><span class="line"></span><br><span class="line">    pid_t pid; </span><br><span class="line">    for(i=0;i&lt;5;i++)&#123;</span><br><span class="line">    	pid = fork();</span><br><span class="line">    	if(pid==0)&#123;</span><br><span class="line">    		printf(&quot;I am child,pid=%d\n&quot;,getpid());</span><br><span class="line">    		break;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sleep(1);</span><br><span class="line">    if(i==5)&#123;</span><br><span class="line">    	for(i=0;i&lt;5;i++)&#123;</span><br><span class="line">    		pid_t wpid=wait(NULL);//阻塞，直到回收</span><br><span class="line">    		printf(&quot;wpid=%d\n&quot;,wpid);//能到这一步说明已经回收了</span><br><span class="line">    	&#125;</span><br><span class="line">    	while(1)&#123;</span><br><span class="line">            sleep(1);</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-熟练掌握waitpid函数的使用"><a href="#7-熟练掌握waitpid函数的使用" class="headerlink" title="7 熟练掌握waitpid函数的使用"></a>7 熟练掌握waitpid函数的使用</h3><p>避免产生僵尸进程</p>
+<h4 id="waitpid"><a href="#waitpid" class="headerlink" title="waitpid"></a>waitpid</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">pid_t waitpid(pid_t pid,int *status,int options);</span><br><span class="line"></span><br><span class="line">pid:</span><br><span class="line">&lt;-1 组id</span><br><span class="line">-1 回收任意</span><br><span class="line">0 回收和调度进程组id相同组内的子进程</span><br><span class="line">&gt;0 回收指定的pid</span><br><span class="line"></span><br><span class="line">options：</span><br><span class="line">0与wait相同，也会阻塞</span><br><span class="line">WNOHANG如果当前没有子进程退出的，会立刻返回</span><br><span class="line"></span><br><span class="line">返回值：</span><br><span class="line">如果设置了WNOHANG，那么如果没有子进程退出，返回0；</span><br><span class="line">如果有子进程退出，返回退出的pid；如果失败返回-1（没有子进程）；</span><br></pre></td></tr></table></figure>
+
+<p>waitpid回收进程：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">	<span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am child.pid=%d\n"</span>,getpid());</span><br><span class="line">		sleep(<span class="number">2</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"I am parent,pid=%d\n"</span>,getpid());</span><br><span class="line">		<span class="keyword">int</span> ret;  </span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span>((ret = waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG)) == <span class="number">0</span>)&#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"ret=%d\n"</span>,ret);</span><br><span class="line">        </span><br><span class="line">        ret = waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG);</span><br><span class="line">        <span class="keyword">if</span>(ret&lt;<span class="number">0</span>)&#123;</span><br><span class="line">            perror(<span class="string">"wait err"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">			sleep(<span class="number">1</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>waitpid回收多个进程：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#inlcude<span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n=<span class="number">5</span>;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid; </span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)&#123;</span><br><span class="line">    	pid = fork();</span><br><span class="line">    	<span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;</span><br><span class="line">    		</span><br><span class="line">    		<span class="keyword">break</span>;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sleep(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>(i==<span class="number">5</span>)&#123;</span><br><span class="line">    	<span class="comment">//parent 主要用于回收</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am parent!\n"</span>);</span><br><span class="line">        <span class="comment">//如何使用waitpid回收？  -1代表子进程都死了，都收了</span></span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">pid_t</span> wpid=waitpid(<span class="number">-1</span>,<span class="literal">NULL</span>,WNOHANG);<span class="comment">//阻塞，直到回收</span></span><br><span class="line">            <span class="keyword">if</span>(wpid == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(wpid&gt;<span class="number">0</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"wpid=%d\n"</span>,wpid);<span class="comment">//能到这一步说明已经回收了</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="comment">//保持父进程的活性，看有没有僵尸</span></span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    	 </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(i&lt;<span class="number">5</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"I am child,i=%d,pid=%d\n"</span>,getpid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/26/Linux的系统编程-进程控制/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-        <div class="archives">
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-hexo搭建全记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
+      <a class="article-title" href="/2019/09/24/hexo搭建全记录/">GitHub+Hexo搭建过程记录</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2019/09/24/hexo搭建全记录/" class="archive-article-date">
+  	<time datetime="2019-09-24T04:51:17.629Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-搭建步骤："><a href="#1-搭建步骤：" class="headerlink" title="1 搭建步骤："></a><strong>1 搭建步骤：</strong></h2><p>1 node安装</p>
+<p>官网地址：<a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">https://nodejs.org/en/download/</a><br>下载好直接安装，一直下一步，安装成功了以后打开cmd，输入<code>node -v</code>查看版本号，看到版本号，说明安装成功。</p>
+<p>2 cnpm安装</p>
+<p>由于我们被墙的厉害，所以使用npm下载模块时候会发现效率真的很慢，所以推荐淘宝的镜像，安装cnpm的cmd指令如下：</p>
+<p><code>$ npm install -g cnpm --registry=https://registry.npm.taobao.org</code><br>安装完成后，输入<code>cnpm -v</code> ，不报错就是成功。</p>
+<p>3 安装hexo：<code>cnpm install -g hexo-cli</code> （全局） </p>
+<p>4 在对应目录下新建一个目录：<code>mkdir blog</code></p>
+<p>5 hexo init，创建，成功后出现的提示 👇</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO  Start blogging with Hexo!</span><br></pre></td></tr></table></figure>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<p>6 启动：先clean一下，再生成 g：<code>generate</code> 的意思</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo cleanhexo g</span><br></pre></td></tr></table></figure>
+
+<p>7 运行：hexo s ，成功后👇</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO  Start processingINFO  Hexo is running at http://localhost:4000 . Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
+
+<p>8 打开localhost：4000，进入自动生成的第一篇博文：hello world</p>
+<h2 id="2-写博客"><a href="#2-写博客" class="headerlink" title="2 写博客"></a>2 写博客</h2><ol>
+<li><blockquote>
+<p>hexo n “我的第一篇博客” ， n：new</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO  Created: D:\github\blog\source\_posts\我的第一篇博客.md</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>cd 到该目录下，有两篇文章，分别是hello world 和 刚创建的</p>
+</li>
+<li><p>我是通过typora对内容进行编辑的，很好用</p>
+</li>
+<li><p>编辑结束，保存文章</p>
+</li>
+<li><p>退回到blog文件夹下，先clean，在重新生成并启动</p>
+</li>
+<li><p>打开就能看到新建的博客啦~~</p>
+</li>
+</ol>
+<h2 id="3-部署：免费方式GitHub"><a href="#3-部署：免费方式GitHub" class="headerlink" title="3 部署：免费方式GitHub"></a>3 部署：免费方式GitHub</h2><ol>
+<li><p>首先在自己的GitHub上创建一个仓库，命名为：用户名.github.io</p>
+</li>
+<li><p>回到命令行，安装一个插件：cnpm install hexo-deployer-git –save</p>
+<p>iOS的 ls 对应 win 的 dir 查看文件用</p>
+</li>
+<li><p>配置blog下的 _config.yml 文件，win用户可以使用notepad++来修改👇，注意，每个后面都有空格！！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deploy:  type: git  repo: https://github.com/GAOGAO1994/GAOGAO1994.github.io.git  branch: master</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>部署到远端：hexo d，d 就是 deploy ， 部署上去的意思。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Branch &apos;master&apos; set up to track remote branch &apos;master&apos; from &apos;https://github.com/GAOGAO1994/GAOGAO1994.github.io.git&apos;.[32mINFO [39m Deploy done: [35mgit[39m</span><br></pre></td></tr></table></figure>
+
+<p>👆部署成功</p>
+</li>
+<li><p>现在我们直接通过 ：<a href="https://username.github.io/" target="_blank" rel="noopener">https://username.github.io/</a> 就可以访问我们的博客~~</p>
+</li>
+</ol>
+<h2 id="4-更换主题"><a href="#4-更换主题" class="headerlink" title="4 更换主题"></a>4 更换主题</h2><ol>
+<li><p>定位到blog文件夹下：git clone <a href="https://github.com/litten/hexo-theme-yilia" target="_blank" rel="noopener">https://github.com/litten/hexo-theme-yilia</a> themes/yilia</p>
+</li>
+<li><p>修改 _config.yml 文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: yilia</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新 clean 、g、d</p>
+</li>
+<li><p>成功</p>
+<p>PS：此主题需根据提示下载相关插件以及做相应配置</p>
+<ul>
+<li><p>blog下：cnpm i hexo-generator-json-content –save</p>
+</li>
+<li><p>在配置文件中加入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsonContent:    meta: false    pages: false    posts:      title: true      date: true      path: true      text: false      raw: false      content: false      slug: false      updated: false      comments: false      link: false      permalink: false      excerpt: false      categories: false      tags: true</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ol>
+<p>配置文件中相应字段修改后就可以实现个性化主题了 ~</p>
+<p><a href="https://hexo.io/zh-cn/docs/configuration.html" target="_blank" rel="noopener">https://hexo.io/zh-cn/docs/configuration.html</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/24/hexo搭建全记录/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
+      <a class="article-title" href="/2019/09/24/hello-world/">Hello World</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
+        
+        <a href="/2019/09/24/hello-world/" class="archive-article-date">
+  	<time datetime="2019-09-24T02:03:20.176Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
-          
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/24/hello-world/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
+        
+        
+    </div>
+</aside>
 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的基础用法/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.870Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的基础用法/">Linux的基础语法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
-  
-
-    
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><a class="page-number" href="/archives/2019/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2019/page/4/">4</a><a class="extend next" rel="next" href="/archives/2019/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
     </nav>
   
 
@@ -468,9 +566,9 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: false,
+		isHome: true,
 		isPost: false,
-		isArchive: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

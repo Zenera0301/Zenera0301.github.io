@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>操作系统-概述 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/3/index.html">
+  <meta name="description" content="1 操作系统做了什么？helloworld.c的执行过程： 123456//程序作用：在显示器上打印hello world#include&amp;lt;stdio.h&amp;gt;int main(int argc,char* argv[])&amp;#123;    puts(&quot;hello world&quot;);    return 0;&amp;#125;  (1)启动程序执行（用户要告诉操作系统执行helloworld程序）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-概述">
+<meta property="og:url" content="http://yoursite.com/2019/10/12/操作系统-概述/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="1 操作系统做了什么？helloworld.c的执行过程： 123456//程序作用：在显示器上打印hello world#include&amp;lt;stdio.h&amp;gt;int main(int argc,char* argv[])&amp;#123;    puts(&quot;hello world&quot;);    return 0;&amp;#125;  (1)启动程序执行（用户要告诉操作系统执行helloworld程序）">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-12T07:36:11.088Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="操作系统-概述">
+<meta name="twitter:description" content="1 操作系统做了什么？helloworld.c的执行过程： 123456//程序作用：在显示器上打印hello world#include&amp;lt;stdio.h&amp;gt;int main(int argc,char* argv[])&amp;#123;    puts(&quot;hello world&quot;);    return 0;&amp;#125;  (1)启动程序执行（用户要告诉操作系统执行helloworld程序）">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,384 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-操作系统-概述" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      操作系统-概述
+    </h1>
+  
+
+        
+        <a href="/2019/10/12/操作系统-概述/" class="archive-article-date">
+  	<time datetime="2019-10-12T07:35:41.727Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-12</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-操作系统做了什么？"><a href="#1-操作系统做了什么？" class="headerlink" title="1 操作系统做了什么？"></a>1 操作系统做了什么？</h3><p>helloworld.c的执行过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//程序作用：在显示器上打印hello world</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"hello world"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>(1)启动程序执行（用户要告诉操作系统执行helloworld程序）</p>
+<ul>
+<li>命令行键入执行命令，鼠标双击helloworld程序的图标</li>
+</ul>
+<p>(2)操作系统准备</p>
+<ul>
+<li>操作系统：根据文件名，找到helloworld程序的相关信息，检查类型是否是可执行文件；并通过程序首部信息，确定代码和数据在可执行文件中的位置，并计算出对应的磁盘块地址（可执行文件 ，Windows下是pe格式，Linux下是elf格式）；</li>
+<li>操作系统：<strong>创建一个新的进程</strong>，并将helloworld可执行文件映射到该进程结构，表示由该进程执行helloworld程序；</li>
+<li>操作系统：为helloworld程序设置CPU上下文环境，并跳到程序的开始处（假设调度程序选中helloworld程序）；</li>
+</ul>
+<p>(3)开始执行这个可执行文件</p>
+<ul>
+<li>执行helloworld程序的第一条指令，发生<strong>缺页异常</strong>；</li>
+<li>操作系统：分配一页物理内存，将代码从磁盘读入内存，然后继续执行helloworld程序；</li>
+<li>helloworld程序执行puts函数（系统调用，故而控制权又转回给了操作系统），想在显示器上写出字符串；</li>
+<li>操作系统：找到要将字符串送往的显示设备，通常设备是由一个进程控制的，所以操作系统把要显示的字符串送给该进程；</li>
+</ul>
+<p>(4)字符串显示过程</p>
+<ul>
+<li>操作系统：控制设备的进程告诉设备的窗口系统它要显示字符串，窗口系统确定这是一个合法操作，然后将字符串转换为像素，将像素写入设备的存储映像区；</li>
+<li>视频硬件将像素转换成显示器可以接受的一组控制/数据信号；</li>
+<li>显示器解释信号，激发液晶屏；</li>
+<li>我们在屏幕上看到了hello world。</li>
+</ul>
+<p>角度一：</p>
+<p>用户程序———-创建进程————-OS进程管理</p>
+<p>执行用户程序——-发生缺页异常——-OS存储管理</p>
+<p>用户程序继续执行——-执行puts函数—–OS</p>
+<p>角度二：</p>
+<p>OS进程管理—–调度—-helloworld程序———-程序执行过程中会陷入OS</p>
+<p>OS存储管理——再次调度helloworld程序——程序再次陷入OS</p>
+<p><strong>操作系统负责程序启动、执行过程，在执行过程中提供各种支持。</strong></p>
+<hr>
+<h3 id="2-操作系统的定义与作用"><a href="#2-操作系统的定义与作用" class="headerlink" title="2 操作系统的定义与作用"></a>2 操作系统的定义与作用</h3><h4 id="操作系统是什么？"><a href="#操作系统是什么？" class="headerlink" title="操作系统是什么？"></a>操作系统是什么？</h4><p>操作系统是计算机系统的一个系统软件，是一些程序模块的集合——</p>
+<ul>
+<li>它们能以尽量<strong>有效、合理</strong>的方式组织和管理计算机的软硬件资源；</li>
+<li>合理地组织计算机的工作流程，控制程序的执行并向用户提供各种服务功能；</li>
+<li>使得用户能够灵活、<strong>方便</strong>地使用计算机，使整个计算机系统高效率运行</li>
+</ul>
+<p>解读关键词：</p>
+<ul>
+<li>有效：系统效率，资源利用率（CPU利用率充足与否？I/O设备是否忙碌？）</li>
+<li>合理：各种软硬件资源的管理是否公平合理？（如果不公平不合理，则可能产生什么问题？）</li>
+<li>方便使用：两种角度：用户界面（使用者） 与 程序接口（程序员）</li>
+</ul>
+<h4 id="操作系统三个作用："><a href="#操作系统三个作用：" class="headerlink" title="操作系统三个作用："></a>操作系统三个作用：</h4><ul>
+<li><p>资源的管理者（有效）—有效地管理资源</p>
+</li>
+<li><p>向用户提供各种服务（方便使用）—通过命令接口、编程接口等为用户提供各种功能服务</p>
+</li>
+<li><p>对硬件机器的扩展（扩展能力）—屏蔽硬件细节，为用户提供扩展的虚拟机器</p>
+</li>
+</ul>
+<h4 id="（1）OS是资源的管理者"><a href="#（1）OS是资源的管理者" class="headerlink" title="（1）OS是资源的管理者"></a>（1）OS是资源的管理者</h4><p>自底向上看，就是从OS自身看，OS是资源的管理者</p>
+<p>硬件资源：CPU、内存、设备（I/O设备、磁盘、时钟、网络卡等）</p>
+<p>软件资源：磁盘上的文件、各类管理信息等</p>
+<h5 id="怎样管理资源？"><a href="#怎样管理资源？" class="headerlink" title="怎样管理资源？"></a>怎样管理资源？</h5><ul>
+<li><p>跟踪记录资源的使用状况（用数据结构记录：哪些资源空闲，分配给谁使用，允许用多长时间）</p>
+</li>
+<li><p>确定资源分配策略（算法）</p>
+<p>—静态分配策略（一次性集齐所有的资源，再开始执行，执行过程中不需要其他资源，一次性执行完成；但在执行过程中有时候不需要再用资源，导致资源浪费）</p>
+<p>—动态分配策略（进程执行过程中，何时需要资源何时提出申请，OS根据系统当前资源使用状况，即数据结构决定这个资源是否分配给它，资源利用率得到充分提高）</p>
+</li>
+<li><p>实施资源的分配和回收</p>
+<p>页式存储系统，用位示图Bitmap这个数据结构来记录物理内存的使用情况，一位对应物理内存的一页，如果该页空闲，对应的位记为0，分配出去了，对应的位就记为1；</p>
+<p>分配过程，就是按照资源分配策略，选中要分配资源给哪个进程，决定要分配给它多少，然后修改对应的数据结构，把原来的0改成1；</p>
+<p>回收过程，也要修改相应的数据结构，把1改为0；</p>
+</li>
+<li><p>提高资源利用率</p>
+</li>
+<li><p>保护资源的使用</p>
+</li>
+<li><p>协调多个进程对资源请求的冲突</p>
+</li>
+</ul>
+<h5 id="从资源管理的角度–OS五大基本功能"><a href="#从资源管理的角度–OS五大基本功能" class="headerlink" title="从资源管理的角度–OS五大基本功能"></a>从资源管理的角度–OS五大基本功能</h5><ul>
+<li><p>进程/线程管理（CPU管理）</p>
+<p>进程线程状态、控制、同步互斥、通信、调度</p>
+</li>
+<li><p>存储管理</p>
+<p>分配/回收、地址转换、存储保护、内存扩充</p>
+</li>
+<li><p>文件管理</p>
+<p>文件目录、文件操作、磁盘空间、文件存取控制</p>
+</li>
+<li><p>设备管理</p>
+<p>设备驱动、分配回收、缓冲技术</p>
+</li>
+<li><p>用户接口</p>
+<p>系统命令、典型接口</p>
+</li>
+</ul>
+<h4 id="（2）OS是各种系统服务的提供者"><a href="#（2）OS是各种系统服务的提供者" class="headerlink" title="（2）OS是各种系统服务的提供者"></a>（2）OS是各种系统服务的提供者</h4><ul>
+<li>在操作系统之上，从用户角度看：操作系统为用户提供了一组功能强大、方便易用的<strong>命令或系统调用</strong></li>
+<li>典型的服务：进程的创建、执行；文件和目录的操作；I/O设备的使用；各类统计信息</li>
+</ul>
+<h4 id="（3）OS是对硬件机器的扩展"><a href="#（3）OS是对硬件机器的扩展" class="headerlink" title="（3）OS是对硬件机器的扩展"></a>（3）OS是对硬件机器的扩展</h4><p>os是硬件之上的第一层软件：硬件—（物理机器界面）—-操作系统—–（虚拟机器界面）—-应用程序</p>
+<p>为什么要把硬件屏蔽，因为与硬件相关的工作是复杂、繁琐的</p>
+<ul>
+<li>操作系统在应用程序与硬件之间建立了一个等价的扩展机器（虚拟机）</li>
+<li>对硬件抽象，提高可移植性；比底层硬件更容易编程</li>
+</ul>
+<hr>
+<h3 id="3-操作系统的主要特征"><a href="#3-操作系统的主要特征" class="headerlink" title="3 操作系统的主要特征"></a>3 操作系统的主要特征</h3><p>4个主要特征：并发、共享、虚拟、随机。</p>
+<h4 id="（1）OS特征–并发"><a href="#（1）OS特征–并发" class="headerlink" title="（1）OS特征–并发"></a>（1）OS特征–并发</h4><p><strong>并发</strong>：处理多个同时性活动的能力</p>
+<p>由于并发会引发很多的问题：活动切换、保护、相互依赖的活动间的同步</p>
+<p>在计算机系统中同时存在多个程序运行，单CPU上：</p>
+<p>宏观上，这些程序在同时执行；</p>
+<p>微观上，任何时刻只有一个程序真正在执行，即这些程序在CPU上是轮流执行的</p>
+<p><strong>并行</strong>：与并发相似，但多指不同程序同时在多个硬件部件上执行</p>
+<h4 id="（2）OS特征–共享"><a href="#（2）OS特征–共享" class="headerlink" title="（2）OS特征–共享"></a>（2）OS特征–共享</h4><p>共享：操作系统与多个用户的程序共同使用计算机系统中的资源（共享有限的系统资源）</p>
+<p>操作系统要对系统资源进行合理分配，和使用资源在一个时间段内交替被多个进程所用</p>
+<ul>
+<li>互斥共享（如打印机）</li>
+<li>同时共享（如可重入代码、磁盘文件）</li>
+</ul>
+<p>问题：资源分配难以达到最优化，如何保护资源，使得不同进程之间不会互相干扰？</p>
+<h4 id="（3）OS特征–虚拟"><a href="#（3）OS特征–虚拟" class="headerlink" title="（3）OS特征–虚拟"></a>（3）OS特征–虚拟</h4><ul>
+<li>一个物理实体（CPU或内存）映射为若干个对应的逻辑实体—-分时（把时间分成很多片段）或分空间（把空间分成很多区域）</li>
+<li>虚拟是操作系统管理系统资源的重要手段，可提高资源利用率</li>
+</ul>
+<h5 id="操作系统中的虚拟性体现："><a href="#操作系统中的虚拟性体现：" class="headerlink" title="操作系统中的虚拟性体现："></a>操作系统中的虚拟性体现：</h5><ul>
+<li>CPU——每个进程的”虚处理机“（这是宏观上看到的，其实微观上每个时刻只有一个进程在跑）</li>
+<li>存储器——每个进程都有独立的虚拟地址空间（代码+数据+堆栈）（逻辑上，每个进程都有自己的地址空间，但物理上，进程们共用一块物理内存）</li>
+<li>显示设备——多窗口或虚拟终端</li>
+</ul>
+<h4 id="（4）OS特征–随机"><a href="#（4）OS特征–随机" class="headerlink" title="（4）OS特征–随机"></a>（4）OS特征–随机</h4><p>操作系统必须随时对<strong>以不可预测的次序</strong>发生的事件进行响应并处理</p>
+<ul>
+<li>进程的运行速度不可预知：多个进程并发执行，走走停停，无法预知每个进程的运行推进的快慢</li>
+<li>难以重现系统在某个时刻的状态（包括重现运行中的错误）</li>
+</ul>
+<hr>
+<h3 id="4-典型操作系统的架构"><a href="#4-典型操作系统的架构" class="headerlink" title="4 典型操作系统的架构"></a>4 典型操作系统的架构</h3><h4 id="Windows操作系统的体系架构："><a href="#Windows操作系统的体系架构：" class="headerlink" title="Windows操作系统的体系架构："></a>Windows操作系统的体系架构：</h4><ol>
+<li>用户态：动态链接库（DLL）、系统进程、服务进程、用户进程、环境子系统（如Win32）</li>
+<li>内核态：<strong>硬件抽象层</strong>（HAL）（相同体系结构的不同计算机区分依据）、<strong>内核</strong>（不同体系结构的区分依据），这两层是和硬件相关的；设备驱动程序、执行体、图形与窗口模块、内核态可调用接口、系统服务分发器</li>
+<li>物理硬件：硬件</li>
+</ol>
+<p>Windows操作系统体系架构抽象如下：</p>
+<ul>
+<li>应用程序</li>
+<li>系统功能调用</li>
+<li>操作系统</li>
+<li>计算机硬件</li>
+</ul>
+<h4 id="UNIX操作系统"><a href="#UNIX操作系统" class="headerlink" title="UNIX操作系统"></a>UNIX操作系统</h4><p>同心圆环，从内到外：硬件—-内核—-系统调用接口—-命令和库</p>
+<p>有用户态和内核态</p>
+<p>内核结构：</p>
+<ul>
+<li>进程控制子系统：调度、进程通信、存储管理内存管理</li>
+<li>设备驱动程序：块设备的设备驱动、字符设备的设备驱动</li>
+<li>硬件控制层</li>
+<li>系统调用接口：提供给用户程序，程序可<strong>直接</strong>和系统调用接口打交道，也可以<strong>通过函数库</strong>和系统调用接口打交道</li>
+</ul>
+<h4 id="Linux内核组件"><a href="#Linux内核组件" class="headerlink" title="Linux内核组件"></a>Linux内核组件</h4><ul>
+<li>进程和调度</li>
+<li>虚拟内存管理、物理内存管理</li>
+<li>文件系统</li>
+<li>设备驱动程序（字符、块、网络 设备驱动程序）</li>
+<li>陷入和异常的处理、中断处理（对硬件异常处理）</li>
+<li>系统调用接口</li>
+</ul>
+<h4 id="Android操作系统的架构"><a href="#Android操作系统的架构" class="headerlink" title="Android操作系统的架构"></a>Android操作系统的架构</h4><p>从底到上：Linux内核—-系统库和Android运行时系统—-应用程序框架—-Android应用程序</p>
+<p>其中，内核里包括一些进程管理、内存管理、安全、网络、驱动这些东西</p>
+<hr>
+<h3 id="5-操作系统的分类"><a href="#5-操作系统的分类" class="headerlink" title="5 操作系统的分类"></a>5 操作系统的分类</h3><p>操作系统发展，随着硬件的发展，应用需求的发展，软件新技术的出现而发展，因为操作系统必须要充分利用硬件，给用户提供更好的服务。</p>
+<p>大型计算机——个人计算机——网络——移动计算——-云计算——泛在计算（物联网）——机器人</p>
+<h4 id="传统操作系统分类"><a href="#传统操作系统分类" class="headerlink" title="传统操作系统分类"></a>传统操作系统分类</h4><h4 id="1-批处理操作系统"><a href="#1-批处理操作系统" class="headerlink" title="1 批处理操作系统"></a>1 批处理操作系统</h4><p>大型公司可能会用，<strong>追求目标</strong>：提高资源利用率，增加作业处理吞吐量</p>
+<p><strong>工作方式</strong>：</p>
+<ul>
+<li>用户将作业交给系统操作员</li>
+<li>系统操作员把许多用户的作业组成一批作业，输入到计算机系统中，在系统中形成一个自动转接的连续作业流</li>
+<li>启动操作系统</li>
+<li>由操作员将作业结果交给用户</li>
+</ul>
+<p><strong>简单细节</strong>：</p>
+<p>作业：包括了用户程序，程序中用到的数据，作业说明书，就是说明作业怎么样处理的</p>
+<p>成批：主要是批，就是一批作业由若干个作业组成，用户提交作业后只能等待处理结果，不能干预自己作业的执行</p>
+<p>批作业处理：对一批作业中的每个作业进行相同的处理：从磁带读入用户作业和编译链接程序，编译链接用户作业以生成可执行程序；启动执行；执行并输出结果</p>
+<p><strong>典型的FMS JOB结构</strong></p>
+<h4 id="3-实时操作系统"><a href="#3-实时操作系统" class="headerlink" title="3 实时操作系统"></a>3 实时操作系统</h4><p><strong>概念</strong>：指计算机能及时响应外部事件的请求，在规定的严格时间内，完成对该事件的处理，并控制所有实施设备和实时任务协调一致地工作</p>
+<p><strong>分类</strong>：第一类，实时过程控制（工业控制，航空，军事控制）；第二类，实时通信/信息处理（电讯自动交换机，银行，飞机订票，股市行情）</p>
+<p><strong>追求目标</strong>：对外部请求在<strong>严格时间范围内</strong>做出响应；<strong>高可靠性</strong></p>
+<p><strong>特征</strong>：关键参数是时间，硬实时系统（某个动作必须要在固定时刻或时间范围内完成），软实时系统（接受偶尔违反最终时限，音频视频的播放）</p>
+<h4 id="4-个人计算机操作系统"><a href="#4-个人计算机操作系统" class="headerlink" title="4 个人计算机操作系统"></a>4 个人计算机操作系统</h4><p>计算机在某一时间内为单用户服务</p>
+<p>追求目标：界面友好，使用方便；丰富应用软件</p>
+<h4 id="5-网络操作系统"><a href="#5-网络操作系统" class="headerlink" title="5 网络操作系统"></a>5 网络操作系统</h4><p>计算机联网，各个计算机各有自己的操作系统，这些操作系统必须支持（按网络体系结构协议标准开发的）网络模块</p>
+<p><strong>功能</strong>：网络管理，通信，安全，资源共享，和各种网络应用</p>
+<p><strong>追求</strong>：相互通信，资源共享</p>
+<h4 id="6-分布式操作系统"><a href="#6-分布式操作系统" class="headerlink" title="6 分布式操作系统"></a>6 分布式操作系统</h4><p><strong>分布式系统</strong>：或以计算机网络为基础，或以多处理机为基础，基本特征是处理分布在不同计算机上</p>
+<p><strong>分布式操作系统</strong>：是一个统一的操作系统，允许若干台计算机相互协作，共同完成一项任务。操作系统可将各种系统任务在分布式系统中任何处理机上运行，自动实现全系统范围内的任务分配、自动调度、均衡各个处理机的工作负载。</p>
+<p><strong>特点</strong>：处理能力强，速度更快，可靠性增强，具有透明性</p>
+<h4 id="7-嵌入式操作系统"><a href="#7-嵌入式操作系统" class="headerlink" title="7 嵌入式操作系统"></a>7 嵌入式操作系统</h4><p><strong>嵌入式系统</strong>：在各种设备、装置或系统中，完成特定功能的软硬件系统；大的设备、装置中的一个部分；工作在反应式或对处理时间有严格要求的环境中。</p>
+<p><strong>嵌入式操作系统</strong>：运行在嵌入式系统环境中，对整个嵌入式系统和它所操作、控制的各种部件装置等等资源进行统一协调、调度、指挥和控制的系统软件</p>
+<h4 id="操作系统的另一种分类-TANENBAUM"><a href="#操作系统的另一种分类-TANENBAUM" class="headerlink" title="操作系统的另一种分类 TANENBAUM"></a>操作系统的另一种分类 TANENBAUM</h4><ul>
+<li>大型机操作系统</li>
+<li>服务器操作系统</li>
+<li>多处理机操作系统</li>
+<li>个人计算机操作系统</li>
+<li>掌上计算机操作系统</li>
+<li>嵌入式操作系统</li>
+<li>传感器节点操作系统</li>
+<li>实时操作系统</li>
+<li>智能卡操作系统</li>
+</ul>
+<h5 id="举个小例子：智能卡操作系统"><a href="#举个小例子：智能卡操作系统" class="headerlink" title="举个小例子：智能卡操作系统"></a>举个小例子：智能卡操作系统</h5><p>智能卡：一种包含有一块CPU芯片的卡片</p>
+<ul>
+<li>特点：非常严格的运行能耗和存储空间限制；有些智能卡只有单项功能，如电子支付；</li>
+<li>专用的操作系统</li>
+</ul>
+<p><strong>重点内容</strong>：</p>
+<p>掌握操作系统的概念</p>
+<ul>
+<li>理解操作系统的不同作用</li>
+<li>理解操作系统的主要特征</li>
+</ul>
+<p>掌握重要的操作系统技术Spooling技术</p>
+<p>了解操作系统架构</p>
+<p>了解操作系统的分类</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/12/操作系统-概述/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/10/13/操作系统-进程线程模型/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          操作系统-进程线程模型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/07/C++11新特性/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">C++11的新特性</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的基础用法/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.870Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的基础用法/">Linux的基础语法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><a class="page-number" href="/archives/2019/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2019/page/4/">4</a><a class="extend next" rel="next" href="/archives/2019/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +559,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

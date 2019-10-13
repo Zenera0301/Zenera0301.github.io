@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>操作系统-运行环境与运行机制 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/3/index.html">
+  <meta name="description" content="操作系统-运行环境与运行机制和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制） 和软件接触的：操作胸痛运行机制（系统调用） 1 处理器状态（模式）：处理器由运算器、控制器、一系列的寄存器以及高速缓存构成 两类寄存器：用户可见寄存器+控制和状态寄存器（由操作系统代码使用） 常见控制和状态寄存器：  程序计数器，PC，记录将要取出的指令的地址 指令寄存器，IR，记录最近取出的指令 程序状态字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-运行环境与运行机制">
+<meta property="og:url" content="http://yoursite.com/2019/10/13/操作系统-运行环境与运行机制/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="操作系统-运行环境与运行机制和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制） 和软件接触的：操作胸痛运行机制（系统调用） 1 处理器状态（模式）：处理器由运算器、控制器、一系列的寄存器以及高速缓存构成 两类寄存器：用户可见寄存器+控制和状态寄存器（由操作系统代码使用） 常见控制和状态寄存器：  程序计数器，PC，记录将要取出的指令的地址 指令寄存器，IR，记录最近取出的指令 程序状态字">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-13T14:07:01.548Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="操作系统-运行环境与运行机制">
+<meta name="twitter:description" content="操作系统-运行环境与运行机制和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制） 和软件接触的：操作胸痛运行机制（系统调用） 1 处理器状态（模式）：处理器由运算器、控制器、一系列的寄存器以及高速缓存构成 两类寄存器：用户可见寄存器+控制和状态寄存器（由操作系统代码使用） 常见控制和状态寄存器：  程序计数器，PC，记录将要取出的指令的地址 指令寄存器，IR，记录最近取出的指令 程序状态字">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,240 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-操作系统-运行环境与运行机制" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      操作系统-运行环境与运行机制
+    </h1>
+  
+
+        
+        <a href="/2019/10/13/操作系统-运行环境与运行机制/" class="archive-article-date">
+  	<time datetime="2019-10-13T14:05:59.473Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="操作系统-运行环境与运行机制"><a href="#操作系统-运行环境与运行机制" class="headerlink" title="操作系统-运行环境与运行机制"></a>操作系统-运行环境与运行机制</h3><p>和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制）</p>
+<p>和软件接触的：操作胸痛运行机制（系统调用）</p>
+<h4 id="1-处理器状态（模式）："><a href="#1-处理器状态（模式）：" class="headerlink" title="1 处理器状态（模式）："></a>1 处理器状态（模式）：</h4><p>处理器由运算器、控制器、一系列的<strong>寄存器</strong>以及高速缓存构成</p>
+<p>两类寄存器：用户可见寄存器+<strong>控制和状态寄存器</strong>（由操作系统代码使用）</p>
+<p>常见控制和状态寄存器：</p>
+<ul>
+<li>程序计数器，PC，记录将要取出的指令的地址</li>
+<li>指令寄存器，IR，记录最近取出的指令</li>
+<li>程序状态字，PSW，记录处理器的运行状态，包括条件码、模式、控制位等信息</li>
+</ul>
+<h5 id="操作系统的需要–保护"><a href="#操作系统的需要–保护" class="headerlink" title="操作系统的需要–保护"></a>操作系统的需要–保护</h5><p>操作系统要保证：并发和共享时，1用户程序和用户程序之间互不干扰；2用户程序对操作系统不干扰</p>
+<p>需要硬件提供基本运行机制：1处理器具有特权级别，能在不同的特权级运行的不同指令集合；2硬件机制可将OS与用户程序隔离（用户不能访问操作系统空间；操作系统能访问用户空间）</p>
+<p>处理器的状态（模式MODE）：特权指令（只有操作系统能用），非特权指令（操作系统和用户都能使用）</p>
+<p>操作系统需要两种CPU状态：内核态（运行操作系统程序）；用户态（运行用户程序）</p>
+<p>特权指令：启动I/O，内存清零，修改程序状态字，设置时钟，允许/禁止中断，停机</p>
+<p>非特权指令：控制转移，算术运算，取数指令，访管指令（从用户态陷入内核态）</p>
+<h5 id="实例：X86系列处理器"><a href="#实例：X86系列处理器" class="headerlink" title="实例：X86系列处理器"></a>实例：X86系列处理器</h5><p>支持4个处理器特权级别，特权环：R0（内核态）,R1,R2（受保护的共享的代码，语言编译环境）,R3（用户态），不同级别能够运行的指令集不同。</p>
+<p>目前大多数基于X86处理器的操作系统，<strong>只用了R0和R3两个特权级别</strong>。</p>
+<h5 id="CPU状态之间的转换"><a href="#CPU状态之间的转换" class="headerlink" title="CPU状态之间的转换"></a>CPU状态之间的转换</h5><p>用户态—转—-内核态：唯一途径是：中断、异常、陷入机制</p>
+<p>内核态—转—用户态：设置程序状态字PSW；访管指令（陷入指令）用于调用操作系统的功能或服务，int，trap，syscall，sysenter/sysexit</p>
+<h4 id="2-中断与异常机制介绍"><a href="#2-中断与异常机制介绍" class="headerlink" title="2 中断与异常机制介绍"></a>2 中断与异常机制介绍</h4><p>中断/异常对于操作系统来说，像汽车的发动机，像飞机的引擎操作系统是由中断驱动的，或由事件触动的</p>
+<p>概念：中断与异常是CPU对于系统发生的某个事件做出的一种反应。CPU暂停正在执行的程序，保留现场，然后自动转去执行相应事件的处理程序，处理完成后返回断点，继续执行被打断的程序。事件的发生改变了处理器的控制流。</p>
+<p>中断的引入：为了支持CPU和设备之间的并行操作；</p>
+<p>异常的引入：表示CPU执行指令时本身出现的问题。</p>
+<p>事件：</p>
+<p>中断（外中断）：I/O中断、时钟中断、硬件故障；</p>
+<p>异常（内中断）：系统调用、页故障/页错误、保护性异常、断点指令、其他程序性异常(算术溢出等)；</p>
+<p>中断是外部事件，正在运行的程序所不希望的；异常是内部事件，是正在运行的程序所引发的；</p>
+<h4 id="3-中断与异常机制工作原理"><a href="#3-中断与异常机制工作原理" class="headerlink" title="3 中断与异常机制工作原理"></a>3 中断与异常机制工作原理</h4><p>硬件软件相互配合完成。</p>
+<p>硬件：中断异常响应，捕获中断/异常请求，以一定的响应，将处理器控制权交给特定的处理程序。</p>
+<p>软件：中断异常处理程序，识别中断/异常类型，并完成相应的处理。</p>
+<p>中断响应：发现中断，接收中断的过程，由中断硬件部件完成。</p>
+<p>取指令，执行指令，每条指令执行周期的最后扫描中断寄存器，查看是否有中断信号，若有中断，中断硬件将该中断触发器内容按规定内容编码送入PSW的相应位，成为中断码，通过查<strong>中断向量表</strong>引出中断处理程序。</p>
+<p>中断向量表</p>
+<p>中断向量：一个内存单元，存放中断处理程序入口地址和程序运行时所需的处理机状态字。</p>
+<p>执行流程按中断号/异常类型的不同，通过中断向量表转移控制权给中断处理程序。</p>
+<p>硬件部分，中断响应过程：</p>
+<ul>
+<li>设备发送中断信号</li>
+<li>硬件保存现场（PSW，PC）</li>
+<li>根据中断码查表</li>
+<li>把中断处理程序入口地址等推送到响应的寄存器</li>
+<li>执行中断处理程序</li>
+</ul>
+<p>软件部分，中断处理程序：</p>
+<ul>
+<li>设计操作系统时，为每一类中断/异常事件编好响应的处理程序，并设置好中断向量表；</li>
+<li>系统运行时若响应中断，中断硬件部件将CPU控制权转给中断处理程序：保存相关寄存器信息，分析中断异常的具体原因，执行对应的处理功能，恢复现场，返回被事件打断的程序。</li>
+</ul>
+<p>软件提前设置好，硬件部件来执行。</p>
+<p>中断/异常机制：</p>
+<p>以设备输入输出中断为例：</p>
+<ul>
+<li>（硬件）打印机给CPU发出中断信号</li>
+<li>（硬件）CPU处理完当前指令后检测到中断，判断出中断来源并向相关设备发确认信号</li>
+<li>（硬件）CPU开始为软件处理中断做准备：处理器状态被切换到内核态，在系统栈中保存被中断程序的重要的上下文环境，主要是程序计数器PC和程序状态字PSW</li>
+<li>（硬件）CPU根据中断码查询中断向量表，获得与这个中断相关的处理程序的入口地址，并将PC设置成该地址，新的指令周期开始时，CPU控制转移到中断处理程序</li>
+<li>（<strong>软件</strong>）中断处理程序开始工作：在系统栈中保存现场信息；检查I/O设备的状态信息，操纵I/O设备或者在设备和内存之间传送数据等</li>
+<li>（硬件）中断处理结束时，CPU检测到中断返回指令，从系统栈中恢复被中断程序的上下文环境，CPU状态恢复成原来的状态，PSW和PC恢复成中断前的值，CPU开始一个新的指令周期。</li>
+</ul>
+<p>I/O中断处理程序：分为两类：</p>
+<ul>
+<li>I/O操作正常结束，如果有程序等待此次I/O的结果，将其唤醒；如果要继续I/O操作，需要准备好数据重新启动I/O。</li>
+<li>I/O操作出现错误，重复执行数次，次数有上限，达到时系统将判定硬件故障。</li>
+</ul>
+<h4 id="4-系统调用机制"><a href="#4-系统调用机制" class="headerlink" title="4 系统调用机制"></a>4 系统调用机制</h4><p>系统调用：用户在编程时可以调用的操作系统功能</p>
+<p>系统调用作用：是操作系统提供给编程人员的唯一接口，使CPU状态从用户态陷入内核态</p>
+<p>每个操作系统都提供几百种系统调用（进程控制，进程通信，文件使用，目录操作，设备管理，信息维护等）</p>
+<p>区分概念：</p>
+<p><strong>内核函数</strong>是系统调用的处理程序，<strong>C函数库/API接口</strong>是封装起来的函数接口，暴露给<strong>应用程序</strong>供其调用的。</p>
+<p>参数传递，用户程序的参数传递给内核：</p>
+<p>常用3方法：</p>
+<ul>
+<li>由陷入指令自带参数；</li>
+<li>通过寄存器传递参数；</li>
+<li>在内存中开辟专用堆栈区传参；</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(<span class="number">1</span>,<span class="built_in">string</span>,<span class="number">7</span>);<span class="comment">//1表示把结果送到标准输出设备，送的内容放到字符串里头，长度是7</span></span><br></pre></td></tr></table></figure>
+
+<p>系统调用的执行过程：当CPU执行到特殊的陷入指令时：</p>
+<ul>
+<li>中断/异常机制：硬件保护现场，通过查中断向量表把控制权转给系统调用总入口程序</li>
+<li>系统调用总入口程序</li>
+<li>执行系统调用例程</li>
+<li>恢复现场，返回用户程序</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/13/操作系统-运行环境与运行机制/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/10/13/操作系统-进程线程模型/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">操作系统-进程线程模型</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的基础用法/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.870Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的基础用法/">Linux的基础语法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><a class="page-number" href="/archives/2019/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2019/page/4/">4</a><a class="extend next" rel="next" href="/archives/2019/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +415,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
