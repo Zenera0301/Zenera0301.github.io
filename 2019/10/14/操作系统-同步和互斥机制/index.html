@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="操作系统-同步和互斥机制主要内容：  进程的并发执行 进程互斥 进程同步 信号量及PV操作 经典的IPC问题   进程的并发执行 并发是所有问题产生的基础 并发也是操作系统设计的基础  进程的特性： 并发：进程的执行是间断性的；进程的相对执行速度不可预测 共享：进程/线程之间 会共享某些资源，会有一定的制约性 不确定性：进程执行结果与其执行的相对速度有关，是不确定的  并发环境下进程间的制约关系，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-14T14:38:35.392Z">
+<meta property="og:updated_time" content="2019-10-14T14:40:11.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统-同步和互斥机制">
 <meta name="twitter:description" content="操作系统-同步和互斥机制主要内容：  进程的并发执行 进程互斥 进程同步 信号量及PV操作 经典的IPC问题   进程的并发执行 并发是所有问题产生的基础 并发也是操作系统设计的基础  进程的特性： 并发：进程的执行是间断性的；进程的相对执行速度不可预测 共享：进程/线程之间 会共享某些资源，会有一定的制约性 不确定性：进程执行结果与其执行的相对速度有关，是不确定的  并发环境下进程间的制约关系，">
@@ -302,45 +302,8 @@
 <p>在临界区后实施V(mutex）</p>
 </li>
 <li><p>用信号量解决生产者/消费者问题</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 100 <span class="comment">//缓冲区个数</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> semaphore;<span class="comment">//信号量是一种特殊的整形数据</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;<span class="comment">//互斥信号量：控制对临界区的访问 （保护buffer）</span></span><br><span class="line">semaphore empty = N;<span class="comment">//空缓冲区个数 （生产者不能往满的缓冲区放东西）</span></span><br><span class="line">semaphore full = <span class="number">0</span>;<span class="comment">//满缓冲区个数 （消费者不能从空的缓冲区取东西）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//生产者 </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        item = produce_item();<span class="comment">//生产者生产</span></span><br><span class="line">        </span><br><span class="line">        P(&amp;empty);</span><br><span class="line">        </span><br><span class="line">       	P(&amp;mutext);</span><br><span class="line">        insert_item(item);<span class="comment">//插入缓冲区</span></span><br><span class="line">        V(&amp;mutext);</span><br><span class="line">        </span><br><span class="line">        v(&amp;full);</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//消费者</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        </span><br><span class="line">        P(&amp;full);</span><br><span class="line">        </span><br><span class="line">        P(&amp;mutext);</span><br><span class="line">        item=remove_item();<span class="comment">//不为空时，就取走一个</span></span><br><span class="line">        V(&amp;mutext);</span><br><span class="line">        </span><br><span class="line">        V(&amp;empty);</span><br><span class="line">        </span><br><span class="line">        consume_item(item);<span class="comment">//消费者进行消费</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<pre><code>#define N 100 //缓冲区个数
-typedef int semaphore;//信号量是一种特殊的整形数据
-semaphore mutex = 1;//互斥信号量：控制对临界区的访问 （保护buffer）
-semaphore empty = N;//空缓冲区个数 （生产者不能往满的缓冲区放东西）
-semaphore full = 0;//满缓冲区个数 （消费者不能从空的缓冲区取东西）
-
-//生产者 
-void producer(void){
-    int item;
-    while(TRUE){
-        item = produce_item();//生产者生产
-
-        P(&amp;empty);
-
-           P(&amp;mutext);
-        insert_item(item);//插入缓冲区
-        V(&amp;mutext);
-
-        v(&amp;full);
-    }    
-}
-//消费者
-void consumer(void){
-    int item;
-    while(TRUE){
-
-        P(&amp;full);
-
-        P(&amp;mutext);
-        item=remove_item();//不为空时，就取走一个
-        V(&amp;mutext);
-
-        V(&amp;empty);
-
-        consume_item(item);//消费者进行消费
-    }
-}</code></pre><ol start="29">
 <li><p>两个P操作的顺序能否颠倒：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">消费者中的，两个P操作不能颠倒，可能出现死锁问题。</span><br><span class="line"></span><br><span class="line">两个V操作可以颠倒，因为v操作不会使得调用v操作的进程进入等待状态。</span><br><span class="line"></span><br><span class="line">不需要在临界区做的事情尽量不要往临界区放。</span><br></pre></td></tr></table></figure>
 </li>
