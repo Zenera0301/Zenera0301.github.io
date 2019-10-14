@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="操作系统-CPU调度主要内容：  CPU调度概念  设计调度算法时要考虑的要点  批处理系统的调度算法  交互式系统的调度算法  Windows操作系统的线程调度算法  其他    CPU调度：控制、协调进程对CPU的竞争；按一定的调度算法，从就绪序列里选一个进程，把CPU的使用权交给被选中的进程；如果没有就绪进程，系统会安排一个系统空闲进程或idle进程；  系统场景：N个进程就绪、等待上CPU">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-14T14:16:00.319Z">
+<meta property="og:updated_time" content="2019-10-14T14:22:35.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统-CPU调度">
 <meta name="twitter:description" content="操作系统-CPU调度主要内容：  CPU调度概念  设计调度算法时要考虑的要点  批处理系统的调度算法  交互式系统的调度算法  Windows操作系统的线程调度算法  其他    CPU调度：控制、协调进程对CPU的竞争；按一定的调度算法，从就绪序列里选一个进程，把CPU的使用权交给被选中的进程；如果没有就绪进程，系统会安排一个系统空闲进程或idle进程；  系统场景：N个进程就绪、等待上CPU">
@@ -349,36 +349,18 @@
 <li><p>Windows线程调度策略：</p>
 <p>主动切换</p>
 <p>抢占：当线程被抢占时，它被放回相应优先级的就绪队列的队首；处于实时优先级的线程被抢占时，时间配额被重置为一个完整的时间配额，再次上CPU运行的时候运行的是一个完整的时间配额；处于可变优先级的线程在被抢占时，时间配额不变，重新得到CPU后将运行剩余的时间配额。区别出两种不同类型的线程</p>
+<p>时间配额用完：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">线程a的优先级没有降低：如果队列中有其他就绪线程，选择下一个线程执行，a回到原来就绪队列末尾；如果队列中没有其他就绪线程，系统给线程a重新分配一个新的时间配额，让他继续运行；</span><br><span class="line"></span><br><span class="line">线程a的优先级降低了：Windows将选择一个更高优先级的线程去运行；</span><br></pre></td></tr></table></figure>
+
+<p>线程优先级提升与时间配额调整：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">提升线程的优先级</span><br><span class="line"></span><br><span class="line">给线程分配一个很大的时间配额</span><br></pre></td></tr></table></figure>
+
+<p>提升线程的优先级：（只针对可变优先级线程）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">I/O操作完成</span><br><span class="line"></span><br><span class="line">信号量或时间等待结束</span><br><span class="line"></span><br><span class="line">前台进程中的线程完成一个等待操作</span><br><span class="line"></span><br><span class="line">由于窗口活动而唤醒窗口线程</span><br><span class="line"></span><br><span class="line">线程处于就绪态超过了一定的时间还没有被调度运行（产生了饥饿现象）</span><br></pre></td></tr></table></figure>
+
+
+
 </li>
-</ol>
-<pre><code>时间配额用完：
-
-线程a的优先级没有降低：如果队列中有其他就绪线程，选择下一个线程执行，a回到原来就绪队列末尾；如果队列中没有其他就绪线程，系统给线程a重新分配一个新的时间配额，让他继续运行；
-
-线程a的优先级降低了：Windows将选择一个更高优先级的线程去运行；
-
-
-
-线程优先级提升与时间配额调整：
-
-提升线程的优先级
-
-给线程分配一个很大的时间配额
-
-
-
-提升线程的优先级：（只针对可变优先级线程）
-
-I/O操作完成
-
-信号量或时间等待结束
-
-前台进程中的线程完成一个等待操作
-
-由于窗口活动而唤醒窗口线程
-
-线程处于就绪态超过了一定的时间还没有被调度运行（产生了饥饿现象）</code></pre><ol start="36">
-<li></li>
 </ol>
 
       

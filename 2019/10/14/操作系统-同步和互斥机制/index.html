@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="操作系统-同步和互斥机制主要内容：  进程的并发执行 进程互斥 进程同步 信号量及PV操作 经典的IPC问题   进程的并发执行 并发是所有问题产生的基础 并发也是操作系统设计的基础  进程的特性： 并发：进程的执行是间断性的；进程的相对执行速度不可预测 共享：进程/线程之间 会共享某些资源，会有一定的制约性 不确定性：进程执行结果与其执行的相对速度有关，是不确定的  并发环境下进程间的制约关系，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-14T14:15:51.584Z">
+<meta property="og:updated_time" content="2019-10-14T14:21:56.088Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统-同步和互斥机制">
 <meta name="twitter:description" content="操作系统-同步和互斥机制主要内容：  进程的并发执行 进程互斥 进程同步 信号量及PV操作 经典的IPC问题   进程的并发执行 并发是所有问题产生的基础 并发也是操作系统设计的基础  进程的特性： 并发：进程的执行是间断性的；进程的相对执行速度不可预测 共享：进程/线程之间 会共享某些资源，会有一定的制约性 不确定性：进程执行结果与其执行的相对速度有关，是不确定的  并发环境下进程间的制约关系，">
@@ -207,23 +207,15 @@
 <li><p><strong>临界区</strong>（互斥区）：各个进程中对某个<strong>临界资源（共享变量）</strong>实施操作的程序片段</p>
 </li>
 <li><p>临界区（互斥区）使用原则：</p>
-<p>没有进程在临界区时，想进入临界区内的进程可以进入</p>
-<p>不允许两个进程同时处于其临界区中</p>
-<p><strong>临界区外运行的进程，不得阻塞其他进程进入临界区</strong>（防止：某个低优先级进程处在临界区内，同时某个高优先级进程需要进入临界区，此时等待低优先级释放临界区，但是在这个时候来了个特别耗时的中优先级的进程，如果没有这条规则，中优先级的进程先执行，低优先级的进程因为优先级低无法执行，高优先级的进程因为得不到释放的临界区也无法执行，中优先级的进程竟然比高优先级的进程更优先执行，所以不可以，因此有了这条规则）</p>
-<p>不得使进程无限期等待进入临界区，应在有限时间内满足进入请求</p>
-</li>
-<li><p>实现进程互斥的方案：软件方案：Dekker解法，Peterson解法；硬件方案：屏蔽中断，TSL（XCHG）指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">没有进程在临界区时，想进入临界区内的进程可以进入</span><br><span class="line"></span><br><span class="line">不允许两个进程同时处于其临界区中</span><br><span class="line"></span><br><span class="line">**临界区外运行的进程，不得阻塞其他进程进入临界区**（防止：某个低优先级进程处在临界区内，同时某个高优先级进程需要进入临界区，此时等待低优先级释放临界区，但是在这个时候来了个特别耗时的中优先级的进程，如果没有这条规则，中优先级的进程先执行，低优先级的进程因为优先级低无法执行，高优先级的进程因为得不到释放的临界区也无法执行，中优先级的进程竟然比高优先级的进程更优先执行，所以不可以，因此有了这条规则）</span><br><span class="line"></span><br><span class="line">不得使进程无限期等待进入临界区，应在有限时间内满足进入请求</span><br></pre></td></tr></table></figure>
+
+<p>实现进程互斥的方案：软件方案：Dekker解法，Peterson解法；硬件方案：屏蔽中断，TSL（XCHG）指令</p>
 </li>
 <li><p>软件解法1</p>
 <p>free：临界区空闲标志（true表示有进程在临界区，false表示无进程在临界区）</p>
 <p>初值：free为false</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="built_in">free</span>);<span class="built_in">free</span> = <span class="literal">true</span>;<span class="comment">//lock()设计成原语</span></span><br><span class="line">临界区</span><br><span class="line"><span class="built_in">free</span> = <span class="literal">false</span>;<span class="comment">//unlock()设计成原语</span></span><br></pre></td></tr></table></figure>
-
-
-
 </li>
-</ol>
-<ol start="11">
 <li><p>软件解法2：</p>
 <p>违反原则！</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="keyword">not</span> turn);<span class="comment">//turn=ture，让p进程进临界区；</span></span><br><span class="line">临界区</span><br><span class="line">turn = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
@@ -236,12 +228,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pturn = <span class="literal">true</span>；</span><br><span class="line"><span class="keyword">while</span>(qturn);<span class="comment">//p进程看看q想不想进临界区</span></span><br><span class="line">临界区</span><br><span class="line">pturn = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">qturn = ture;</span><br><span class="line"><span class="keyword">while</span>(pturn);<span class="comment">//q进程看看p想不想进临界区</span></span><br><span class="line">临界区</span><br><span class="line">qturn = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-
-
 </li>
-</ol>
-<ol start="13">
 <li><p>软件解法4——Dekker算法</p>
 <p>在算法3基础上，引入turn变量：turn=1：p进程可以进；turn=2：q进程可以进</p>
 <p>P进程：</p>
@@ -249,61 +236,29 @@
 
 <p>Q进程：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">qturn = <span class="literal">true</span>；</span><br><span class="line"><span class="keyword">while</span>(qturn)<span class="comment">//q进程看看p想不想进临界区</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (turn == <span class="number">1</span>)&#123;</span><br><span class="line">		qturn = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">while</span>(turn == <span class="number">1</span>);<span class="comment">//循环，在CPU上等，忙等待，用完时间片才下CPU</span></span><br><span class="line">		qturn = ture;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">临界区</span><br><span class="line">turn= <span class="number">1</span>;</span><br><span class="line">qturn = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-
-
 </li>
-</ol>
-<ol start="14">
 <li><p>软件解法5——Peterson算法</p>
 <p>解决了互斥访问的问题，而且克服了强制轮流法的缺点，可以完全正常地工作</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">enter_region(i);</span><br><span class="line">临界区</span><br><span class="line">leave_region(i);</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FALSE 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRUE 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 2 <span class="comment">//进程的个数</span></span></span><br><span class="line"><span class="keyword">int</span> turn; <span class="comment">//轮到谁？</span></span><br><span class="line"><span class="keyword">int</span> interested[N];<span class="comment">//兴趣数组初始值均为false</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">enter_region</span><span class="params">(<span class="keyword">int</span> process)</span></span>&#123;<span class="comment">//process=0或1,两个进程，process是进程号</span></span><br><span class="line">    <span class="keyword">int</span> other;<span class="comment">//另外一个进程的进程号</span></span><br><span class="line">    other = <span class="number">1</span>-process;</span><br><span class="line">    interested[process]=TRUE;<span class="comment">//表明本进程对临界区感兴趣</span></span><br><span class="line">    turn=process;<span class="comment">//设置标志位，谁想进临界区，谁给turn赋值，赋的值是自己的进程号</span></span><br><span class="line">    <span class="keyword">while</span>(turn==process &amp;&amp; interested[other]==TRUE);<span class="comment">//假设0号进程先请求，turn=0，1号进程后请求，1号进程会把之前的turn中的值覆盖掉，此时turn=1。针对0号进程，第一个条件不满足，于是跳出循环，执行临界区代码；而针对1号进程，两个条件都满足，于是一直循环。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">leave_region</span><span class="params">(<span class="keyword">int</span> process)</span></span>&#123;</span><br><span class="line">    interested[process] = FALSE;<span class="comment">//本进程已经离开临界区，表明本进程对临界区不再感兴趣</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 </li>
-</ol>
-<ol start="15">
 <li><p>硬件解法1——中断屏蔽方法</p>
 <p>“开关中断”指令：先执行“关中断”指令—-临界区操作—-再执行“关中断”指令（原语操作都是这么实现的）</p>
 <p>优缺点：简单高效；代价高，限制CPU并发能力（临界区大小）；不适用于多处理器；适用于操作系统本身，不适用于用户进程</p>
 </li>
 <li><p>硬件解法2——测试并加锁指令</p>
 <p>加锁：</p>
-<p>复制锁到寄存器，并将锁置1；</p>
-<p>判断寄存器内容是否是0？</p>
-<p>如果不是0，说明原来是上锁的，跳转到enter_region，重新做刚才的事情；busy waiting，直到锁被释放</p>
-<p>如果之前是0，那就返回调用者，进入了临界区</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">复制锁到寄存器，并将锁置1；</span><br><span class="line">    </span><br><span class="line">判断寄存器内容是否是0？</span><br><span class="line">    </span><br><span class="line">如果不是0，说明原来是上锁的，跳转到enter_region，重新做刚才的事情；busy waiting，直到锁被释放</span><br><span class="line">    </span><br><span class="line">如果之前是0，那就返回调用者，进入了临界区</span><br><span class="line">    </span><br><span class="line">读一个内存单元内容，到寄存器</span><br><span class="line">    </span><br><span class="line">把内存单元的内容写上某个值</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<pre><code>读一个内存单元内容，到寄存器
-
-把内存单元的内容写上某个值</code></pre><ol start="17">
 <li><p>硬件解法3——交换指令</p>
 <p>XCHG指令：Exchange</p>
+<p>加锁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">给寄存器中置1</span><br><span class="line">    </span><br><span class="line">交换寄存器与所变量的内容</span><br><span class="line">    </span><br><span class="line">判断寄存器内容是否为零？</span><br><span class="line">    </span><br><span class="line">不是零，跳转到enter_region</span><br><span class="line">    </span><br><span class="line">是零，返回调用者，进入了临界区</span><br></pre></td></tr></table></figure>
+
+<p>解锁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">在锁中置0</span><br><span class="line">    </span><br><span class="line">返回调用者</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<pre><code>加锁：
-
-给寄存器中置1
-
-交换寄存器与所变量的内容
-
-判断寄存器内容是否为零？
-
-不是零，跳转到enter_region
-
-是零，返回调用者，进入了临界区
-
-
-
-解锁：
-
-在锁中置0
-
-返回调用者</code></pre><ol start="18">
 <li><p>对比：</p>
 <p>软件方法：带来一定开销，需要编程技巧；</p>
 <p>硬件方法：通过开关中断的指令，测试并设置加锁的指令，交换的指令</p>
@@ -315,27 +270,12 @@
 <p>一个进程运行到某一点时，要求另一个伙伴进程为他提供消息，未获得消息之前，该进程进入阻塞态，获得消息后，被唤醒进入就绪态；</p>
 </li>
 <li><p>生产者/消费者进程（有界缓冲区问题）</p>
+<p>场景描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一个或多个生产者，生产了某种数据或信息，放置到缓冲区中；</span><br><span class="line">    </span><br><span class="line">消费者从缓冲区取走数据，每次取一项；</span><br><span class="line">    </span><br><span class="line">只能有一个生产者或消费者对缓冲区进行操作；</span><br></pre></td></tr></table></figure>
+
+<p>要解决的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当缓冲区满的时候，生产者不会继续向其中添加数据；</span><br><span class="line">    </span><br><span class="line">当缓冲区为空时，消费者不会从中移走数据。</span><br><span class="line">    </span><br><span class="line">避免忙等待：睡眠 （让出CPU，自己去睡眠）与 唤醒（另外一个进程做完了响应的工作后，把刚才进入睡眠的进程唤醒）（原语）</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<pre><code>场景描述：
-
-一个或多个生产者，生产了某种数据或信息，放置到缓冲区中；
-
-消费者从缓冲区取走数据，每次取一项；
-
-只能有一个生产者或消费者对缓冲区进行操作；
-
-
-
-要解决的问题：
-
-当缓冲区满的时候，生产者不会继续向其中添加数据；
-
-当缓冲区为空时，消费者不会从中移走数据。
-
-
-
-避免忙等待：睡眠 （让出CPU，自己去睡眠）与 唤醒（另外一个进程做完了响应的工作后，把刚才进入睡眠的进程唤醒）（原语）</code></pre><ol start="22">
 <li><p>生产者/消费者问题：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 100</span></span><br><span class="line"><span class="keyword">int</span> count=<span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        item = produce_item();<span class="comment">//生产者生产</span></span><br><span class="line">        <span class="keyword">if</span>(count==N) sleep();<span class="comment">//如果缓冲区满了，就不能再往里面送了，生产者睡眠</span></span><br><span class="line">        insert_item(item);<span class="comment">//插入缓冲区</span></span><br><span class="line">        count=count+<span class="number">1</span>;<span class="comment">//更新缓冲区中计数</span></span><br><span class="line">        <span class="keyword">if</span>(count==<span class="number">1</span>)&#123;<span class="comment">//现在有数据了</span></span><br><span class="line">            wakeup(consumer);<span class="comment">//唤醒消费者</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        <span class="keyword">if</span>(count==<span class="number">0</span>) sleep();<span class="comment">//如果buffer为空，就睡眠</span></span><br><span class="line">        item=remove_item();<span class="comment">//不为空时，就取走一个</span></span><br><span class="line">        count=count<span class="number">-1</span>;<span class="comment">//更新缓冲区数据</span></span><br><span class="line">        <span class="keyword">if</span>(count==N<span class="number">-1</span>)&#123;<span class="comment">//如果已经不为满了</span></span><br><span class="line">            wakeup(producer);<span class="comment">//就唤醒消费者</span></span><br><span class="line">        &#125;</span><br><span class="line">        consume_item(item);<span class="comment">//消费者进行消费</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -370,59 +310,36 @@
 <p>在临界区后实施V(mutex）</p>
 </li>
 <li><p>用信号量解决生产者/消费者问题</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 100 <span class="comment">//缓冲区个数</span></span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="keyword">int</span> semaphore;<span class="comment">//信号量是一种特殊的整形数据</span></span><br><span class="line">    semaphore mutex = <span class="number">1</span>;<span class="comment">//互斥信号量：控制对临界区的访问 （保护buffer）</span></span><br><span class="line">    semaphore empty = N;<span class="comment">//空缓冲区个数 （生产者不能往满的缓冲区放东西）</span></span><br><span class="line">    semaphore full = <span class="number">0</span>;<span class="comment">//满缓冲区个数 （消费者不能从空的缓冲区取东西）</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//生产者 </span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> item;</span><br><span class="line">        <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">            item = produce_item();<span class="comment">//生产者生产</span></span><br><span class="line">            </span><br><span class="line">            P(&amp;empty);</span><br><span class="line">            </span><br><span class="line">           	P(&amp;mutext);</span><br><span class="line">            insert_item(item);<span class="comment">//插入缓冲区</span></span><br><span class="line">            V(&amp;mutext);</span><br><span class="line">            </span><br><span class="line">            v(&amp;full);</span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//消费者</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> item;</span><br><span class="line">        <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">            </span><br><span class="line">            P(&amp;full);</span><br><span class="line">            </span><br><span class="line">            P(&amp;mutext);</span><br><span class="line">            item=remove_item();<span class="comment">//不为空时，就取走一个</span></span><br><span class="line">            V(&amp;mutext);</span><br><span class="line">            </span><br><span class="line">            V(&amp;empty);</span><br><span class="line">            </span><br><span class="line">            consume_item(item);<span class="comment">//消费者进行消费</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
 </li>
 </ol>
-<pre><code><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 100 <span class="comment">//缓冲区个数</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> semaphore;<span class="comment">//信号量是一种特殊的整形数据</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;<span class="comment">//互斥信号量：控制对临界区的访问 （保护buffer）</span></span><br><span class="line">semaphore empty = N;<span class="comment">//空缓冲区个数 （生产者不能往满的缓冲区放东西）</span></span><br><span class="line">semaphore full = <span class="number">0</span>;<span class="comment">//满缓冲区个数 （消费者不能从空的缓冲区取东西）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//生产者 </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        item = produce_item();<span class="comment">//生产者生产</span></span><br><span class="line">        </span><br><span class="line">        P(&amp;empty);</span><br><span class="line">        </span><br><span class="line">       	P(&amp;mutext);</span><br><span class="line">        insert_item(item);<span class="comment">//插入缓冲区</span></span><br><span class="line">        V(&amp;mutext);</span><br><span class="line">        </span><br><span class="line">        v(&amp;full);</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//消费者</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> item;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        </span><br><span class="line">        P(&amp;full);</span><br><span class="line">        </span><br><span class="line">        P(&amp;mutext);</span><br><span class="line">        item=remove_item();<span class="comment">//不为空时，就取走一个</span></span><br><span class="line">        V(&amp;mutext);</span><br><span class="line">        </span><br><span class="line">        V(&amp;empty);</span><br><span class="line">        </span><br><span class="line">        consume_item(item);<span class="comment">//消费者进行消费</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></code></pre><ol start="29">
+<ol start="29">
 <li><p>两个P操作的顺序能否颠倒：</p>
 <p>消费者中的，两个P操作不能颠倒，可能出现死锁问题。</p>
 <p>两个V操作可以颠倒，因为v操作不会使得调用v操作的进程进入等待状态。</p>
 <p>不需要在临界区做的事情尽量不要往临界区放。</p>
 </li>
 <li><p>用 信号量 解决 读者/写者 问题</p>
+<p>多个进程共享一个数据区，这些进程分为两组：</p>
+<p>读者进程：只读数据区中的数据</p>
+<p>写者进程：只往数据区写数据</p>
+<p>要求满足条件：</p>
+<p>允许多个读者同时执行读操作</p>
+<p>不允许多个写者同时操作</p>
+<p>不允许读者、写者同时操作</p>
 </li>
-</ol>
-<pre><code>多个进程共享一个数据区，这些进程分为两组：
+<li><p>第一类读者写者问题（本质是互斥问题）：读者优先：</p>
+<p>如果读者执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">无其他读者、写者，该读者可以读</span><br><span class="line">    </span><br><span class="line">若已有写者等待，但有其他读者正在读，则该读者也可以读</span><br><span class="line">    </span><br><span class="line">如果写者正在写，该读者必须等</span><br></pre></td></tr></table></figure>
 
-读者进程：只读数据区中的数据
-
-写者进程：只往数据区写数据
-
-
-
-要求满足条件：
-
-允许多个读者同时执行读操作
-
-不允许多个写者同时操作
-
-不允许读者、写者同时操作</code></pre><ol start="31">
-<li>第一类读者写者问题（本质是互斥问题）：读者优先：</li>
-</ol>
-<pre><code>如果读者执行：
-
-无其他读者、写者，该读者可以读
-
-若已有写者等待，但有其他读者正在读，则该读者也可以读
-
-如果写者正在写，该读者必须等
-
-
-
-如果写者执行：
-
-无其他读者、写者，该写者可以写
-
-若有读者正在读，该写者等待
-
-若有其他写者正在写，该写者等待</code></pre><ol start="32">
+<p>如果写者执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">无其他读者、写者，该写者可以写</span><br><span class="line">    </span><br><span class="line">若有读者正在读，该写者等待</span><br><span class="line">    </span><br><span class="line">若有其他写者正在写，该写者等待</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>读写操作都是保护区：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reader</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        ...</span><br><span class="line">        P(mutex);</span><br><span class="line">        rc = rc+<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(rc == <span class="number">1</span>) P(w);<span class="comment">//不需要每个读者都做，第一个读者做，后续的读者都不需要</span></span><br><span class="line">        V(mutex);</span><br><span class="line">        </span><br><span class="line">        读操作</span><br><span class="line">            </span><br><span class="line">        P(mutex);</span><br><span class="line">        rc = rc<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">if</span>(rc == <span class="number">0</span>) V(w);<span class="comment">//不需要每个读者都做，最后一个读者做，前面的读者都不需要</span></span><br><span class="line">        V(mutex);</span><br><span class="line">        </span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">writer</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(TRUE)&#123;</span><br><span class="line">        ...</span><br><span class="line">        P(w);</span><br><span class="line">        写操作</span><br><span class="line">        V(w);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 </li>
-</ol>
-<ol start="33">
 <li><p>Linux提供的读写锁</p>
 <p>如果每个执行实体对临界区的访问，或者是读或者是写共享变量，但是他们都不会既读又写时，读写锁是最好的选择。实例：Linux的IPX路由代码中使用了读写锁，用ipx_routes_lock的读写锁保护IPX路由表的并发访问。</p>
 </li>
@@ -431,11 +348,11 @@
 <p>竞争条件、临界区</p>
 <p>进程同步、进程互斥</p>
 <p>自旋锁（忙等待）</p>
+<p>信号量、PV操作</p>
+<p>经典问题模型及解决方案：生产者-消费者问题、读者-写者问题</p>
 </li>
 </ol>
-<pre><code>信号量、PV操作
 
-经典问题模型及解决方案：生产者-消费者问题、读者-写者问题</code></pre>
       
 
       
