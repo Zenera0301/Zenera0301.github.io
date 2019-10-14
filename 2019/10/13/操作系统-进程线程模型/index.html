@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DinDin&#39;s Blog">
 <meta property="og:description" content="操作系统-进程线程模型 多道程序设计  并发环境与并发程序  进程的定义  进程控制块PCB（进程描述符，进程属性），一个专门的数据结构（用于管理控制进程），记录进程的各种属性，描述进程的动态变化过程，PCB是系统感知进程存在的唯一标志，进程与PCB是一一对应的，所有进程的PCB集合是进程表。包括进程描述信息、进程控制信息、CPU现场信息。  进程的三种基本状态：运行态、就绪态、等待态； 进程的其">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-14T14:16:05.296Z">
+<meta property="og:updated_time" content="2019-10-14T14:26:59.514Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统-进程线程模型">
 <meta name="twitter:description" content="操作系统-进程线程模型 多道程序设计  并发环境与并发程序  进程的定义  进程控制块PCB（进程描述符，进程属性），一个专门的数据结构（用于管理控制进程），记录进程的各种属性，描述进程的动态变化过程，PCB是系统感知进程存在的唯一标志，进程与PCB是一一对应的，所有进程的PCB集合是进程表。包括进程描述信息、进程控制信息、CPU现场信息。  进程的三种基本状态：运行态、就绪态、等待态； 进程的其">
@@ -265,12 +265,7 @@
 <li><p>线程的基本概念：进程的两个基本属性：资源的拥有者，CPU的调度单位；有了线程后，进程还是资源的拥有者，线程继承了CPU调度单位这一属性；故，线程是进程中 一个运行实体，是CPU的调度单位，有时将线程称为<strong>轻量级进程</strong>。在同一个进程中增加了多个执行序列（线程）。</p>
 </li>
 <li><p>线程的属性：</p>
-<p>有标识符ID</p>
-<p>有状态及状态转换，需要提供一些操作</p>
-<p>不运行时需要保存的上下文，有上下文环境：程序计数器等寄存器</p>
-<p>有自己的<strong>栈和栈指针</strong></p>
-<p><strong>共享所在进程的地址空间和其他资源</strong></p>
-<p>可以创建、撤销另一个线程。程序开始是以一个单线程进程方式运行的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">有标识符ID</span><br><span class="line"></span><br><span class="line">有状态及状态转换，需要提供一些操作</span><br><span class="line"></span><br><span class="line">不运行时需要保存的上下文，有上下文环境：程序计数器等寄存器</span><br><span class="line"></span><br><span class="line">有自己的**栈和栈指针**</span><br><span class="line"></span><br><span class="line">**共享所在进程的地址空间和其他资源**</span><br><span class="line"></span><br><span class="line">可以创建、撤销另一个线程。程序开始是以一个单线程进程方式运行的</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>线程机制的实现方式</p>
 <p>用户级线程</p>
