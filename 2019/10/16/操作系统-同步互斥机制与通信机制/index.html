@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | DinDin&#39;s Blog</title>
+  <title>操作系统-同步互斥机制与通信机制 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/page/3/index.html">
+  <meta name="description" content="管程 monitor 进程间通信 IPC 典型操作系统的IPC机制   管程，为什么引入了信号量和PV操作之后，又出现管程？ 信号量机制的不足：程序编写难，易出错（pv操作顺序不对，导致死锁） 解决：在程序设计语言中引入管程成分–高级同步机制  管程  是一个特殊模块 有一个名字 由关于共享资源的数据结构及在其上操作的一组过程组成   进程与管程 进程只能通过调用管程中的过程来间接访问管程中的数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-同步互斥机制与通信机制">
+<meta property="og:url" content="http://yoursite.com/2019/10/16/操作系统-同步互斥机制与通信机制/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="管程 monitor 进程间通信 IPC 典型操作系统的IPC机制   管程，为什么引入了信号量和PV操作之后，又出现管程？ 信号量机制的不足：程序编写难，易出错（pv操作顺序不对，导致死锁） 解决：在程序设计语言中引入管程成分–高级同步机制  管程  是一个特殊模块 有一个名字 由关于共享资源的数据结构及在其上操作的一组过程组成   进程与管程 进程只能通过调用管程中的过程来间接访问管程中的数">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-16T14:27:27.550Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="操作系统-同步互斥机制与通信机制">
+<meta name="twitter:description" content="管程 monitor 进程间通信 IPC 典型操作系统的IPC机制   管程，为什么引入了信号量和PV操作之后，又出现管程？ 信号量机制的不足：程序编写难，易出错（pv操作顺序不对，导致死锁） 解决：在程序设计语言中引入管程成分–高级同步机制  管程  是一个特殊模块 有一个名字 由关于共享资源的数据结构及在其上操作的一组过程组成   进程与管程 进程只能通过调用管程中的过程来间接访问管程中的数">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,295 +158,378 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-操作系统-同步互斥机制与通信机制" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      操作系统-同步互斥机制与通信机制
+    </h1>
+  
+
+        
+        <a href="/2019/10/16/操作系统-同步互斥机制与通信机制/" class="archive-article-date">
+  	<time datetime="2019-10-16T14:26:51.238Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-16</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>管程 monitor</li>
+<li>进程间通信 IPC</li>
+<li>典型操作系统的IPC机制</li>
+</ul>
+<ol>
+<li><p>管程，为什么引入了信号量和PV操作之后，又出现管程？</p>
+<p>信号量机制的不足：程序编写难，易出错（pv操作顺序不对，导致死锁）</p>
+<p>解决：在程序设计语言中引入管程成分–高级同步机制</p>
+</li>
+<li><p>管程</p>
+<blockquote>
+<p>是一个特殊模块</p>
+<p>有一个名字</p>
+<p>由关于<strong>共享资源的数据结构</strong>及在其上操作的<strong>一组过程</strong>组成</p>
+</blockquote>
+</li>
+<li><p>进程与管程</p>
+<p><strong>进程</strong>只能通过<strong>调用管程中的过程</strong>来间接访问<strong>管程中的数据结构</strong></p>
+</li>
+<li><p>管程要保证什么？</p>
+<blockquote>
+<p>作为一种同步机制，管程满足两个条件：</p>
+<p>互斥：管程是互斥进入的，有一个进程调用管程中的过程，就不允许其他过程调用，保证管程中数据结构的数据完整性。管程的互斥性是由编译器负责保证的。</p>
+<p>同步：管程中<strong>设置条件变量，及等待/唤醒操作</strong>，以解决同步问题。可以让一个进程或线程在条件变量上等待（此时，应先释放管程的控制权），也可以通过发送信号将等待在条件变量上的进程或线程唤醒。</p>
+</blockquote>
+</li>
+<li><p>应用管程的时候遇到的问题</p>
+<blockquote>
+<p>场景：</p>
+<p>当一个进入管程的进程执行等待操作时，它应当释放管程的互斥权</p>
+<p>当后面的进入管程的进程执行唤醒操作时（例如P唤醒Q），管程中便存在两个同事处于活动状态的进程。</p>
+<p>3种解决方法：</p>
+<p>1 P等待Q执行 (Hoare)</p>
+<p>2 Q等待P继续执行(MESA)(不在一个地方等待，本来Q是等在条件变量上)</p>
+<p>3 规定唤醒操作作为管程中最后一个可执行的操作 （Hansen）</p>
+</blockquote>
+</li>
+<li><p>Hoare管程：</p>
+<blockquote>
+<p>因为管程是互斥进入的，所以当一个进程试图进入一个已被占用的管程时，应当在管程的入口处等待</p>
+<p>为此，管程入口处设置了一个进程等待队列，称作入口等待队列</p>
+<p>如果进程P唤醒了Q，则P等待Q执行；如果进程Q执行中唤醒了R，Q等待R执行；…，因此在管程内部可能会出现多个等待进程</p>
+<p>为此，在管程内需要设置一个进程等待队列，称为<strong>紧急等待队列</strong>，紧急等待队列的优先级高于入口等待队列的优先级</p>
+</blockquote>
+</li>
+<li><p>Hoare管程——条件变量的实现：</p>
+<blockquote>
+<p>条件变量–在管程内部说明和使用的一种特殊类型的变量</p>
+<p>var c : condition;声明了一个条件变量c</p>
+<p>对于条件变量c，可以执行wait和signal操作</p>
+<p>wait(c)：</p>
+<ul>
+<li>如果<strong>紧急等待队列</strong>非空，则唤醒紧急等待队列的第一个等待者；</li>
+<li>否则释放管程的互斥权，执行此操作的进程进入c链末尾</li>
+</ul>
+<p>signal(c)：</p>
+<ul>
+<li>如果c链为空，则相当于空操作，执行此操作的进程继续执行</li>
+<li>否则唤醒第一个等待者，执行此操作的进程进入<strong>紧急等待队列</strong>的末尾</li>
+</ul>
+</blockquote>
+</li>
+<li><p>用管程解决生产者消费者问题:</p>
+<p>c和c++没有支持管程，但java中有类似的机制</p>
+</li>
+<li><p>Mesa管程</p>
+<blockquote>
+<p>针对Hoare管程的缺点，两次额外的进程切换，而提出的，效率略高于Hoare管程</p>
+<p>解决办法：</p>
+<p><strong>signal——notify</strong></p>
+<p>notify——当一个正在管程中的进程执行notify(x)时，它使得x条件队列得到通知，发信号的进程继续执行</p>
+<p>使用notify要注意的问题：</p>
+<ul>
+<li><p>notify的结果：位于条件队列头的进程在将来合适的时候且当处理器可用时恢复执行</p>
+</li>
+<li><p>由于不能保证在它之前没有其他进程进入管程，因而这个进程<strong>必须重新检查条件</strong></p>
+<p>用while循环取代if语句</p>
+</li>
+<li><p>导致对条件变量至少多一次额外的检测（但不再有额外的进程切换），并且对等待进程在notify之后何时运行没有任何限制</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>改进notify</p>
+<blockquote>
+<ul>
+<li><p>给每个条件原语关联一个<strong>监视计时器</strong>，不论是否被通知，一个等待时间超时的进程将被设为就绪态</p>
+<p>当该进程被调度执行时，会再次检查相关条件，如果条件满足就继续运行</p>
+</li>
+<li><p>超时可以防止如下情况的发生：当某些进程在产生了相关条件的信号之前就失败了时，等待该条件的进程就会被无限制推迟执行而处于饥饿状态</p>
+</li>
+<li><p><strong>broadcast：使所有在该条件上等待的进程都被释放，并进入就绪队列</strong>：当一个进程不知道有多少进程将被激活时，这种方式是非常方便的；当一个进程难以准确判定将激活哪个进程时，也可使用广播</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Hoare管程和Mesa管程比较</p>
+<blockquote>
+<ul>
+<li>mesa管程优于Hoare管程支出在于Mesa管程错误少</li>
+<li>在mesa管程中，由于每个过程在<strong>收到信号后</strong>，<strong>都重新检查管程变量</strong>，并且由于使用了while结构，一个进程不正确的broadcast广播或发信号notify，不会导致收到信号的程序出错；收到信号的程序检查相关的变量，如果期望的条件没有满足，他会重新继续等待</li>
+</ul>
+</blockquote>
+</li>
+<li><p>管程</p>
+<blockquote>
+<p>管程：是一个抽象数据类型，有一个明确定义的操作集合，通过它且只有通过它才能曹总该数据类型的实例</p>
+<p>实现管程结构必须保证：</p>
+<ul>
+<li>只能通过管程的某个过程才能访问资源</li>
+<li>管程是互斥使用的，某个时刻只能有一个进程或线程调用管程中的过程</li>
+</ul>
+<p>条件变量：为提供进程与其他进程通信或同步而引入 wait/signal 或 wait/notify 或 wait/broadcast</p>
+</blockquote>
+</li>
+<li><p>线程库pthread中的同步机制</p>
+<p>互斥量，通过对互斥量进行操作，保护临界区</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pthread_mutex_init  新建一个锁（互斥量）</span><br><span class="line">Pthread_mutex_destroy 销毁一个已存在的锁</span><br><span class="line">Pthread_mutex_lock 加锁</span><br><span class="line">Pthread_mutex_trylock 试图加锁，加锁没加上就出错返回，转去等待</span><br><span class="line">Pthread_mutex_unlock 解锁</span><br></pre></td></tr></table></figure>
+
+<p>解决同步问题，用的是条件变量，以及在条件变量上的操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pthread_cond_init 创建一个条件变量</span><br><span class="line">Pthread_cond_destroy 销毁一个条件变量</span><br><span class="line">Pthread_cond_wait 等待信号（block wait <span class="keyword">for</span> a signal）</span><br><span class="line">Pthread_cond_signal 向另一个线程发信号并唤醒它（signal another thread <span class="keyword">and</span> wake it up）</span><br><span class="line">Pthread_cond_broadcast 向多个线程发信号并唤醒它们（signal multiple threads <span class="keyword">and</span> wake all of them）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进程间通信机制</p>
+<blockquote>
+<p>为什么需要通信机制？</p>
+<ul>
+<li><p>信号量和管程的不足：只能传递简单信息，不能传送大信息</p>
+</li>
+<li><p>管程不适用于多处理器情况</p>
+</li>
+<li><p>需要引入通信机制：</p>
+<p>消息传递：send和receive原语；适用于：分布式系统、基于共享内存的多处理机系统、单处理机系统；可以解决进程间的<strong>同步问题、互斥问题、通信问题</strong></p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>基本通信方式</p>
+<blockquote>
+<ul>
+<li>消息传递</li>
+<li>共享内存</li>
+<li>管道</li>
+<li>套接字（适合网络、分布式系统）</li>
+<li>远程过程调用（适合网络、分布式系统）</li>
+</ul>
+</blockquote>
+</li>
+<li><p>消息传递</p>
+<blockquote>
+<p>发送进程S：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; send(destination,message);</span><br><span class="line">&gt; message:text,size</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>接收进程R：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; receive(source,message);</span><br><span class="line">&gt; message:text,size</span><br><span class="line">&gt; 接收进程的PCB中消息队列指针</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>操作系统空间：</p>
+<p>有一组消息缓冲区，每个消息缓冲区buffer结构：消息头（消息类型、接收进程ID、发送进程ID、消息长度、控制信息）；消息体（消息内容）</p>
+<p>发送原语：发送进程陷入操作系统，由操作系统完成发送的过程。发送进程S<strong>陷入内核</strong>，操作系统把发送进程准备好的消息，拷贝到某一个缓冲区buffer里头（<strong>复制消息</strong>），就是找个空的缓冲区把消息内容拷贝过去；然后把消息挂接到接收进程R的消息队列的末尾（<strong>消息入队</strong>）。到了这一步，发送进程已经完成发送工作，可以接着做其他事情了。什么时候接收进程上CPU了，执行到receive接收原语，陷入操作系统（<strong>陷入内核</strong>），有操作系统完成相应的工作，操作系统帮助他把消息复制到接收进程的地址空间（<strong>复制消息</strong>）。完成一个发送和接收的过程。</p>
+</blockquote>
+</li>
+<li><p>用PV操作实现send原语</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">send(destination,message)&#123;</span><br><span class="line">    根据destination找接进程；</span><br><span class="line">    如果未能找到，出错返回；</span><br><span class="line">    申请空缓冲区P(buf-empty);</span><br><span class="line">    </span><br><span class="line">    P(mutex1);</span><br><span class="line">    取空缓冲区</span><br><span class="line">    V(mutex1);</span><br><span class="line">    </span><br><span class="line">    把消息从message处复制到空缓冲区；</span><br><span class="line">        </span><br><span class="line">	P(mutex2);</span><br><span class="line">    把消息缓冲区挂接到接收进程的消息队列；</span><br><span class="line">    V(mutex2);</span><br><span class="line">    </span><br><span class="line">    V(buf-full);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">信号量：</span><br><span class="line">buf-empty初值为N</span><br><span class="line">buf-full初值为<span class="number">0</span></span><br><span class="line">mutex1初值为<span class="number">1</span></span><br><span class="line">mutex2初值为<span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>共享内存</p>
+<blockquote>
+<p>读者写者解决互斥问题</p>
+<p>同一块物理地址中的一块内存，映射到两个进程空间，在进程1和进程2中分别为A和B，那么进程1对于共享内存的读写，其实就是对A的读写，同样，进程2对于共享内存的读写，其实就是对B的读写。</p>
+<p>进程1读A的同时，进程2可以读B；可同时读，但不可同时写。</p>
+</blockquote>
+</li>
+<li><p>管道通信方式pipe</p>
+<blockquote>
+<p>利用一个缓冲传输介质——内存或文件，连接两个相互通信的进程</p>
+<p>（一个或多个）发送进程—-往管道尾巴里写—-接收进程从管道头上读</p>
+<ul>
+<li>字符流方式写入读出</li>
+<li>先进先出顺序</li>
+<li>管道通信机制必须提供的协调能力（互斥（读写不能同时）、同步、判断对方进程是否存在）</li>
+</ul>
+</blockquote>
+</li>
+<li><p>典型操作系统的IPC机制</p>
+<blockquote>
+<p>Unix:</p>
+<p>Linux: </p>
+<p>用户能调用：管道、消息队列、共享内存、信号量、信号、套接字</p>
+<p>内核同步机制：原子操作、自旋锁、读写锁、信号量、读写信号量、互斥体、完成变量、顺序锁、屏障…</p>
+<p>Windows:</p>
+</blockquote>
+</li>
+<li><p>原子操作</p>
+<p>不可分割，执行完成前不会被其他任务或事件中断</p>
+<p>常用语实现资源的引用计数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">atomic_t</span> v = atomic_init(<span class="number">0</span>);</span><br><span class="line">atomic_set(&amp;v,<span class="number">4</span>);</span><br><span class="line">atomic_add(<span class="number">2</span>,&amp;v);</span><br><span class="line">atomic_inc(&amp;v);</span><br><span class="line">printk(<span class="string">"%d\n"</span>,atomic_read(&amp;v));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>屏障（栅栏、关卡）</p>
+<blockquote>
+<p>一种同步机制</p>
+<p>用于对一组线程进行协调</p>
+<p>应用场景：一组线程协同完成一项任务，需要所有线程都到达一个汇合点后再一起向前推进。</p>
+</blockquote>
+</li>
+<li><p>重点内容</p>
+<blockquote>
+<p>管程</p>
+<ul>
+<li>如何保证互斥</li>
+<li>如何保证同步——条件变量和 wait/signal</li>
+<li>Hoare管程</li>
+<li>Mesa管程</li>
+</ul>
+<p>进程间通信</p>
+<ul>
+<li>消息传递、共享内存、管道</li>
+</ul>
+<p>Pthread中的同步机制</p>
+<p>Linux的IPC机制</p>
+<p>重点概念：管程、Hoare管程、Mesa管程、条件变量、wait/signal、Pthread中的互斥锁与条件变量、共享内存、消息传递、管道、Linux中的原子操作、屏障、读写锁</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Socket/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.599Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Socket/">Linux网络编程-socket</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/16/操作系统-同步互斥机制与通信机制/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Select/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.596Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/10/14/操作系统-同步和互斥机制/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">操作系统-同步和互斥机制</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Select/">Linux网络编程-select</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/29/Linux网络编程-Poll/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/29/Linux网络编程-Poll/">Linux网络编程-poll</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/内存分区/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:13:25.956Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/内存分区/">内存分区</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/socket通信基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:11:27.671Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/socket通信基础/">Socket通信</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础练习/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础练习/">MySQL基础练习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL基础/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.829Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL基础/">MySQL基础</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/MySQL进阶/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:09:32.791Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/MySQL进阶/">MySQL进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -469,8 +553,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

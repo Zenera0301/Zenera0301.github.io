@@ -159,6 +159,292 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-操作系统-同步互斥机制与通信机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/16/操作系统-同步互斥机制与通信机制/">操作系统-同步互斥机制与通信机制</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/16/操作系统-同步互斥机制与通信机制/" class="archive-article-date">
+  	<time datetime="2019-10-16T14:26:51.238Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>管程 monitor</li>
+<li>进程间通信 IPC</li>
+<li>典型操作系统的IPC机制</li>
+</ul>
+<ol>
+<li><p>管程，为什么引入了信号量和PV操作之后，又出现管程？</p>
+<p>信号量机制的不足：程序编写难，易出错（pv操作顺序不对，导致死锁）</p>
+<p>解决：在程序设计语言中引入管程成分–高级同步机制</p>
+</li>
+<li><p>管程</p>
+<blockquote>
+<p>是一个特殊模块</p>
+<p>有一个名字</p>
+<p>由关于<strong>共享资源的数据结构</strong>及在其上操作的<strong>一组过程</strong>组成</p>
+</blockquote>
+</li>
+<li><p>进程与管程</p>
+<p><strong>进程</strong>只能通过<strong>调用管程中的过程</strong>来间接访问<strong>管程中的数据结构</strong></p>
+</li>
+<li><p>管程要保证什么？</p>
+<blockquote>
+<p>作为一种同步机制，管程满足两个条件：</p>
+<p>互斥：管程是互斥进入的，有一个进程调用管程中的过程，就不允许其他过程调用，保证管程中数据结构的数据完整性。管程的互斥性是由编译器负责保证的。</p>
+<p>同步：管程中<strong>设置条件变量，及等待/唤醒操作</strong>，以解决同步问题。可以让一个进程或线程在条件变量上等待（此时，应先释放管程的控制权），也可以通过发送信号将等待在条件变量上的进程或线程唤醒。</p>
+</blockquote>
+</li>
+<li><p>应用管程的时候遇到的问题</p>
+<blockquote>
+<p>场景：</p>
+<p>当一个进入管程的进程执行等待操作时，它应当释放管程的互斥权</p>
+<p>当后面的进入管程的进程执行唤醒操作时（例如P唤醒Q），管程中便存在两个同事处于活动状态的进程。</p>
+<p>3种解决方法：</p>
+<p>1 P等待Q执行 (Hoare)</p>
+<p>2 Q等待P继续执行(MESA)(不在一个地方等待，本来Q是等在条件变量上)</p>
+<p>3 规定唤醒操作作为管程中最后一个可执行的操作 （Hansen）</p>
+</blockquote>
+</li>
+<li><p>Hoare管程：</p>
+<blockquote>
+<p>因为管程是互斥进入的，所以当一个进程试图进入一个已被占用的管程时，应当在管程的入口处等待</p>
+<p>为此，管程入口处设置了一个进程等待队列，称作入口等待队列</p>
+<p>如果进程P唤醒了Q，则P等待Q执行；如果进程Q执行中唤醒了R，Q等待R执行；…，因此在管程内部可能会出现多个等待进程</p>
+<p>为此，在管程内需要设置一个进程等待队列，称为<strong>紧急等待队列</strong>，紧急等待队列的优先级高于入口等待队列的优先级</p>
+</blockquote>
+</li>
+<li><p>Hoare管程——条件变量的实现：</p>
+<blockquote>
+<p>条件变量–在管程内部说明和使用的一种特殊类型的变量</p>
+<p>var c : condition;声明了一个条件变量c</p>
+<p>对于条件变量c，可以执行wait和signal操作</p>
+<p>wait(c)：</p>
+<ul>
+<li>如果<strong>紧急等待队列</strong>非空，则唤醒紧急等待队列的第一个等待者；</li>
+<li>否则释放管程的互斥权，执行此操作的进程进入c链末尾</li>
+</ul>
+<p>signal(c)：</p>
+<ul>
+<li>如果c链为空，则相当于空操作，执行此操作的进程继续执行</li>
+<li>否则唤醒第一个等待者，执行此操作的进程进入<strong>紧急等待队列</strong>的末尾</li>
+</ul>
+</blockquote>
+</li>
+<li><p>用管程解决生产者消费者问题:</p>
+<p>c和c++没有支持管程，但java中有类似的机制</p>
+</li>
+<li><p>Mesa管程</p>
+<blockquote>
+<p>针对Hoare管程的缺点，两次额外的进程切换，而提出的，效率略高于Hoare管程</p>
+<p>解决办法：</p>
+<p><strong>signal——notify</strong></p>
+<p>notify——当一个正在管程中的进程执行notify(x)时，它使得x条件队列得到通知，发信号的进程继续执行</p>
+<p>使用notify要注意的问题：</p>
+<ul>
+<li><p>notify的结果：位于条件队列头的进程在将来合适的时候且当处理器可用时恢复执行</p>
+</li>
+<li><p>由于不能保证在它之前没有其他进程进入管程，因而这个进程<strong>必须重新检查条件</strong></p>
+<p>用while循环取代if语句</p>
+</li>
+<li><p>导致对条件变量至少多一次额外的检测（但不再有额外的进程切换），并且对等待进程在notify之后何时运行没有任何限制</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>改进notify</p>
+<blockquote>
+<ul>
+<li><p>给每个条件原语关联一个<strong>监视计时器</strong>，不论是否被通知，一个等待时间超时的进程将被设为就绪态</p>
+<p>当该进程被调度执行时，会再次检查相关条件，如果条件满足就继续运行</p>
+</li>
+<li><p>超时可以防止如下情况的发生：当某些进程在产生了相关条件的信号之前就失败了时，等待该条件的进程就会被无限制推迟执行而处于饥饿状态</p>
+</li>
+<li><p><strong>broadcast：使所有在该条件上等待的进程都被释放，并进入就绪队列</strong>：当一个进程不知道有多少进程将被激活时，这种方式是非常方便的；当一个进程难以准确判定将激活哪个进程时，也可使用广播</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Hoare管程和Mesa管程比较</p>
+<blockquote>
+<ul>
+<li>mesa管程优于Hoare管程支出在于Mesa管程错误少</li>
+<li>在mesa管程中，由于每个过程在<strong>收到信号后</strong>，<strong>都重新检查管程变量</strong>，并且由于使用了while结构，一个进程不正确的broadcast广播或发信号notify，不会导致收到信号的程序出错；收到信号的程序检查相关的变量，如果期望的条件没有满足，他会重新继续等待</li>
+</ul>
+</blockquote>
+</li>
+<li><p>管程</p>
+<blockquote>
+<p>管程：是一个抽象数据类型，有一个明确定义的操作集合，通过它且只有通过它才能曹总该数据类型的实例</p>
+<p>实现管程结构必须保证：</p>
+<ul>
+<li>只能通过管程的某个过程才能访问资源</li>
+<li>管程是互斥使用的，某个时刻只能有一个进程或线程调用管程中的过程</li>
+</ul>
+<p>条件变量：为提供进程与其他进程通信或同步而引入 wait/signal 或 wait/notify 或 wait/broadcast</p>
+</blockquote>
+</li>
+<li><p>线程库pthread中的同步机制</p>
+<p>互斥量，通过对互斥量进行操作，保护临界区</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pthread_mutex_init  新建一个锁（互斥量）</span><br><span class="line">Pthread_mutex_destroy 销毁一个已存在的锁</span><br><span class="line">Pthread_mutex_lock 加锁</span><br><span class="line">Pthread_mutex_trylock 试图加锁，加锁没加上就出错返回，转去等待</span><br><span class="line">Pthread_mutex_unlock 解锁</span><br></pre></td></tr></table></figure>
+
+<p>解决同步问题，用的是条件变量，以及在条件变量上的操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pthread_cond_init 创建一个条件变量</span><br><span class="line">Pthread_cond_destroy 销毁一个条件变量</span><br><span class="line">Pthread_cond_wait 等待信号（block wait <span class="keyword">for</span> a signal）</span><br><span class="line">Pthread_cond_signal 向另一个线程发信号并唤醒它（signal another thread <span class="keyword">and</span> wake it up）</span><br><span class="line">Pthread_cond_broadcast 向多个线程发信号并唤醒它们（signal multiple threads <span class="keyword">and</span> wake all of them）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进程间通信机制</p>
+<blockquote>
+<p>为什么需要通信机制？</p>
+<ul>
+<li><p>信号量和管程的不足：只能传递简单信息，不能传送大信息</p>
+</li>
+<li><p>管程不适用于多处理器情况</p>
+</li>
+<li><p>需要引入通信机制：</p>
+<p>消息传递：send和receive原语；适用于：分布式系统、基于共享内存的多处理机系统、单处理机系统；可以解决进程间的<strong>同步问题、互斥问题、通信问题</strong></p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>基本通信方式</p>
+<blockquote>
+<ul>
+<li>消息传递</li>
+<li>共享内存</li>
+<li>管道</li>
+<li>套接字（适合网络、分布式系统）</li>
+<li>远程过程调用（适合网络、分布式系统）</li>
+</ul>
+</blockquote>
+</li>
+<li><p>消息传递</p>
+<blockquote>
+<p>发送进程S：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; send(destination,message);</span><br><span class="line">&gt; message:text,size</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>接收进程R：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; receive(source,message);</span><br><span class="line">&gt; message:text,size</span><br><span class="line">&gt; 接收进程的PCB中消息队列指针</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>操作系统空间：</p>
+<p>有一组消息缓冲区，每个消息缓冲区buffer结构：消息头（消息类型、接收进程ID、发送进程ID、消息长度、控制信息）；消息体（消息内容）</p>
+<p>发送原语：发送进程陷入操作系统，由操作系统完成发送的过程。发送进程S<strong>陷入内核</strong>，操作系统把发送进程准备好的消息，拷贝到某一个缓冲区buffer里头（<strong>复制消息</strong>），就是找个空的缓冲区把消息内容拷贝过去；然后把消息挂接到接收进程R的消息队列的末尾（<strong>消息入队</strong>）。到了这一步，发送进程已经完成发送工作，可以接着做其他事情了。什么时候接收进程上CPU了，执行到receive接收原语，陷入操作系统（<strong>陷入内核</strong>），有操作系统完成相应的工作，操作系统帮助他把消息复制到接收进程的地址空间（<strong>复制消息</strong>）。完成一个发送和接收的过程。</p>
+</blockquote>
+</li>
+<li><p>用PV操作实现send原语</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">send(destination,message)&#123;</span><br><span class="line">    根据destination找接进程；</span><br><span class="line">    如果未能找到，出错返回；</span><br><span class="line">    申请空缓冲区P(buf-empty);</span><br><span class="line">    </span><br><span class="line">    P(mutex1);</span><br><span class="line">    取空缓冲区</span><br><span class="line">    V(mutex1);</span><br><span class="line">    </span><br><span class="line">    把消息从message处复制到空缓冲区；</span><br><span class="line">        </span><br><span class="line">	P(mutex2);</span><br><span class="line">    把消息缓冲区挂接到接收进程的消息队列；</span><br><span class="line">    V(mutex2);</span><br><span class="line">    </span><br><span class="line">    V(buf-full);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">信号量：</span><br><span class="line">buf-empty初值为N</span><br><span class="line">buf-full初值为<span class="number">0</span></span><br><span class="line">mutex1初值为<span class="number">1</span></span><br><span class="line">mutex2初值为<span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>共享内存</p>
+<blockquote>
+<p>读者写者解决互斥问题</p>
+<p>同一块物理地址中的一块内存，映射到两个进程空间，在进程1和进程2中分别为A和B，那么进程1对于共享内存的读写，其实就是对A的读写，同样，进程2对于共享内存的读写，其实就是对B的读写。</p>
+<p>进程1读A的同时，进程2可以读B；可同时读，但不可同时写。</p>
+</blockquote>
+</li>
+<li><p>管道通信方式pipe</p>
+<blockquote>
+<p>利用一个缓冲传输介质——内存或文件，连接两个相互通信的进程</p>
+<p>（一个或多个）发送进程—-往管道尾巴里写—-接收进程从管道头上读</p>
+<ul>
+<li>字符流方式写入读出</li>
+<li>先进先出顺序</li>
+<li>管道通信机制必须提供的协调能力（互斥（读写不能同时）、同步、判断对方进程是否存在）</li>
+</ul>
+</blockquote>
+</li>
+<li><p>典型操作系统的IPC机制</p>
+<blockquote>
+<p>Unix:</p>
+<p>Linux: </p>
+<p>用户能调用：管道、消息队列、共享内存、信号量、信号、套接字</p>
+<p>内核同步机制：原子操作、自旋锁、读写锁、信号量、读写信号量、互斥体、完成变量、顺序锁、屏障…</p>
+<p>Windows:</p>
+</blockquote>
+</li>
+<li><p>原子操作</p>
+<p>不可分割，执行完成前不会被其他任务或事件中断</p>
+<p>常用语实现资源的引用计数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">atomic_t</span> v = atomic_init(<span class="number">0</span>);</span><br><span class="line">atomic_set(&amp;v,<span class="number">4</span>);</span><br><span class="line">atomic_add(<span class="number">2</span>,&amp;v);</span><br><span class="line">atomic_inc(&amp;v);</span><br><span class="line">printk(<span class="string">"%d\n"</span>,atomic_read(&amp;v));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>屏障（栅栏、关卡）</p>
+<blockquote>
+<p>一种同步机制</p>
+<p>用于对一组线程进行协调</p>
+<p>应用场景：一组线程协同完成一项任务，需要所有线程都到达一个汇合点后再一起向前推进。</p>
+</blockquote>
+</li>
+<li><p>重点内容</p>
+<blockquote>
+<p>管程</p>
+<ul>
+<li>如何保证互斥</li>
+<li>如何保证同步——条件变量和 wait/signal</li>
+<li>Hoare管程</li>
+<li>Mesa管程</li>
+</ul>
+<p>进程间通信</p>
+<ul>
+<li>消息传递、共享内存、管道</li>
+</ul>
+<p>Pthread中的同步机制</p>
+<p>Linux的IPC机制</p>
+<p>重点概念：管程、Hoare管程、Mesa管程、条件变量、wait/signal、Pthread中的互斥锁与条件变量、共享内存、消息传递、管道、Linux中的原子操作、屏障、读写锁</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/16/操作系统-同步互斥机制与通信机制/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-操作系统-同步和互斥机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1658,115 +1944,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/30/Json/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-http协议" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/http协议/">http</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/http协议/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:25:32.230Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>应用层协议</p>
-<h3 id="1-请求消息（Request），浏览器给服务器发送"><a href="#1-请求消息（Request），浏览器给服务器发送" class="headerlink" title="1 请求消息（Request），浏览器给服务器发送"></a>1 请求消息（Request），浏览器给服务器发送</h3><p>http协议包括四部分：</p>
-<ol>
-<li><p><strong>请求行</strong>：请求类型，要访问的资源，使用的http版本，例如：  </p>
-<p><code>GET /1.txt  HTTP/1.1</code>  和<code>POST HTTP/1.1</code></p>
-</li>
-<li><p><strong>请求头</strong>：服务器要使用的附加信息（由键值对组成）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Host: localhost:2222</span><br><span class="line">User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/201001 01 </span><br><span class="line">Firefox/24.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Connection: keep-alive</span><br><span class="line">If-Modified-Since: Fri, 18 Jul 2014 08:36:36 GMT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>空行</strong>：空行是必须要有的，即使没有请求数据，就是换行：\r\n</p>
-</li>
-<li><p><strong>请求数据</strong>：主体，可以添加任意的其他数据（可以有，可以没有）</p>
-</li>
-</ol>
-<h3 id="2-响应消息（Response），服务器收到请求后给浏览器发"><a href="#2-响应消息（Response），服务器收到请求后给浏览器发" class="headerlink" title="2 响应消息（Response），服务器收到请求后给浏览器发"></a>2 响应消息（Response），服务器收到请求后给浏览器发</h3><p>响应消息包括四部分：</p>
-<ol>
-<li><strong>状态行</strong>：包括http协议版本号，状态码，状态信息</li>
-<li><strong>消息报头</strong>：说明客户端要使用的一些附加信息</li>
-<li><strong>空行</strong>：空行是必须要有的</li>
-<li><strong>响应正文</strong>：服务器返回给客户端的文本信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 Ok</span><br><span class="line">Server: micro_httpd</span><br><span class="line">Date: Fri, 18 Jul 2014 14:34:26 GMT</span><br><span class="line">Content-Type: text/plain; charset=iso-8859-1 (必选项,告诉浏览器发送的数据是什么类型)</span><br><span class="line">Content-Length: 32(发送的数据的长度，或者写-1，或者不写)</span><br><span class="line">Content-Language: zh-CN</span><br><span class="line">Last-Modified: Fri, 18 Jul 2014 08:36:36 GMT</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main(void)&#123;</span><br><span class="line">    printf(&quot;hello world!\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-Get和Post的区别"><a href="#3-Get和Post的区别" class="headerlink" title="3 Get和Post的区别"></a>3 Get和Post的区别</h3><h4 id="Get："><a href="#Get：" class="headerlink" title="Get："></a>Get：</h4><ul>
-<li>请求数据的时候，用户名和密码等敏感信息会显示在地址栏中，不够安全，不适用敏感信息</li>
-<li>url的长度有限，不同浏览器限制不同，能显示的消息有限，适用于小数据量</li>
-<li>get产生一个包，header和request body放在一起发送出去，服务器收到后返回200 ok</li>
-</ul>
-<h4 id="Post："><a href="#Post：" class="headerlink" title="Post："></a>Post：</h4><ul>
-<li>提交数据的时候，数据不显示在地址栏里，隐藏起来的，相对更安全，提交敏感信息用post</li>
-<li>post对于文件大小没有限定，适合大数据量</li>
-<li>post产生两个包：一个header，一个request body；发送header后，服务器返回100 continue；发送body后，服务器返回200 ok</li>
-</ul>
-<h3 id="4-浏览器使用get方法向服务器请求数据："><a href="#4-浏览器使用get方法向服务器请求数据：" class="headerlink" title="4 浏览器使用get方法向服务器请求数据："></a>4 浏览器使用get方法向服务器请求数据：</h3><p>浏览器地址栏：192.168.1.115/hello.c</p>
-<p>浏览器封装一个http请求协议：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get /hello.c http/1.1</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">\r\n</span><br></pre></td></tr></table></figure>
-
-<p>服务器解析这个请求：</p>
-<p>分析请求行，根据资源目录，找到所需资源hello.c，用open打开文件，read读取文件内容，发送给浏览器</p>
-<h3 id="5-HTTP常用状态码"><a href="#5-HTTP常用状态码" class="headerlink" title="5  HTTP常用状态码"></a>5  HTTP常用状态码</h3><p>状态代码由3位数字组成，第一个数字定义了响应的类别，共分5种类别: </p>
-<p>○ 1xx：<strong>指示信息</strong>–表示请求已接收，继续处理 </p>
-<p>○ 2xx：<strong>成功</strong>–表示请求已被成功接收、理解、接受 </p>
-<p>○ 3xx：<strong>重定向</strong>–要完成请求必须进行更进一步的操作 </p>
-<p>○ 4xx：<strong>客户端错误</strong>–请求有语法错误或请求无法实现 </p>
-<p>○ 5xx：<strong>服务器端错误</strong>–服务器未能实现合法的请求 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">常见状态码：</span><br><span class="line"> 200 OK 客户端请求成功</span><br><span class="line"> 400 Bad Request 客户端请求有语法错误，不能被服务器所理解</span><br><span class="line"> 401 Unauthorized 请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用 </span><br><span class="line"> 403 Forbidden 服务器收到请求，但是拒绝提供服务</span><br><span class="line"> 404 Not Found 请求资源不存在，eg：输入了错误的URL</span><br><span class="line"> 500 Internal Server Error 服务器发生不可预期的错误</span><br><span class="line"> 503 Server Unavailable 服务器当前不能处理客户端的请求，一段时间后可能恢复正常</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/http协议/">展开全文 >></a>
         </p>
       
 

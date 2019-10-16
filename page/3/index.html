@@ -159,6 +159,116 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Linux网络编程-Socket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/29/Linux网络编程-Socket/">Linux网络编程-socket</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/29/Linux网络编程-Socket/" class="archive-article-date">
+  	<time datetime="2019-09-29T14:39:07.599Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>程序员要做的事：操作文件（内核缓冲区）</p>
+<p>工作模式：</p>
+<ul>
+<li>创建一个文件描述符fd</li>
+<li>这个fd对应一块内核缓冲区</li>
+<li>这个内核缓冲区是分为两部分的：一部分专门用于读；一部分专门用于写</li>
+<li>read的时候是读内核缓冲区中的数据；write的时候是往这块内核缓冲区写数据</li>
+<li>内核缓冲区负责写的部分若有数据，数据就直接发送出去了</li>
+</ul>
+<h3 id="服务器流程："><a href="#服务器流程：" class="headerlink" title="服务器流程："></a>服务器流程：</h3><ol>
+<li><p>创建套接字 </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> lfd = socket;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>绑定本地IP和端口</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">socketaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.port = htons(port); <span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">serv.IP = htons(INADDR_ANY);<span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">bind(lfd,&amp;serv,<span class="keyword">sizeof</span>(serv));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>监听</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen(lfd,<span class="number">128</span>);<span class="comment">//128是同时连接到服务器上的个数</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>等待并接收连接请求</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个结构体，用于保存：连接到服务器上的客户端的IP和端口</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd,&amp;client,&amp;len); <span class="comment">//cfd 是用于通信的</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通信</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关闭</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(lfd);<span class="comment">//用于监听的文件描述符</span></span><br><span class="line">close(cfd);<span class="comment">//用于通信的文件描述符</span></span><br></pre></td></tr></table></figure>
+
+<p>linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束后，把套接字库关闭</p>
+</li>
+</ol>
+<h3 id="客户端流程"><a href="#客户端流程" class="headerlink" title="客户端流程"></a>客户端流程</h3><ol>
+<li><p>创建套接字</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> fd = socket;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>连接服务器</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">server</span>;</span></span><br><span class="line">server.port</span><br><span class="line">server.ip = (<span class="keyword">int</span>)...</span><br><span class="line">server.family</span><br><span class="line">connect(fd,&amp;server,<span class="keyword">sizeof</span>(server));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通信</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>断开连接</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">close(fd);</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/29/Linux网络编程-Socket/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Linux网络编程-Select" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1468,91 +1578,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/27/Linux系统编程-线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux系统编程-守护进程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>生存期长</strong>，常在系统引导装入时启动，仅在系统关闭时才终止； <strong>没有控制终端，在后台运行</strong>。</p>
-<ol>
-<li><p>创建子进程，父进程退出</p>
-</li>
-<li><p>在子进程中创建新会话</p>
-<p>setsid()函数；使子进程完全独立出来，脱离控制</p>
-</li>
-<li><p>改变当前目录为根目录</p>
-<p>chdir()函数；防止占用可卸载的文件系统；也可以换成其他路径</p>
-</li>
-<li><p>重设文件权限掩码</p>
-<p>umask()函数；防止继承的文件创建屏蔽字拒绝某些权限；增加守护进程灵活性</p>
-</li>
-<li><p>关闭文件描述符</p>
-<p>继承的打开文件不会用到，浪费系统资源，无法卸载</p>
-</li>
-<li><p>开始执行守护进程核心工作</p>
-</li>
-<li><p>守护进程退出处理程序模型</p>
-</li>
-</ol>
-<p>扩展了解：</p>
-<p>通过nohup指令也可以达到守护进程创建的效果</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/27/Linux系统编程-守护进程/">展开全文 >></a>
         </p>
       
 

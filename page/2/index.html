@@ -159,6 +159,115 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-http协议" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/30/http协议/">http</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/30/http协议/" class="archive-article-date">
+  	<time datetime="2019-09-30T14:25:32.230Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>应用层协议</p>
+<h3 id="1-请求消息（Request），浏览器给服务器发送"><a href="#1-请求消息（Request），浏览器给服务器发送" class="headerlink" title="1 请求消息（Request），浏览器给服务器发送"></a>1 请求消息（Request），浏览器给服务器发送</h3><p>http协议包括四部分：</p>
+<ol>
+<li><p><strong>请求行</strong>：请求类型，要访问的资源，使用的http版本，例如：  </p>
+<p><code>GET /1.txt  HTTP/1.1</code>  和<code>POST HTTP/1.1</code></p>
+</li>
+<li><p><strong>请求头</strong>：服务器要使用的附加信息（由键值对组成）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Host: localhost:2222</span><br><span class="line">User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/201001 01 </span><br><span class="line">Firefox/24.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Connection: keep-alive</span><br><span class="line">If-Modified-Since: Fri, 18 Jul 2014 08:36:36 GMT</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>空行</strong>：空行是必须要有的，即使没有请求数据，就是换行：\r\n</p>
+</li>
+<li><p><strong>请求数据</strong>：主体，可以添加任意的其他数据（可以有，可以没有）</p>
+</li>
+</ol>
+<h3 id="2-响应消息（Response），服务器收到请求后给浏览器发"><a href="#2-响应消息（Response），服务器收到请求后给浏览器发" class="headerlink" title="2 响应消息（Response），服务器收到请求后给浏览器发"></a>2 响应消息（Response），服务器收到请求后给浏览器发</h3><p>响应消息包括四部分：</p>
+<ol>
+<li><strong>状态行</strong>：包括http协议版本号，状态码，状态信息</li>
+<li><strong>消息报头</strong>：说明客户端要使用的一些附加信息</li>
+<li><strong>空行</strong>：空行是必须要有的</li>
+<li><strong>响应正文</strong>：服务器返回给客户端的文本信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 Ok</span><br><span class="line">Server: micro_httpd</span><br><span class="line">Date: Fri, 18 Jul 2014 14:34:26 GMT</span><br><span class="line">Content-Type: text/plain; charset=iso-8859-1 (必选项,告诉浏览器发送的数据是什么类型)</span><br><span class="line">Content-Length: 32(发送的数据的长度，或者写-1，或者不写)</span><br><span class="line">Content-Language: zh-CN</span><br><span class="line">Last-Modified: Fri, 18 Jul 2014 08:36:36 GMT</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main(void)&#123;</span><br><span class="line">    printf(&quot;hello world!\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Get和Post的区别"><a href="#3-Get和Post的区别" class="headerlink" title="3 Get和Post的区别"></a>3 Get和Post的区别</h3><h4 id="Get："><a href="#Get：" class="headerlink" title="Get："></a>Get：</h4><ul>
+<li>请求数据的时候，用户名和密码等敏感信息会显示在地址栏中，不够安全，不适用敏感信息</li>
+<li>url的长度有限，不同浏览器限制不同，能显示的消息有限，适用于小数据量</li>
+<li>get产生一个包，header和request body放在一起发送出去，服务器收到后返回200 ok</li>
+</ul>
+<h4 id="Post："><a href="#Post：" class="headerlink" title="Post："></a>Post：</h4><ul>
+<li>提交数据的时候，数据不显示在地址栏里，隐藏起来的，相对更安全，提交敏感信息用post</li>
+<li>post对于文件大小没有限定，适合大数据量</li>
+<li>post产生两个包：一个header，一个request body；发送header后，服务器返回100 continue；发送body后，服务器返回200 ok</li>
+</ul>
+<h3 id="4-浏览器使用get方法向服务器请求数据："><a href="#4-浏览器使用get方法向服务器请求数据：" class="headerlink" title="4 浏览器使用get方法向服务器请求数据："></a>4 浏览器使用get方法向服务器请求数据：</h3><p>浏览器地址栏：192.168.1.115/hello.c</p>
+<p>浏览器封装一个http请求协议：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get /hello.c http/1.1</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">key:value</span><br><span class="line">\r\n</span><br></pre></td></tr></table></figure>
+
+<p>服务器解析这个请求：</p>
+<p>分析请求行，根据资源目录，找到所需资源hello.c，用open打开文件，read读取文件内容，发送给浏览器</p>
+<h3 id="5-HTTP常用状态码"><a href="#5-HTTP常用状态码" class="headerlink" title="5  HTTP常用状态码"></a>5  HTTP常用状态码</h3><p>状态代码由3位数字组成，第一个数字定义了响应的类别，共分5种类别: </p>
+<p>○ 1xx：<strong>指示信息</strong>–表示请求已接收，继续处理 </p>
+<p>○ 2xx：<strong>成功</strong>–表示请求已被成功接收、理解、接受 </p>
+<p>○ 3xx：<strong>重定向</strong>–要完成请求必须进行更进一步的操作 </p>
+<p>○ 4xx：<strong>客户端错误</strong>–请求有语法错误或请求无法实现 </p>
+<p>○ 5xx：<strong>服务器端错误</strong>–服务器未能实现合法的请求 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">常见状态码：</span><br><span class="line"> 200 OK 客户端请求成功</span><br><span class="line"> 400 Bad Request 客户端请求有语法错误，不能被服务器所理解</span><br><span class="line"> 401 Unauthorized 请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用 </span><br><span class="line"> 403 Forbidden 服务器收到请求，但是拒绝提供服务</span><br><span class="line"> 404 Not Found 请求资源不存在，eg：输入了错误的URL</span><br><span class="line"> 500 Internal Server Error 服务器发生不可预期的错误</span><br><span class="line"> 503 Server Unavailable 服务器当前不能处理客户端的请求，一段时间后可能恢复正常</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/30/http协议/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-XML" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -897,116 +1006,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/29/Linux网络编程-常识方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-Socket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/29/Linux网络编程-Socket/">Linux网络编程-socket</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/29/Linux网络编程-Socket/" class="archive-article-date">
-  	<time datetime="2019-09-29T14:39:07.599Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>程序员要做的事：操作文件（内核缓冲区）</p>
-<p>工作模式：</p>
-<ul>
-<li>创建一个文件描述符fd</li>
-<li>这个fd对应一块内核缓冲区</li>
-<li>这个内核缓冲区是分为两部分的：一部分专门用于读；一部分专门用于写</li>
-<li>read的时候是读内核缓冲区中的数据；write的时候是往这块内核缓冲区写数据</li>
-<li>内核缓冲区负责写的部分若有数据，数据就直接发送出去了</li>
-</ul>
-<h3 id="服务器流程："><a href="#服务器流程：" class="headerlink" title="服务器流程："></a>服务器流程：</h3><ol>
-<li><p>创建套接字 </p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> lfd = socket;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>绑定本地IP和端口</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">socketaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.port = htons(port); <span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">serv.IP = htons(INADDR_ANY);<span class="comment">// 小端转大端，主机字节序转网络字节序</span></span><br><span class="line">bind(lfd,&amp;serv,<span class="keyword">sizeof</span>(serv));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>监听</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen(lfd,<span class="number">128</span>);<span class="comment">//128是同时连接到服务器上的个数</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>等待并接收连接请求</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个结构体，用于保存：连接到服务器上的客户端的IP和端口</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd,&amp;client,&amp;len); <span class="comment">//cfd 是用于通信的</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通信</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>关闭</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(lfd);<span class="comment">//用于监听的文件描述符</span></span><br><span class="line">close(cfd);<span class="comment">//用于通信的文件描述符</span></span><br></pre></td></tr></table></figure>
-
-<p>linux 和windows的区别，Windows 中用recv/send，需要加载套接字库才能用，结束后，把套接字库关闭</p>
-</li>
-</ol>
-<h3 id="客户端流程"><a href="#客户端流程" class="headerlink" title="客户端流程"></a>客户端流程</h3><ol>
-<li><p>创建套接字</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> fd = socket;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>连接服务器</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">server</span>;</span></span><br><span class="line">server.port</span><br><span class="line">server.ip = (<span class="keyword">int</span>)...</span><br><span class="line">server.family</span><br><span class="line">connect(fd,&amp;server,<span class="keyword">sizeof</span>(server));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通信</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">read/recv  <span class="comment">//接收数据</span></span><br><span class="line">write/send <span class="comment">//发送数据</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>断开连接</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">close(fd);</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/29/Linux网络编程-Socket/">展开全文 >></a>
         </p>
       
 
