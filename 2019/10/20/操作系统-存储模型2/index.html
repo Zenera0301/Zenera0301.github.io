@@ -6,18 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | DinDin&#39;s Blog</title>
+  <title>操作系统-虚拟存储技术 | DinDin&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="My personal blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DinDin&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/page/4/index.html">
+  <meta name="description" content="虚拟存储技术 页表及页表项设计 地址转换过程及TLB引入 软件相关策略 页面置换算法 其他相关技术   虚拟存储技术  当进程运行时，先将一部分代码数据装入内存，另一部分暂留磁盘，当要执行的指令或访问的数据不在内存时，由操作系统自动完成将他们从磁盘调入内存的工作 虚拟地址空间：每个进程的地址空间，就是分配给进程的虚拟内存 虚拟地址：在虚拟内存中指令或数据的位置，该位置可以被访问，仿佛他是内存的一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-虚拟存储技术">
+<meta property="og:url" content="http://yoursite.com/2019/10/20/操作系统-存储模型2/index.html">
 <meta property="og:site_name" content="DinDin&#39;s Blog">
-<meta property="og:description" content="My personal blog">
+<meta property="og:description" content="虚拟存储技术 页表及页表项设计 地址转换过程及TLB引入 软件相关策略 页面置换算法 其他相关技术   虚拟存储技术  当进程运行时，先将一部分代码数据装入内存，另一部分暂留磁盘，当要执行的指令或访问的数据不在内存时，由操作系统自动完成将他们从磁盘调入内存的工作 虚拟地址空间：每个进程的地址空间，就是分配给进程的虚拟内存 虚拟地址：在虚拟内存中指令或数据的位置，该位置可以被访问，仿佛他是内存的一">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-20T12:50:59.934Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DinDin&#39;s Blog">
-<meta name="twitter:description" content="My personal blog">
+<meta name="twitter:title" content="操作系统-虚拟存储技术">
+<meta name="twitter:description" content="虚拟存储技术 页表及页表项设计 地址转换过程及TLB引入 软件相关策略 页面置换算法 其他相关技术   虚拟存储技术  当进程运行时，先将一部分代码数据装入内存，另一部分暂留磁盘，当要执行的指令或访问的数据不在内存时，由操作系统自动完成将他们从磁盘调入内存的工作 虚拟地址空间：每个进程的地址空间，就是分配给进程的虚拟内存 虚拟地址：在虚拟内存中指令或数据的位置，该位置可以被访问，仿佛他是内存的一">
   
     <link rel="alternative" href="/atom.xml" title="DinDin&#39;s Blog" type="application/atom+xml">
   
@@ -157,241 +158,535 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-操作系统-存储模型2" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      操作系统-虚拟存储技术
+    </h1>
+  
+
+        
+        <a href="/2019/10/20/操作系统-存储模型2/" class="archive-article-date">
+  	<time datetime="2019-10-20T12:49:07.422Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-20</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>虚拟存储技术</li>
+<li>页表及页表项设计</li>
+<li>地址转换过程及TLB引入</li>
+<li>软件相关策略</li>
+<li>页面置换算法</li>
+<li>其他相关技术</li>
+</ul>
+<ol>
+<li><p>虚拟存储技术</p>
+<blockquote>
+<p>当进程运行时，先将一部分代码数据装入内存，另一部分暂留磁盘，当要执行的指令或访问的数据不在内存时，由操作系统自动完成将他们从磁盘调入内存的工作</p>
+<p>虚拟地址空间：每个进程的地址空间，就是<strong>分配给进程的虚拟内存</strong></p>
+<p>虚拟地址：在虚拟内存中指令或数据的位置，该位置可以被访问，仿佛他是内存的一部分</p>
+</blockquote>
+</li>
+<li><p>存储器的层次结构</p>
+<blockquote>
+<p>寄存器</p>
+<p>高速缓存cache</p>
+<p>内存ram</p>
+<p>磁盘disk</p>
+<p>从上往下趋势：容量大，速度慢，成本低</p>
+</blockquote>
+</li>
+<li><p>虚存 与 存储体系</p>
+<blockquote>
+<p>进程的地址空间（虚存），把内存和磁盘有机结合起来使用，得到一个容量很大的“内存”，就是虚存。</p>
+<p>虚存是内存的抽象，构建在存储体系之上，由操作系统协调各存储器的使用</p>
+<p>虚存提供了一个比物理内存空间大得多的地址空间</p>
+<p>其大小受 计算机寻址机制  和  磁盘中可用空间 两方面影响：32位计算机，虚拟地址空间可达2的32次方，即4G</p>
+</blockquote>
+</li>
+<li><p>地址保护</p>
+<blockquote>
+<p>确保每个进程有自己独立的地址空间</p>
+<p>确保进程访问合法的地址范围（防止地址越界）</p>
+<p>确保进程的操作时合法的</p>
+</blockquote>
+</li>
+<li><p>虚拟页式</p>
+<blockquote>
+<p>虚拟存储技术+页式存储管理方案=虚拟页式存储管理系统</p>
+<p>思想：</p>
+<p>进程开始运行之前，不是装入全部页面，而是装入一个或0个页面；</p>
+<p>之后，根据进程运行的需要，动态装入其他页面；</p>
+<p>当内存空间已满，而又需要装入新的页面时，则根据某种算法，置换内存中的某个页面，以便装入新的页面。</p>
+<p>具体方式：</p>
+<p>请求调用（需要的页面不在内存）（主要）</p>
+<p>预先调页（猜测哪些页面需要用到，提前调入内存）</p>
+<p>本质是：资源转换技术：</p>
+<p>以<strong>CPU时间和磁盘空间</strong> 换取 昂贵的<strong>内存空间</strong>；是操作系统的资源转换技术</p>
+</blockquote>
+</li>
+<li><p>页表及页表项设计</p>
+<blockquote>
+<p>页表=页表项们（通常由硬件设计的）</p>
+<p>页框号：内存块号、物理页面号、页帧号</p>
+<p>有效位：驻留位、中断位：表示该页在内存还是磁盘</p>
+<p>访问位：引用位</p>
+<p>修改位：此页在内存中是否被修改过</p>
+<p>保护位：读/可读写</p>
+</blockquote>
+</li>
+<li><p>页表</p>
+<blockquote>
+<p>32位虚拟地址空间的页表规模？页面大小为4k；页表项大小为4字节；则一个进程地址空间有2的20次方个页面；一个页面有一个页表项，故共有2的20次方个页表项；一个页面可以放1k个页表项，需要1024个页表页。</p>
+<p>32位虚地址 = 进程需要4GB内存 = 4 * 1024 * 1024KB内存，除以页面大小4KB=2^20页</p>
+<p>页表中一页为一页表项，需要2^20 * 4B大小，除以页面大小4KB=2^10，所以页表要占1024页</p>
+<p>页表页在诶村中若不连续存放，则需要引入页表页的地址索引表：<strong>页目录</strong>，二级甚至多级页表结构</p>
+</blockquote>
+</li>
+<li><p>二级页表结构及地址映射</p>
+<blockquote>
+<p>页目录（每个进程有一个）</p>
+<p>根据页目录，查到页表地址，从页表中的页表项中的页框号，去形成真正的物理地址</p>
+<p>当一个进程上CPU的时候，他的<strong>页目录起始地址</strong>应该推送到一个<strong>页目录地址寄存器</strong>中，当进程下CPU时，这个地址会保存在PCB相关的现场信息里。</p>
+<p>通过这个页目录地址 就能找到内存中的页目录。</p>
+<p>虚拟地址：32位的虚拟地址空间：31-21页目录偏移，21-11页表偏移，11-0页内偏移</p>
+</blockquote>
+</li>
+<li><p>引入反转（倒排）页表</p>
+<blockquote>
+<p>地址转换：从虚拟地址空间出发：虚拟地址—查页表—得到页框号—形成物理地址；每个进程一张页表</p>
+<p>解决思路：从物理地址空间出发，整个系统建立一张页表；页表项记录进程i的虚拟地址（虚页号）与页框号的映射关系（把进程信息也填写到页表项当中）</p>
+<p>设计：PowerPC、UltraSPARC和IA-64等体系结构采用。将虚拟地址的页号部分映射到一个散列值；散列值指向一个反转页表；反转页表大小与实际内存成固定比例，与进程个数无关。现代计算机用这种方法解决页表占用很大空间的问题。</p>
+</blockquote>
+</li>
+<li><p>地址转换过程</p>
+<blockquote>
+<p>MMU</p>
+</blockquote>
+</li>
+<li><p>快表TLB的引入</p>
+<blockquote>
+<p>页表：两次或两次以上的内存访问</p>
+<p>CPU的指令处理速度与内存指令的访问速度差异大，CPU的速度得不到充分利用</p>
+<p>如何加快地址映射速度，以改善系统性能？<strong>程序访问的局部性原理</strong>–引入快表（TLB）</p>
+</blockquote>
+</li>
+<li><p>快表</p>
+<blockquote>
+<p>快表的引入就是为了加快地址转换的速度</p>
+<p>在CPU中引入的高速缓存，可以匹配CPU的处理速率和内存的访问速度</p>
+<p>一种随机存取型存储器，除连线寻址机制外，还有接线逻辑，能按特定的匹配算法，在一个存储周期内，按特定的匹配标志，同时查找所有的字</p>
+<p>相关联存储器：特点是按内容并行查找</p>
+<p>保存正在运行进程的页表的子集（部分页表项）</p>
+<p>快表的大小、位置：几级快表，不同级别大小不同，位置和CPU、MMU在一块</p>
+<p>快表的置换问题</p>
+</blockquote>
+</li>
+<li><p>页错误</p>
+<blockquote>
+<p>页错误、页面错误、页故障、页面失效：地址转换过程中，硬件发现了问题，产生异常（陷入操作系统，操作系统来解决异常）</p>
+<p>具体原因：缺页异常（所访问的虚拟页面没有调入物理内存），页面访问违反权限（读写，用户内核），错误的访问地址</p>
+<p><strong>缺页异常处理</strong>：在地址映射过程中，硬件检查页表时发现要访问的页面不在内存，产生缺页异常。操作系统执行<strong>缺页异常处理程序</strong>：获得磁盘地址，启动磁盘，将该页调入内存。</p>
+<p>如果内存中有空闲页框，则分配一个页框，将新调入页装入，并修改页表中相应页表项的有效位及相应的页框号；若内存中无空闲页框，则要置换内存中某一页框，若该页框内容被修改过，则要将其写回磁盘。可以加入预取的策略。</p>
+</blockquote>
+</li>
+<li><p>软件相关策略</p>
+</li>
+<li><p>驻留集：</p>
+<blockquote>
+<p>驻留集大小：给每个进程分配多少个页框？</p>
+<p>​    固定分配策略：进程创建时确定，可以根据进程类型（交互、批处理、应用类）或程序员或系统管理员的需要来确定；</p>
+<p>​    可变分配策略：根据缺页率评估进程局部性表现：缺页率高–增加页框数，缺页率低–减少页框数，这种方法会带来系统开销。</p>
+</blockquote>
+</li>
+<li><p>置换问题</p>
+<blockquote>
+<p>置换范围：计划置换页面的集合是局限在产生缺页中断的进程，还是所有进程的页框？</p>
+<p>​    局部置换策略：尽在产生本次缺页的进程的驻留集中选择；</p>
+<p>​    全局置换策略：将内存中所有未锁定的页框都作为置换的候选；</p>
+<p>置换策略：在计划置换的页框集合中，选择换出哪一个页框？</p>
+</blockquote>
+</li>
+<li><p>可变分配+局部置换：</p>
+<blockquote>
+<p>1 当一个新的进程装入内存时，给它分配一定数目的页框，然后填满这些页框</p>
+<p>2 当发生一次缺页异常时，从产生缺页异常的驻留集中选择一个用于置换</p>
+<p>3 不断重新评估进程的页框分配情况，增加或减少分配给他的页框，以提高整体性能</p>
+</blockquote>
+</li>
+<li><p>置换策略</p>
+<blockquote>
+<p>决定置换当前内存中的哪个页框：</p>
+<p>所有策略的目标：<strong>置换最近最不可能访问的页</strong></p>
+<p>根据程序局部性原理，最近的访问历史和最近将要访问的模式之间存在相关性，因此，大多数策略都<strong>基于过去的行为来预测将来的行为</strong>。</p>
+<p><strong>注意：置换策略设计的越精致越复杂，实现的软硬件开销就越大</strong>。</p>
+<p>约束：不能置换被锁定的页框！</p>
+</blockquote>
+</li>
+<li><p>页框锁定</p>
+<blockquote>
+<p>为什么要锁定页面：采用虚存技术后：开销：使进程运行时间变得不确定；</p>
+<p>给每一页框增加一个锁定位；</p>
+<p>通过设置相应的锁定位，不让操作系统将进程使用的页面换出内存，避免产生由交换过程带来的不确定的延迟。</p>
+<p>如：操作系统核心代码，关键数据结构，I/O缓冲区</p>
+</blockquote>
+</li>
+<li><p>清除策略</p>
+<blockquote>
+<p>清除：从进程的驻留集中收回页框</p>
+<p>虚拟页式系统工作的<strong>最佳状态</strong>：<strong>发生缺页异常时，系统中有大量的空闲页框</strong>。</p>
+<p><strong>在系统中，保寸一定数目的空闲页框供给  比  使用所有内存并在需要时搜索一个页框有更好的性能。</strong></p>
+</blockquote>
+</li>
+<li><p>分页守护进程</p>
+<blockquote>
+<p>设计一个分页守护进程，<strong>多数时间睡眠</strong>，可<strong>定期唤醒</strong>以检查内存的状态；</p>
+<p><strong>如果空闲页框过少</strong>，分页守护进程通过预定的页面置换算法选择页面换出内存；</p>
+<p><strong>如果页面装入内存后被修改过</strong>，则将他们写回磁盘。</p>
+<p>分页守护进程可以<strong>保证所有的空闲页框都是“干净”的</strong>。</p>
+</blockquote>
+</li>
+<li><p>清除策略</p>
+<blockquote>
+<p>当进程需要使用一个已置换出的页框时，如果该页框还没有被新的内容覆盖，将他从空闲页框集合中移除即可恢复该页面。</p>
+<p>此时进程未结束，讨论的是 在进程运行过程中，从他的驻留集中收回页框；如果进程已经运行结束，所有的驻留集都还给系统了。</p>
+</blockquote>
+</li>
+<li><p>页缓冲技术</p>
+<blockquote>
+<p>不丢弃置换出的页框，把它们放入两个表之一：如果未被修改，则放入空闲页链表中，如果修改了，则放到被修改页链表中；</p>
+<p>被修改的页定期写回磁盘（不是一次只写一个，大大减少I/O操作的数量，从而减少了磁盘访问时间）</p>
+<p>被置换的页仍然保留在内存中，一旦进程又要访问该页，可以迅速将他加入该进程的驻留集（代价很小）</p>
+</blockquote>
+</li>
+<li><p>页面置换算法</p>
+<blockquote>
+<p>最佳算法、先进先出、第二次机会、时钟算法、最近未使用、最近很少使用、最不经常使用、优化算法、工作集、工作集时钟。</p>
+<p>设计思想、算法实现、算法应用</p>
+</blockquote>
+</li>
+<li><p>最佳页面置换算法（OPT）</p>
+<blockquote>
+<p>设计思想：置换以后不再需要的 或 最远的将来才会用到的页面</p>
+<p>意义：作为一种标准来衡量其他算法的性能</p>
+</blockquote>
+</li>
+<li><p>先进先出算法（FIFO）</p>
+<blockquote>
+<p>思想：选择在内存中驻留时间最长的页并置换它</p>
+<p>对照：超时撤换商品，缺点：会把常用的撤掉</p>
+<p>实现：页面链表法</p>
+</blockquote>
+</li>
+<li><p>第二次机会算法（SCR）</p>
+<blockquote>
+<p>按先进先出算法选择一个页面，检查其访问位R，若为0，则置换该页；若为1，则给它第二次机会，将访问位置0.</p>
+<p>实现：发现R=1，摘链，设置为R=0，换一个链，挂链</p>
+</blockquote>
+</li>
+<li><p>时钟算法（CLOCK）</p>
+<blockquote>
+<p>移动指针，选择下一个要置换的页框，比摘链挂链快</p>
+</blockquote>
+</li>
+<li><p>最近未使用算法（NRU）</p>
+<blockquote>
+<p>选择最近一段时间内未使用过的一页并置换</p>
+<p>实现：设置页表项的两位：访问位R，修改位M。如果硬件没有这些位，可以用软件模拟（做标记）</p>
+<p>当启动一个进程时，R、M位置0，R位被定期清零（复位）</p>
+<p>发生缺页中断，操作系统检查R、M：</p>
+<p>第一类：无访问，无修改；</p>
+<p>第二类：无访问，有修改；</p>
+<p>第三类：有访问，无修改；</p>
+<p>第四类：有访问，有修改；</p>
+<p>算法思想：随机从编号最小的非空类中选择一页置换</p>
+</blockquote>
+</li>
+<li><p>最近未使用算法可以用时钟算法去实现！</p>
+</li>
+<li><p>最近最少使用算法（LRU）</p>
+<blockquote>
+<p>选择最后一次访问时间距离当前时间最长的一页并置换；即置换<strong>未使用时间最长</strong>的一页；</p>
+<p>性能接近OPT</p>
+<p>实现：时间戳 or 维护一个访问页的栈–开销大</p>
+</blockquote>
+</li>
+<li><p>最不经常使用算法（NFU）</p>
+<blockquote>
+<p>选择访问次数最少的页面置换</p>
+<p>LRU的一种软件解决方案</p>
+<p>实现：软件计数器，一页一个，初值为0,；每次时钟中断时，计数器加R；发生缺页中断时，选择计数器值最小的一页置换</p>
+</blockquote>
+</li>
+<li><p>老化算法（AGING）</p>
+<blockquote>
+<p>改进（模拟LRU）：计数器在加R前先右移一位，R位加到计数器的最左端</p>
+</blockquote>
+</li>
+<li><p>页面置换算法的应用</p>
+<blockquote>
+<p>系统给某进程分配3个页框（固定分配策略），初始为空</p>
+<p>进程执行时，页面访问顺序为：2 3 2 1 5 2 4 5 3 2 5 2</p>
+<p>计算应用FIFO、LRU、OPT算法时达的缺页次数分别为：9、7、6</p>
+<p>FIFO：先进先出</p>
+<p>LRU：最久没被访问到的先出</p>
+<p>OPT：以后最久才会被访问到的先出</p>
+</blockquote>
+</li>
+<li><p>Belady现象</p>
+<blockquote>
+<p>系统给某进程分配m个页框，初始为空，页面访问顺序为：1 2 3 4 1 2 5 1 2 3 4 5</p>
+<p>采用FIFO算法，计算当m=3和m=4时的缺页中断次数</p>
+<p>m=3时，缺页中断9次；m=4时，缺页中断10次</p>
+<p>注：FIFO页面置换算法会 产生异常现象：分配给进程的物理页面越多，缺页次数缺越多。</p>
+</blockquote>
+</li>
+<li><p>页面置换算法–工作集算法</p>
+<blockquote>
+<p>影响缺页次数的因素：页面置换算法，页面本身大小，程序编制方法，分配给进程的页框数</p>
+<p>颠簸（抖动）：虚存中，页面在内存和磁盘之间频繁调度，是的调度页面所需的时间比进程实际运行时间还多，这样导致系统效率急剧下降，这种现象叫做颠簸或抖动。</p>
+</blockquote>
+</li>
+<li><p>页面尺寸问题</p>
+<blockquote>
+<p>确定页面大小对于分页的硬件设计非常重要，而对于操作系统是可选的参数；</p>
+<p>多种页面尺寸：为有效使用快表TLB带来灵活性，但给操作系统带来复杂性</p>
+<p>要考虑的因素：内部碎片、页表长度、辅存的物理特性</p>
+</blockquote>
+</li>
+<li><p>工作集模型（Windows采用这种页面置换思想，用的是页面缓冲清除算法）</p>
+<blockquote>
+<p>基本思想：程序局部性原理：进程在一段时间内总是集中访问一些页面（活跃页面），如果分配给一个进程的物理页面数过少，是该进程所需的活跃页面不能全部装入内存，则进程在运行过程中将频繁发生中断。如果能为进程提供与活跃页面数相等的物理页面数，则可减少缺页中断次数。</p>
+<p>工作集：一个进程当前正在使用的页框集合</p>
+<p>工作集W（t，deta）=该进程在过去的deta个虚拟时间单位中访问到的页面的集合。</p>
+<p>内容取决于三个因素：</p>
+<p>访问序列特性；时刻t；工作集窗口长度（deta）（窗口越大，工作集越大）</p>
+<p>算法：找出一个不再工作集的页面并置换它</p>
+<p>思路：每个页表项中有一个字段：记录该页面最后一次被访问的时间；设置一个时间值T</p>
+<p>判断：根据一个页面的访问时间是否落在“当前时间-T”之前或之中，决定其在工作集之外还是之内</p>
+<p>实现：扫描所有页表项，执行操作：</p>
+<p>（1）如果一个页面的R位是1，则将该页面的最后一次访问时间设为当前时间，将R位清零</p>
+<p>（2）如果一个页面的R位是0，则检查该页面的访问时间是否在“<strong>当前时间-T</strong>”之前</p>
+<p>​            如果是（说明不属于工作集，置换），则该页面为被置换的页面；</p>
+<p>​            如果不是（说明属于工作集，不应被置换），则记录当前所有被扫描过的页面的最后访问时间里面的最小值。扫描下一个页面并重复1,2</p>
+</blockquote>
+</li>
+<li><p>页面置换算法小结</p>
+<table>
+<thead>
+<tr>
+<th align="center">算法</th>
+<th align="center">评价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">OPT</td>
+<td align="center">不可实现，但可作为基准</td>
+</tr>
+<tr>
+<td align="center">NRU</td>
+<td align="center">LRU的很粗略的近似</td>
+</tr>
+<tr>
+<td align="center">FIFO</td>
+<td align="center">可能置换出重要的页面</td>
+</tr>
+<tr>
+<td align="center">Second Chance</td>
+<td align="center">比FIFO有很大的改善</td>
+</tr>
+<tr>
+<td align="center">Clock</td>
+<td align="center">实现的</td>
+</tr>
+<tr>
+<td align="center">LRU</td>
+<td align="center">很优秀，但很难实现</td>
+</tr>
+<tr>
+<td align="center">NFU</td>
+<td align="center">LRU的相对粗略的近似</td>
+</tr>
+<tr>
+<td align="center">Aging</td>
+<td align="center">非常近似LRU的有效算法</td>
+</tr>
+<tr>
+<td align="center">Working set</td>
+<td align="center">实现起来开销很大</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>内存映射文件</p>
+<blockquote>
+<p>基本思想：进程通过一个<strong>系统调用</strong>（Linux中可以调用mmap）将一个<strong>文件</strong>（或文件的某个部分）映射到其<strong>虚拟地址空间</strong>的一部分，<strong>访问这个文件就像访问内存中的一个大数组，而不是对文件进行读写</strong>。</p>
+<p>在多数实现中，在映射共享的页面时，不会实际读入这个页面的内容，二是在访问页面时，页面才会被每次一页地读入，磁盘文件则被当做后备存储。</p>
+<p>当进程退出或显式地接触文件映射时，所有被修改页面会写回文件。</p>
+</blockquote>
+</li>
+<li><p>支持写时复制技术</p>
+<blockquote>
+<p>例如：</p>
+<p>两个进程共享三个页面，每页都标志成<strong>写时复制</strong></p>
+<p>进程试图改变页面2的数据后</p>
+<p>他要做写操作，与只读标志产生了冲突，于是产生page fault，进入操作系统，操作系统检查出是写时复制操作，就会在内存中另开辟一个页面，把相应的内容写到这个新页面里；新页面属于要执行写操作的进程私有的，别的进程看不到，就是说对其他共享写时复制页面的进程是不可见的。</p>
+</blockquote>
+</li>
+<li><p>重点：</p>
+<blockquote>
+<p>虚拟存储技术的相关概念</p>
+<p>虚拟页式存储管理方案的实现</p>
+<p>多级页表、反转页表、页表项、地址转换、MMU、快表TLB、页错误、缺页异常处理</p>
+<p>相关软件策略：驻留集、置换范围、清除策略</p>
+<p>置换算法：OPT、FIFO、第二次机会、时钟算法、LRU、老化、工作集</p>
+<p>虚存相关的软件技术：内存映射文件、写时复制</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/28/Linux系统编程-多线程同步/" class="archive-article-date">
-  	<time datetime="2019-09-28T14:07:19.303Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/28/Linux系统编程-多线程同步/">Linux系统编程-多线程同步</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/20/操作系统-存储模型2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-线程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:33.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/10/20/操作系统-存储模型/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          操作系统-存储模型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/16/操作系统-同步互斥机制与通信机制/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">操作系统-同步互斥机制与通信机制</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-线程/">线程学习</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux系统编程-守护进程/" class="archive-article-date">
-  	<time datetime="2019-09-27T14:35:25.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux系统编程-守护进程/">创建守护进程模型</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/27/Linux的系统编程-进程通信/" class="archive-article-date">
-  	<time datetime="2019-09-27T01:03:12.923Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/27/Linux的系统编程-进程通信/">Linux的系统编程-进程通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的基础用法/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.870Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的基础用法/">Linux的基础语法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/26/Linux的系统编程-进程控制/" class="archive-article-date">
-  	<time datetime="2019-09-26T14:37:49.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/26/Linux的系统编程-进程控制/">Linux的系统编程-进程控制</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/24/hexo搭建全记录/" class="archive-article-date">
-  	<time datetime="2019-09-24T04:51:17.629Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/24/hexo搭建全记录/">GitHub+Hexo搭建过程记录</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/24/hello-world/" class="archive-article-date">
-  	<time datetime="2019-09-24T02:03:20.176Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/24/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2019/page/3/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><a class="page-number" href="/archives/2019/page/2/">2</a><a class="page-number" href="/archives/2019/page/3/">3</a><span class="page-number current">4</span>
-    </nav>
   
 
 
@@ -415,8 +710,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
