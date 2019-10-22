@@ -159,6 +159,1197 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-操作系统-文件系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/22/操作系统-文件系统/">操作系统-文件系统</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/22/操作系统-文件系统/" class="archive-article-date">
+  	<time datetime="2019-10-22T14:02:25.961Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>文件与文件系统</li>
+<li>文件的存储介质</li>
+<li>磁盘空间管理</li>
+<li>文件控制块及文件目录</li>
+<li>文件的物理结构</li>
+<li>文件系统的实现</li>
+<li>文件系统实例–UNIX</li>
+</ul>
+<ol>
+<li><p>文件是什么</p>
+<blockquote>
+<p>文件  是  对磁盘的    抽象</p>
+<p>文件是指  一组带标识的（标识就是文件名）、在逻辑上有完整意义的信息项的序列</p>
+<p>信息项：构成文件内容的基本单位（单个字节或多个字节），个信息项之间具有顺序关系</p>
+<p>文件内容的意义：文件建立者和使用者解释</p>
+</blockquote>
+</li>
+<li><p>如何设计一个文件系统？</p>
+<blockquote>
+<p>用户角度：文件系统如何呈现在用户面前：一个文件的组织，如何命名，如何保护文件，可以实施的操作</p>
+<p>操作系统角度：怎样组织管理文件？：文件得到描述、分类，文件目录的实现，存储空间的管理，文件的物理地址，磁盘实际运作方式（与设备管理的接口），文件系统性能</p>
+</blockquote>
+</li>
+<li><p>文件系统</p>
+<blockquote>
+<p>操作系统中，同意管理信息资源的一种软件，管理文件的存储、检索、更新，提供安全可靠的共享和保护手段，并方便用户使用：</p>
+<p>统一管理磁盘空间，实施磁盘空间的分配与回收</p>
+<p>实现文件的按名存取：名字空间—-（映射）—–磁盘空间</p>
+<p>实现文件信息的共享，并提供文件的保护、保密手段</p>
+<p>向用户提供一个方便使用、易于维护的接口，并向用户提供有关统计信息</p>
+<p>提高文件系统性能</p>
+<p>提供与I/O系统的统一接口</p>
+</blockquote>
+</li>
+<li><p>文件分类</p>
+<blockquote>
+<p>按文件的性质和用途分类（UNIX）</p>
+<p>普通文件：包含了用户信息，一般认为ASCII或二进制文件</p>
+<p>目录文件：管理文件系统的系统文件</p>
+<p>特殊文件（设备文件）：字符设备文件：和输入输出有关，用于模仿串行I/O设备，例如终端，打印机，网卡等；块设备文件：磁盘                                                                                  </p>
+<p>管道文件</p>
+<p>套接字</p>
+</blockquote>
+</li>
+<li><p>文件的逻辑结构</p>
+<blockquote>
+<p>从用户角度看：由用户的访问方式确定</p>
+<p>还可以组织成堆、顺序、索引、索引顺序、散列等结构</p>
+</blockquote>
+</li>
+<li><p>典型的文件逻辑结构和文件存取</p>
+<blockquote>
+<p>流式文件：构成文件的基本单位是字符。文件是有逻辑意义、无结构的一串字符的集合。</p>
+<p>记录式文件：文件由若干记录组成，可以按记录进行读写查找等操作。每条记录有其内部结构。</p>
+<p>顺序存取（访问）</p>
+<p>随机存取（访问）：提供读写位置（当前位置）例如UNIX的seek操作</p>
+</blockquote>
+</li>
+<li><p>存储介质与物理块</p>
+<blockquote>
+<p>磁盘（包括固态盘SSD）、磁带、光盘、U盘……</p>
+<p>物理块（块block、簇cluster）</p>
+<p>​        信息存储、传输、分配的独立单位</p>
+<p>​        存储设备划分为大小相等的物理块，统一编号</p>
+</blockquote>
+</li>
+<li><p>磁盘空间管理：有关数据结构</p>
+<blockquote>
+<p>位图：用一串二进制位反映磁盘空间中分配使用情况，每个物理块对应一位，已经分配出去的物理块为0，否则如果空闲则设为1；申请物理块时，可以在位示图中查找为1的位，返回对应物理块号；归还时，将对应位转置1</p>
+<p>空闲块表：把所有的空闲块记录到表里头（起始块号+块数），空闲块表</p>
+<p>空闲块链表：把所有空闲块链成一个链；扩展：成组链接法</p>
+</blockquote>
+</li>
+<li><p>成组链接法</p>
+<blockquote>
+<p>UNIX采用这种方法管理空闲块</p>
+</blockquote>
+</li>
+<li><p>文件控制块及文件目录</p>
+<blockquote>
+<p>文件属性：</p>
+<p>文件控制块：为管理文件设置的专门数据结构，保存管理文件所需要的所有有关信息（文件属性或元数据）</p>
+<p>常用属性：</p>
+<p>文件名，文件号（统一、唯一标识一个文件的信息），文件大小，文件地址（在磁盘上找到文件），创建时间，最后修改时间，最后访问时间，保护，口令，创建者，拥有者，文件类型，共享计数，各种标志（只读、隐藏、系统、归档、ASCII/二进制、顺序/随机访问、临时文件、锁）</p>
+<p>基本文件操作：</p>
+<p>create,delete,open,close,read,write,      append,seek,get attributes,set attributes,rename</p>
+</blockquote>
+</li>
+<li><p>用基本文件操作构建其他操作</p>
+<blockquote>
+<p>copy = open + create + read + write + close + close</p>
+<p>rename = read + write + delete + close</p>
+</blockquote>
+</li>
+<li><p>文件目录、目录项、目录文件</p>
+<blockquote>
+<p>文件目录：统一管理每个文件的元数据，以支持<strong>文件名</strong>到<strong>文件物理地址</strong>的转换；将所有文件的管理信息统一组织在一起，即构成文件目录</p>
+<p>目录文件：将文件目录以<strong>文件</strong>的形式存放在磁盘上</p>
+<p>目录项：构成文件目录的基本单元；目录项可以是FCB（文件控制块），<strong>目录是文件控制块的有序集合</strong></p>
+</blockquote>
+</li>
+<li><p>目录相关概念</p>
+<blockquote>
+<p>1现在的目录 树形结构</p>
+<p>2路径名（文件名）：</p>
+<p>​        绝对路径名：从根目录开始</p>
+<p>​        相对路径名：从当前目录开始</p>
+<p>3当前目录/工作目录</p>
+<p>4目录操作：</p>
+<p>​        创建目录、删除目录</p>
+<p>​        读目录、写目录、改名、复制</p>
+</blockquote>
+</li>
+<li><p>目录文件之间的关联</p>
+<blockquote>
+<p>根目录文件中有ABC三个目录项，根据ABC目录项找到目录A、目录B、目录C</p>
+<p>其中目录B中有两个目录项draw和word，根据draw目录项找到目录draw对应的目录文件，在目录draw下可以创建其他的文件如test，那么目录draw中有test目录项，根据目录项可以找到test文件</p>
+</blockquote>
+</li>
+<li><p>文件的物理结构</p>
+<blockquote>
+<p>文件在存储介质上的存放方式</p>
+<p>解决2问题：</p>
+<p>假设一个文件被划分为N块，这N块在磁盘上是怎么存放的？</p>
+<p>其地址（块号、簇号）在FCB中是怎么记录的？</p>
+</blockquote>
+</li>
+<li><p>连续（顺序）结构</p>
+<blockquote>
+<p>文件的信息存放在若干连续的物理块中。若文件被删，得到连续空闲物理块。</p>
+<p>FCB中 记录：<strong>首块块号</strong> + <strong>块的个数</strong></p>
+<p>优点：简单；支持顺序读取和随机存取；所需的磁盘寻道次数和寻道时间最少；可以同时读入多个块，检索一个块也很容易；</p>
+<p>缺点：1文件无法动态增长。解决办法：预留空间：浪费；重新分配和移动。2不利于文件的插入和删除。3外部碎片：紧缩技术。</p>
+</blockquote>
+</li>
+<li><p>链接结构</p>
+<blockquote>
+<p>一个文件的信息存放在若干不连续的物理块中，各块之间通过指针连接，前一个物理块指向下一个物理块</p>
+<p>FCB记录：<strong>文件的第一块的块号</strong>保存在FCB中即可</p>
+<p>优点：提高了磁盘空间的利用率，不存在外部碎片问题；有利于文件的插入删除；有利于文件动态扩充；</p>
+<p>缺点：存取速度慢，不适于随机存取；可靠性问题，如指针出错；更多的寻道次数和寻道时间；链接指针占用一定的空间。</p>
+</blockquote>
+</li>
+<li><p>链接结构变形：文件分配表FAT</p>
+<blockquote>
+<p>把所有物理块的地址都记在一张表里</p>
+<p>每个表项的值有三种：0（空闲物理块），块号（指向的是下一块块号），-1（文件的最后一块）。</p>
+<p>有了文件分配表这种文件结构，那么某文件的起始块号从何处得到？在FCB中。</p>
+</blockquote>
+</li>
+<li><p>链接结构变形：索引结构</p>
+<blockquote>
+<p>一个文件的信息存放在若干不连续的物理块中</p>
+<p>系统为<strong>每个文件</strong>建立一个专用数据结构——<strong>索引表</strong>，并将这些物理块的块号存放在该索引表中</p>
+<p>索引表就是磁盘块地址数组，其中第i个条目指向文件的第i块</p>
+<p>在FCB中如何记录文件地址？索引表存放在何处？</p>
+<p>FCB是固定大小的，而索引表的大小根据文件大小不同他的索引表大小也不同，可以在FCB中派生出一个字段，专门存放索引表的位置</p>
+<p>优点：保持了链接结构的优点，解决了缺点：既能顺序存取，又能随机存取；满足了文件动态增长、插入删除的要求；能充分利用磁盘空间</p>
+<p>缺点：较多的寻道次数和寻道时间；索引表本身带来了系统开销(内存、磁盘空间，存取时间)</p>
+</blockquote>
+</li>
+<li><p>索引表的组织方式</p>
+<blockquote>
+<p>问题：索引表很大，需要多个物理块存放时怎么办？</p>
+<p>链接方式：一个磁盘块存一个索引表，多个索引表链接起来；</p>
+<p>多级索引方式：将文件的索引表地址放在另一个索引表中；</p>
+<p>综合模式：直接索引方式 + 间接索引方式</p>
+</blockquote>
+</li>
+<li><p>多级索引与综合模式</p>
+<blockquote>
+<p>多级索引：顶级索引表—次级索引表—次次级索引表</p>
+<p>综合模式：顶级索引表–直接物理块 or 次级索引表</p>
+</blockquote>
+</li>
+<li><p>UNIX的三级索引结构</p>
+<blockquote>
+<p>多级索引结构（综合模式）</p>
+<p>每个文件的主索引表有15个索引项（FCB中），每项占2个字节</p>
+<p>前12项直接存放文件的物理块号（直接寻址）</p>
+<p>如果文件大于12块，则利用第13项指向一个物理块，在该块中存放的是一级索引表</p>
+<p>假设扇区大小为512字节，物理块等于扇区块大小，一级索引表可以存放256个物理块号</p>
+<p>对于更大的文件还可以利用第14和第15项作为二级和三级索引表</p>
+<p>1-12：指向文件的前12个物理块</p>
+<p>13：记录一个一级索引表的块号，表中记录了256个磁盘块块号，就是指向256个物理块</p>
+<p>14：指向一个二级索引表，这个表中有256行，每行都指向一个一级索引表，一级索引表指向256个物理块，共256^2个物理块</p>
+<p>15：指向一个三级索引表，表中256行记录256个二级索引表，每个二级索引表指向256个一级索引表，一级索引表指向256个物理块，共256^3个物理块</p>
+<p>一个文件最大能达到12+256+256^2+256^3个物理块</p>
+</blockquote>
+</li>
+<li><p>文件系统的实现</p>
+<blockquote>
+<p>实现文件系统需要考虑：磁盘上和内存中的内容布局</p>
+<p>磁盘上：如何启动操作系统？磁盘是怎样管理的？怎样获取磁盘的有关信息？目录在磁盘上怎么存放？普通文件在磁盘上怎么存放？</p>
+<p>内存中：当进程使用文件时，操作系统是如何支持的？文件系统的内存数据结构？</p>
+</blockquote>
+</li>
+<li><p>相关术语</p>
+<blockquote>
+<p>磁盘分区：把一个物理磁盘的存储空间划分为几个相互独立的部分，成为分区；</p>
+<p>文件卷：磁盘上的逻辑分区，由一个或多个物理块组成：一个文件卷可以是整个磁盘 或部分磁盘或跨盘；同一个文件卷中使用同一份管理数据进行文件分配和磁盘空闲空间管理，不同的文件卷中的管理数据都是相互独立的。一个文件卷上：<strong>包括文件系统信息，一组文件（用户文件、目录文件）、未分配空间</strong>。块、簇：一个或多个（2的幂）连续的扇区，可寻址数据块。</p>
+<p>格式化：在一个文件卷上建立文件系统，即建立并初始化用于文件分配和磁盘空闲空间管理的<strong>管理数据</strong>（元数据）</p>
+</blockquote>
+</li>
+<li><p>磁盘上的内容</p>
+<blockquote>
+<p>文件卷（分区）</p>
+<p>可以存放：</p>
+<p>​    引导区：从该卷引导操作系统所需要的信息；每个卷（分区）一个，通常为第一个扇区</p>
+<p>​    卷（分区）信息：该卷的块数，块大小，空闲块数量和指针，空闲FCB数量和指针</p>
+<p>​    目录文件（根目录文件和其他目录文件）</p>
+<p>​    用户文件</p>
+</blockquote>
+</li>
+<li><p>磁盘上文件系统的布局</p>
+<blockquote>
+<p>内存中所需的数据结构：</p>
+<p>​    系统打开文件表：</p>
+<p>​        整个操作系统一张表：放在内存中，用于保存已经打开文件的PCB表：</p>
+<p>​        FCB（i节点）信息||引用计数||修改标记</p>
+<p>​    用户打开文件表：</p>
+<p>​        每个进程一个，进程的PCB中记录了用户打开文件表的位置：</p>
+<p>​        文件描述符||打开方式||读写指针||系统打开文件表索引</p>
+</blockquote>
+</li>
+<li><p>以UNIX为例介绍文件系统</p>
+<blockquote>
+<p>文件目录检索</p>
+<p>访问一个文件：</p>
+<p>目录检索：用户给出文件名—按文件名查找到目录项/FCB；根据路径名检索：全路径名：从根开始\A\B\C\File1；相对路径：从当前目录开始C\File1。至此，找到了File1的FCB。</p>
+<p>文件寻址：根据<strong>目录项/FCB</strong>中文件物理地址等信息，计算出文件中任意记录或字符在存储介质上的地址。</p>
+</blockquote>
+</li>
+<li><p>目录文件实现时的改进：</p>
+<blockquote>
+<p>如何加快目录检索：</p>
+<p>目录项分解法：把FCB分成两个部分：符号目录项（文件名，文件号）+基本目录项（除<strong>文件名</strong>外的所有字段）</p>
+<p>例子：UNIX的索引节点：i节点</p>
+</blockquote>
+</li>
+<li><p>UNIX文件系统实现：</p>
+<blockquote>
+<p>FCB = 目录项 + i节点</p>
+<p>目录项：文件名+i节点号</p>
+<p>目录文件由目录项构成</p>
+<p>i节点：描述文件的相关信息</p>
+<p>每个文件由一个目录项、一个i节点、若干磁盘块构成</p>
+<p>引导记录–超级数据块–空闲区管理–i节点区–根目录区-文件和目录区</p>
+</blockquote>
+</li>
+<li><p>UNIX中的文件查找/usr/ast/mbox：</p>
+<blockquote>
+<p>把<strong>根目录文件</strong>读入内存</p>
+<p>通过比较文件名，找到usr对应的i节点号是7，i节点7中记录了usr在块128中，</p>
+<p>到磁盘的第128块中找到usr目录文件，把它读入内存，寻找ast文件名，找到发现i节点号为62，i节点62中记录了ast在块496中</p>
+<p>到磁盘的第496块中找到ast目录文件，把它读入内存，查找mbox文件目录项，找到发现对应的i节点号是80，继续在i节点区用80去把mbox文件的i节点读进内存。</p>
+</blockquote>
+</li>
+<li><p>重点内容</p>
+<blockquote>
+<p>文件系统设计的概念：文件、文件分类、文件的逻辑结构和物理结构</p>
+<p>文件目录的实现：文件控制块、目录项、目录文件</p>
+<p>文件系统的实现：磁盘布局、内存数据结构</p>
+<p>磁盘空间的管理：存储介质、扇区、物理块、簇</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/22/操作系统-文件系统/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-死锁" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/22/操作系统-死锁/">操作系统-死锁</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/22/操作系统-死锁/" class="archive-article-date">
+  	<time datetime="2019-10-22T14:01:45.959Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>死锁的基本概念</li>
+<li>资源分配图</li>
+<li>死锁预防</li>
+<li>死锁避免</li>
+<li>死锁检测与解除</li>
+<li>哲学家就餐问题</li>
+</ul>
+<ol>
+<li><p>死锁</p>
+<blockquote>
+<p>一组进程中，每个进程都无限等待被该组中另一个进程所占有的资源，因而永远无法得到资源，这种现象称为进程死锁。</p>
+<p>如果死锁发生，会浪费大量系统资源，甚至导致系统崩溃。</p>
+<p>参与死锁的所有进程都在等待资源；</p>
+<p>参与死锁的进程是当前系统中所有进程的子集。</p>
+</blockquote>
+</li>
+<li><p>为什么会出现死锁</p>
+<blockquote>
+<p>资源数量有限、锁和信号量错误使用</p>
+<p>资源的使用方式：“申请-分配-使用-释放”模式</p>
+</blockquote>
+</li>
+<li><p>可重用资源：可被多个进程多次使用</p>
+<blockquote>
+<p>分为可抢占资源、不可抢占资源；</p>
+<p>可抢占：处理器、I/O部件、内存、文件、数据库、信号量</p>
+<p>不可抢占：打印机</p>
+</blockquote>
+</li>
+<li><p>可消耗资源：只可使用一次，可创建和销毁的资源</p>
+<blockquote>
+<p>信号、中断、消息</p>
+<p>死锁主题中，主要针对可重用资源，不探讨可消耗资源</p>
+</blockquote>
+</li>
+<li><p>进程竞争可重用资源</p>
+<blockquote>
+</blockquote>
+</li>
+<li><p>进程竞争可消耗资源</p>
+<blockquote>
+</blockquote>
+</li>
+<li><p>活锁和饥饿</p>
+<blockquote>
+<p>两个进程都可以上CPU执行，但是都无法向前进展</p>
+<p>活锁：先加锁；再轮询（下一个资源）；既无进展也无阻塞。</p>
+<p>死锁：进程进入等待状态，不会竞争CPU了。</p>
+<p>饥饿：资源分配策略决定。</p>
+</blockquote>
+</li>
+<li><p><strong>产生死锁的必要条件</strong></p>
+<blockquote>
+<p>互斥使用（资源独占）：一个资源一次只能给一个进程使用</p>
+<p>占有且等待（请求和保持，部分分配）：进程在申请新的资源的同时，保持对原有资源的占有</p>
+<p>不可抢占（不可剥夺）：资源的申请者不能强行从资源占有者手中夺取资源，资源只能由占有者资源释放</p>
+<p>循环等待：存在一个进程等待队列{P1，P2，P3…，Pn}</p>
+</blockquote>
+</li>
+<li><p>资源分配图</p>
+<blockquote>
+<p>化简步骤：</p>
+<p>​    找一个非孤立、且只有分配边的进程节点（<strong>去掉分配边，将其变为孤立节点</strong>）</p>
+<p>​    再把相应的资源分配给一个等待该资源的进程，即将该进程的申请边变为分配边</p>
+<p>​    重复直到最后。</p>
+</blockquote>
+</li>
+<li><p>死锁预防</p>
+<blockquote>
+<p>解决死锁的方法：4</p>
+<p>1 <strong>鸵鸟算法</strong>：不考虑此问题</p>
+<p>2-3 不让死锁发生：<strong>死锁预防</strong>（静态策略：设计合适的资源分配算法，不让死锁发生）；<strong>死锁避免</strong>（动态策略：以不让死锁发生为目标，跟踪并评估资源分配过程，根据评估结果决定是否分配）</p>
+<p>4 让死锁发生：<strong>死锁的检测与解除</strong></p>
+</blockquote>
+</li>
+<li><p>死锁预防</p>
+<blockquote>
+<p>在设计系统时，通过确定资源分配算法，排除发生死锁的可能性：防止产生死锁的四个必要条件中任何一个条件发生，破坏产生死锁的四个必要条件之一</p>
+<p>（1）破坏：<strong>互斥使用/资源独占</strong> 条件</p>
+<p>资源转换技术：<strong>把独占资源变为共享资源</strong>。spooling技术的引入：设计一个<strong>守护进程or线程</strong>，负责管理打印机，进程需要打印时，将请求发给daemon，由它完成打印任务。解决不允许任何进程直接占有打印机的问题。</p>
+<p>（2）破坏：<strong>占有且等待</strong>条件</p>
+<p>要求每个进程在运行前，必须一次性申请他所要求的所有资源，且仅当该进程所要的资源均可满足时才给予一次性分配。资源利用率低，产生饥饿现象。</p>
+<p>在允许进程动态申请资源前提下规定，一个进程在申请新的资源不能立刻得到满足，变为等待状态，变之前必须释放自己已经占有的所有资源。产生饥饿现象。</p>
+<p>（3）破坏：<strong>不可抢占</strong>条件</p>
+<p>当一个进程申请的资源被其他进程占用时，可以通过操作系统抢占这一资源（<strong>两个进程优先级不同</strong>）</p>
+<p>局限性：适用于状态易于保存和恢复的资源。CPU、内存。</p>
+<p>（4）破坏：<strong>循环等待</strong>条件</p>
+<p>通过定义资源类型的线性顺序实现</p>
+<p>把系统中的所有资源编号，进程在申请资源时，必须严格按资源编号的递增次序进行，否则，操作系统不予分配。</p>
+<p>解决哲学家就餐问题</p>
+</blockquote>
+</li>
+<li><p>为什么资源有序分配法不会产生死锁</p>
+<blockquote>
+</blockquote>
+</li>
+<li><p>死锁避免</p>
+<blockquote>
+<p>在系统的运行过程中，对进程发出的每个系统能够满足的自愿申请进行动态检查，并根据检查结果决定是否分配资源，若分配后系统发生死锁或可能发生死锁，则不予分配，否则，予以分配。</p>
+<p>安全状态：</p>
+<p>如果系统中存在一个由所有进程构成的安全序列p1,…,pn，则称系统处于安全状态</p>
+<p>安全序列：</p>
+<p>一个进程序列是安全的，说明对于每个进程Pi：他以后还需要的资源数量不找过当前系统剩余资源量，与所有进程Pj（j&lt;i）当前占有资源量之和。</p>
+<p>安全状态一定没有死锁发生。</p>
+</blockquote>
+</li>
+<li><p>不安全状态</p>
+<blockquote>
+<p>系统中不存在一个安全序列</p>
+<p>不安全状态一定导致死锁。</p>
+</blockquote>
+</li>
+<li><p>死锁避免：银行家算法</p>
+<blockquote>
+<p>仿照银行发放贷款时采用的控制方式而设计的一种死锁避免算法</p>
+<p>应用条件：</p>
+<p>1 在<strong>固定数量的进程</strong>中共享<strong>数量固定的资源</strong></p>
+<p>2 每个进程预先指定完成工作所需的最大资源数量</p>
+<p>3 进程不能申请比系统中可用资源总数还多的资源</p>
+<p>4 进程等待资源的时间是优有限的</p>
+<p>5 如果系统满足了进程对资源的最大需求，那么进程应该在有限的时间内使用资源，并归还资源。</p>
+</blockquote>
+</li>
+<li><p>银行家算法</p>
+<blockquote>
+<p>银行家算法：</p>
+<p>n：系统中进程数量</p>
+<p>m：资源类数量</p>
+<p>Available：系统可用资源总数</p>
+<p>Max[i]：进程i对资源的最大需求量</p>
+<p>Allocation[i]：进程i已经得到的资源量</p>
+<p>Need[i]：进程i还需要多少资源</p>
+<p>Request[i]：进程i这次申请需要多少</p>
+<p>流程：</p>
+<p>当进程pi提出资源申请时，系统执行下列步骤：</p>
+<p>1 若Request[i]&lt;=Need[i]，转2</p>
+<p>2 若Request[i]&lt;=Available[i]，转3</p>
+<p>3 假设系统分配了资源，则有：</p>
+<p>​    Available = Available-Request[i];</p>
+<p>​    Allocation[i] = Allocation[i]+Request[i];</p>
+<p>​    Need[i] = Need[i] - Request[i];</p>
+<p>若系统新状态是安全的，则分配完成</p>
+<p>若系统新状态是不安全的，则恢复原来状态，进程等待</p>
+<hr>
+<p>为了进行安全检查，定义数据结构：</p>
+<p>（1）</p>
+<p>Work = Available;</p>
+<p>Finish = false;</p>
+<p>寻找满足条件的i：</p>
+<p>（2）</p>
+<p>a.Finish[i]==false;</p>
+<p>b.Need[i]&lt;=Work;</p>
+<p>如果不存在，则转4</p>
+<p>（3）</p>
+<p>Work = Work +Allocation[i];</p>
+<p>Finish[i] = true;</p>
+<p>转2</p>
+<p>（4）</p>
+<p>若对所有i，Finish[i] == ture,则系统处在安全状态，否则系统处于不安全状态</p>
+</blockquote>
+</li>
+<li><p>死锁检测与解除</p>
+<blockquote>
+<p>死锁检测：允许死锁发生，但是操作系统会不断监视系统进展情况，判断死锁是否真的发生；一旦死锁发生，采用专门措施，解除死锁，并以最小代价恢复操作系统运行。</p>
+<p>检测时机：</p>
+<p>1当进程由于资源请求不满足而等待时检测死锁，缺点系统开销大</p>
+<p>2定时检测</p>
+<p>3系统资源利用率下降时检测死锁</p>
+</blockquote>
+</li>
+<li><p>一个简单的死锁检测算法</p>
+<blockquote>
+<p>每个进程、每个资源指定唯一编号</p>
+<p>设置一张资源分配表：记录个进程与其占用资源之间的关系</p>
+<p>设置一张进程等待表：记录各进程与要申请资源之间的关系</p>
+</blockquote>
+</li>
+<li><p>死锁的解除</p>
+<blockquote>
+<p>以最小的代价恢复系统的运行</p>
+<p>撤销所有死锁进程（代价太大）</p>
+<p>进程回退再启动</p>
+<p>按照某种原则逐一撤销死锁进程，直到不死锁</p>
+<p>按照某种原则逐一抢占资源（资源被抢占的进程必须回退到之前的状态），直到。。。</p>
+</blockquote>
+</li>
+<li><p>哲学家就餐问题</p>
+<blockquote>
+<p>经典的同步互斥问题</p>
+<p>应用程序中并发线程执行时，协调处理共享资源</p>
+</blockquote>
+</li>
+<li><p>解决方式1：把筷子当做信号量处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">semaphore fork[<span class="number">5</span>] = &#123;<span class="number">1</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">philosopher</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        think();</span><br><span class="line">        P(fork[i]);<span class="comment">//申请右边的筷子</span></span><br><span class="line">        P(fork[(i+<span class="number">1</span>)%<span class="number">5</span>]);<span class="comment">//申请左边的筷子</span></span><br><span class="line">        eat();</span><br><span class="line">        V(fork[(i+<span class="number">1</span>)%<span class="number">5</span>]);</span><br><span class="line">        V(fork[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    parbegin(philosopher(<span class="number">0</span>),philosopher(<span class="number">1</span>),philosopher(<span class="number">2</span>),philosopher(<span class="number">3</span>),philosopher(<span class="number">4</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>为防止死锁发生可采用的措施：</p>
+<p>最多允许4个哲学家同时坐在桌子周围</p>
+<p>仅当一个哲学家左右两边的筷子都可以用时，才允许他拿筷子</p>
+<p>给所有哲学家编号，奇数号的哲学家必须首先拿左边的筷子，偶数号的哲学家必须相反</p>
+</blockquote>
+</li>
+<li><p>解决方式2：最多允许4个哲学家同时坐在桌子周围</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">semaphore fork[<span class="number">5</span>] = &#123;<span class="number">1</span>&#125;;</span><br><span class="line">semaphore room = &#123;<span class="number">4</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">philosopher</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        think();</span><br><span class="line">        P(room);</span><br><span class="line">        P(fork[i]);<span class="comment">//申请右边的筷子</span></span><br><span class="line">        P(fork[(i+<span class="number">1</span>)%<span class="number">5</span>]);<span class="comment">//申请左边的筷子</span></span><br><span class="line">        eat();</span><br><span class="line">        V(fork[(i+<span class="number">1</span>)%<span class="number">5</span>]);</span><br><span class="line">        V(fork[i]);</span><br><span class="line">        V(room);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    parbegin(philosopher(<span class="number">0</span>),philosopher(<span class="number">1</span>),philosopher(<span class="number">2</span>),philosopher(<span class="number">3</span>),philosopher(<span class="number">4</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解决方式3：管程</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> philosopher[k=<span class="number">0</span> to <span class="number">4</span>]&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        think();</span><br><span class="line">        get_forks(k);</span><br><span class="line">        eat();</span><br><span class="line">        release_forks(k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解决方式4：把哲学家分为 思考，饥饿，进食三种状态</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">philosopher</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        think();</span><br><span class="line">        P(&amp;mutex);</span><br><span class="line">        state[i]=hungry;</span><br><span class="line">        test(i);</span><br><span class="line">        V(&amp;mutex);</span><br><span class="line">        P(&amp;s[i]);</span><br><span class="line">        拿左筷子；</span><br><span class="line">        拿右筷子；</span><br><span class="line">        进食；</span><br><span class="line">        放左筷子；</span><br><span class="line">        放右筷子；</span><br><span class="line">        P(&amp;mutex);</span><br><span class="line">        state[i]=think();</span><br><span class="line">        test([i<span class="number">-1</span>]%<span class="number">5</span>);</span><br><span class="line">        test([i+<span class="number">1</span>]%<span class="number">5</span>);</span><br><span class="line">        V(&amp;mutex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">state[i]=think();</span><br><span class="line">s[i]=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(state[i]==hungry)&amp;&amp;(state[(i<span class="number">-1</span>)%<span class="number">5</span>]!=eating) &amp;&amp;(state[(i<span class="number">-1</span>)%<span class="number">5</span>]!=eating))&#123;</span><br><span class="line">        state[i]=eating;</span><br><span class="line">        V(&amp;s[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>问题</p>
+<blockquote>
+<p>何时发生死锁？都拿到右边筷子，都在等左边筷子</p>
+<p>怎样从死锁中恢复？某个哲学家放下筷子</p>
+<p>怎样避免死锁发生？最后一根筷子，只能分给手中拿到一根筷子的哲学家</p>
+<p>如何预防死锁？给哲学家编号，给筷子编号，要求只能从编号小的筷子拿起，这样，大部分哲学家都是先右后左，只有最后一个哲学家是先左后右。</p>
+</blockquote>
+</li>
+<li><p>重点：</p>
+<blockquote>
+<p>死锁的基本概念：产生死锁的四个必要条件；死锁、活锁、饥饿 的区别</p>
+<p>死锁的解决方案：死锁预防（资源的有序分配法）；死锁避免（银行家算法、安全/不安全状态）；死锁检测与解除</p>
+<p>资源分配图及在解决死锁问题上的应用</p>
+<p>哲学家就餐问题，及解决方法</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/22/操作系统-死锁/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-IO系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/22/操作系统-IO系统/">操作系统-I/O系统</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/22/操作系统-IO系统/" class="archive-article-date">
+  	<time datetime="2019-10-22T14:01:45.957Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>I/O管理概述</li>
+<li>I/O硬件组成</li>
+<li>I/O控制方式</li>
+<li>I/O软件组成</li>
+<li>I/O相关技术</li>
+<li>I/O性能问题</li>
+</ul>
+<ol>
+<li><p>I/O管理的特点</p>
+<blockquote>
+<p>I/O性能经常成为系统性能的瓶颈</p>
+<p>操作系统庞大复杂的原因之一：资源多 杂 并发，均来自I/O。速度差异很大</p>
+</blockquote>
+</li>
+<li><p>设备分类—按数据组织</p>
+<blockquote>
+<p>块设备：以数据块为单位存储、传输信息；传输速率高，可寻址</p>
+<p>字符设备：以字符为单位存储、传输信息；传输速率低，不可寻址</p>
+</blockquote>
+</li>
+<li><p>设备分类—按资源分配角度</p>
+<blockquote>
+<p>独占设备：打印机</p>
+<p>共享设备：一段时间内，可有多个进程共同使用的设备，提高资源利用率</p>
+<p>虚设备：用共享设备去模拟独占设备；用速度快的模拟速度慢的。提高资源利用率。将慢的独占设备改造成多个用户可共享的设备，提高设备的利用率</p>
+</blockquote>
+</li>
+<li><p>I/O管理的目标和任务</p>
+<blockquote>
+<p>（1）按照用户的请求，控制设备的各种操作，完成I/O设备与内存之间的数据交换，最终完成用户的I/O请求</p>
+<p>设备分配和回收：记录设备的状态；根据用户的请求和设备的类型，采用一定的分配算法，选择一条数据通路</p>
+<p>执行设备驱动程序，实现真正的I/O操作</p>
+<p>设备中断处理：处理外部设备的中断</p>
+<p>缓冲区管理：管理I/O缓冲区，缓解速度之间的不匹配</p>
+<p>（2）建立方便、<strong>统一的独立</strong>于设备的接口</p>
+<p>方便：向用户提供使用外部设备的方便接口，用户编程时不需要考虑设备的复杂物理特性</p>
+<p>统一性：对不同的设备采用统一的操作方式， 即在用户程序中使用的是逻辑设备。逻辑设备与物理设备；屏蔽硬件细节。</p>
+<p>（3）充分利用各种技术（通道，中断，缓冲，异步I/O），提高CPU与设备、设备与设备之间的并行工作能力，充分利用资源，提高资源利用率。并行性，均衡性。</p>
+<p>（4）保护数据</p>
+</blockquote>
+</li>
+<li><p>I/O设备组成</p>
+<blockquote>
+<p>机械+电子</p>
+</blockquote>
+</li>
+<li><p>设备接口–控制器的作用</p>
+<blockquote>
+<p>操作系统将命令写入控制器的接口寄存器；从接口寄存器读取状态信息或结果信息。</p>
+<p>把串行的位流转换为字节快，做必要的错误修正</p>
+</blockquote>
+</li>
+<li><p>I/O端口地址</p>
+<blockquote>
+<p>i/o端口地址：接口电路中每个寄存器具有的、唯一的地址，是个整数；</p>
+<p>所有i/o端口地址形成i/o端口空间（受到保护）</p>
+<p>i/o指令形式与i/o地址是相互关联的，主要有两种形式：内存映像编址，i/o独立编址</p>
+<p>内存映像编址：分配给系统中所有端口的地址空间与内存的地址空间统一编址；把i/o端口看做一个存储单元，对i/o的读写操作等同于对内存的操作。优点：凡是可对内存的操作的指令都可对I/O端口操作；不需要专门的I/O指令；I/O端口可占有较大的地址空间。缺点：占用了部分内存</p>
+</blockquote>
+</li>
+<li><p>内存映射I/O的优点</p>
+<blockquote>
+<p>不需要特殊的保护机制来阻止用户进程执行I/O操作</p>
+<p>可以引用内存的每一条指令也可以引用控制寄存器</p>
+</blockquote>
+</li>
+<li><p>内存映射I/O的缺点</p>
+<blockquote>
+<p>对设备控制寄存器不能进行高速缓存</p>
+</blockquote>
+</li>
+<li><p>I/O控制方式</p>
+<blockquote>
+<p>可编程I/O（轮询/查询）：由CPU代表进程给I/O模块发I/O命令，进程进入忙等待，知道操作完成才继续执行</p>
+<p>中断驱动I/O</p>
+<p>DMA</p>
+</blockquote>
+</li>
+<li><p>I/O软件的组成</p>
+<blockquote>
+<p>分层的设计思想</p>
+<p>把I/O软件组织成多个层次；隐藏底层功能细节，同时给高一层提供服务。</p>
+<p>层：</p>
+<p>用户级I/O软件</p>
+<p>与设备无关的OS软件</p>
+<p>设备驱动程序</p>
+<p>中断处理程序</p>
+<p>硬件</p>
+</blockquote>
+</li>
+<li><p>设备独立性（设备无关性）</p>
+<blockquote>
+<p>用户编写的程序可以访问任意I/O设备，无需事先指定设备</p>
+</blockquote>
+</li>
+<li><p>引入缓冲技术解决什么问题？</p>
+<blockquote>
+<p>解决CPU与I/O设备之间速度的不匹配的问题</p>
+<p>凡是数据到达和离去速度不匹配的地方均可采用缓冲技术</p>
+<p>提高CPU与I/O设备之间的并行性</p>
+<p>减少了I/O设备对CPU的中断请求次数，放宽CPU对中断响应时间的要求</p>
+</blockquote>
+</li>
+<li><p>缓冲技术实现</p>
+<blockquote>
+<p>缓冲区分类：</p>
+<p>硬缓冲：硬件寄存器实现</p>
+<p>软缓冲：在内存中开辟一个空间，用作缓冲区</p>
+<p>缓冲区管理：单缓冲、双缓冲、缓冲池（多缓冲、循环缓冲）（统一管理多个缓冲区，采用有界缓冲区的生产者消费者模型 对缓冲池中的缓冲区进行循环使用）</p>
+</blockquote>
+</li>
+<li><p>终端输入软件中的键盘驱动程序</p>
+<blockquote>
+<p>任务之一：收集字符</p>
+<p>两种常见的字符缓冲方法：</p>
+<p>公共缓冲池</p>
+<p>终端数据结构缓冲</p>
+</blockquote>
+</li>
+<li><p>UNIX系统5中</p>
+<blockquote>
+<p>采用缓冲池技术，可平滑和加快信息在内存和磁盘之间的传输</p>
+<p>缓冲区结合提前读和延迟写技术，对具有重复性及阵发性I/O进程、提高I/O速度很有帮助</p>
+<p>缓冲池：200个缓冲区（512字节or1024个字节）</p>
+<p>每个缓冲区由两部分组成：缓冲控制块或缓冲首部+缓冲数据区；通过缓冲控制块实现对缓冲区的管理</p>
+<p>空闲缓冲区队列（av链）：队列头部为bfreelist</p>
+<p>设备缓冲队列（b链）：连接所有分配给各类设备使用的缓冲区，按照散列方式组织</p>
+<p>每个缓冲区同时在av链和b链</p>
+</blockquote>
+</li>
+<li><p>I/O设备管理有关数据结构</p>
+<blockquote>
+<p>描述设备、控制器等部件的表格</p>
+<p>简历同类资源的队列</p>
+<p>面向进程I/O请求的动态数据结构</p>
+<p>建立I/O队列</p>
+</blockquote>
+</li>
+<li><p>I/O进程</p>
+<blockquote>
+<p>（1）</p>
+<p>专门处理系统中的I/O请求和中断工作</p>
+<p>I/O请求的进入：</p>
+<p>用户程序：调用send将I/O请求发送给I/O进程；调用block将自己阻塞，直到I/O任务完成后被唤醒</p>
+<p>系统：利用wakeup唤醒I/O进程，完成用户所要求的I/O处理</p>
+<p>I/O中断的进入：</p>
+<p>当I/O中断发生时，内核中的中断处理程序发一条消息给I/O进程，由I/O进程处理中断</p>
+<p>（2）</p>
+<p>是系统进程，优先级很高。一旦被唤醒，很快抢占处理机并投入运行。</p>
+<p>I/O进程开始运行后，首先关闭中断，然后用receive接收消息</p>
+<p>两种情形：</p>
+<p>没有消息，则开中断，将自己阻塞；</p>
+<p>有消息，判断消息类型：</p>
+<p>a. I/O请求：准备通道程序，发出启动I/O指令，继续判断有无消息</p>
+<p>b. I/O中断：进一步判断正常或异常结束，错误就转入错误处理程序，正确就处理中断请求</p>
+</blockquote>
+</li>
+<li><p>I/O性能问题</p>
+<blockquote>
+<p>使CPU利用率尽可能不被I/O降低</p>
+<p>使CPU尽可能摆脱I/O</p>
+<p>减少或缓解速度差异—缓冲技术</p>
+<p>使CPU不等待I/O—异步I/O</p>
+<p>让CPU摆脱I/O–DMA、通道</p>
+</blockquote>
+</li>
+<li><p>异步传输</p>
+<blockquote>
+<p>异步模式：用于优化应用程序的性能</p>
+<p>同步I/O：应用程序被阻塞直到I/O操作完成</p>
+<p>异步传输I/O的基本思想：</p>
+<p>系统实现：</p>
+<p>通过切换到其他线程保证CPU利用率；</p>
+<p>对少量数据的I/O操作会引入切换的开销；</p>
+<p>用户实现：</p>
+<p>将访问控制分成两个阶段进行；</p>
+<p>发出读取指令后继续做其他操作；</p>
+<p>当需要用读入的数据的时候，再使用wait命令等待其完成</p>
+<p>不引入线程切换，减少开销</p>
+</blockquote>
+</li>
+<li><p>重点</p>
+<blockquote>
+<p>I/O系统的概念：I/O设备的特点分类；I/O管理的任务</p>
+<p>I/O管理的解决方案：I/O硬件组成；I/O控制方式；缓冲技术</p>
+<p>I/O相关技术</p>
+<p>I/O性能提高的解决方案</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/22/操作系统-IO系统/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-文件管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/22/操作系统-文件管理/">操作系统-文件管理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/22/操作系统-文件管理/" class="archive-article-date">
+  	<time datetime="2019-10-22T14:01:45.921Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>文件系统实例-FAT</li>
+<li>文件操作的实现</li>
+<li>文件系统的管理</li>
+<li>文件系统的安全性</li>
+<li>文件系统的性能问题</li>
+<li>文件系统的两个练习</li>
+</ul>
+<ol>
+<li><p>Windows——FAT16文件系统（简单）</p>
+<blockquote>
+<p>簇大小：1,2,4,8,16,32,64扇区</p>
+<p>文件系统的数据记录在“引导扇区”中</p>
+<p>文件分配表FAT的作用：描述簇的分配状态、标注下一簇的簇号等</p>
+<p><strong>FAT表项：2字节</strong></p>
+<p><strong>目录项：32字节</strong></p>
+<p><strong>根目录大小固定</strong></p>
+</blockquote>
+</li>
+<li><p>文件操作的实现</p>
+<blockquote>
+<p>创建文件：<strong>建立系统与文件的联系，实质是建立文件的FCB</strong>：在目录中为新文件建立一个目录项，根据提供的参数及需要填写相关内容；分配必要的存储空间。</p>
+<p>打开文件：根据文件名在文件目录中检索，并将该文件的目录项读入内存，建立相应的数据结构，为后续的文件操作做好准备。通过文件描述符和文件句柄。</p>
+</blockquote>
+</li>
+<li><p>建立文件</p>
+<blockquote>
+<p>create(文件名，访问权限)：</p>
+<p>1 检查参数的合法性（合法-2，不合法-报错返回）</p>
+<p>2 申请空闲目录项，并填写相关内容</p>
+<p>3 为文件申请磁盘块</p>
+<p>4 返回</p>
+</blockquote>
+</li>
+<li><p>打开文件</p>
+<blockquote>
+<p>fd = open(文件路径名，打开方式)</p>
+<p>根据文件路径名查目录，找到目录项；</p>
+<p>根据文件号查系统打开文件表，看文件是否已被打开，若是–共享计数+1；否则，共享计数置为1；</p>
+<p>根据打开方式、共享说明、用户身份检查访问合法性</p>
+<p>在用户打开文件表找那个获取一空表项，填写打开方式等，并指向系统打开文件表对应表项。返回信息：fd：文件描述符，是一个非负整数，用于以后读写文件</p>
+</blockquote>
+</li>
+<li><p>指针定位</p>
+<blockquote>
+<p>seek(fd,新指针位置)</p>
+<p>系统为每个进程打开的每个文件维护一个读写指针，即相对于文件开头的偏移地址（读写指针指向每次文件读写的开始位置，在每次读写完成后，读写指针按照读写的数据量自动后移相应数值）</p>
+<p>​    由fd查用户打开文件表，找到对应的表项；</p>
+<p>​    将用户打开文件表中的文件读写指针位置，设置为新指针的位置，共后续读写命令存取该指针处文件内容。</p>
+</blockquote>
+</li>
+<li><p>读文件</p>
+<blockquote>
+<p>read(文件描述符，读指针，要读的长度，内存目的地址)</p>
+<p>1 根据打开文件时得到的文件描述符，找到相应的文件控制块(目录项)，确定读操作合法性，合法继续2，否则报错返回</p>
+<p>2 将文件的逻辑块号转换为的物理块号：根据参数中的读指针、长度与文件控制块中的信息，确定块号、块数、块内位移</p>
+<p>3 申请缓冲区</p>
+<p>4 启动磁盘I/O操作，把磁盘块中的信息读入缓冲区，再传送到指定的内存区（多次读盘）</p>
+<p>5 反复执行3、4直至读出所需数量的数据或读到文件尾部</p>
+</blockquote>
+</li>
+<li><p>怎样实现系统调用rename（重命名）</p>
+<blockquote>
+<p>根据文件名进行目录检索，找到对应的FCB或者目录项，在FCB或者目录项中，直接把名字改成新名字</p>
+</blockquote>
+</li>
+<li><p>文件系统的管理</p>
+<blockquote>
+<p>可靠性：低于和预防各种物理破坏和认为破坏的能力</p>
+<p>坏块问题：把坏块分配给坏块文件，由系统使用它</p>
+<p>备份：通过转储操作，形成文件或文件系统的多个副本</p>
+</blockquote>
+</li>
+<li><p>文件系统备份</p>
+<blockquote>
+<p>全量转储：定期将所有文件拷贝到后援存储器</p>
+<p>增量转储：之转储修改过的文件，即两次备份之间的修改，减少系统开销</p>
+<p>物理转储：从磁盘第0块开始，将所有磁盘块按序输出到磁带</p>
+<p>逻辑转储：从一个或几个指定目录开始，递归地转储自给定日期后所有更改的文件和目录</p>
+</blockquote>
+</li>
+<li><p>文件系统一致性</p>
+<blockquote>
+<p>问题产生：磁盘块–读入内存，操作–写回磁盘块（若在写回之前，系统崩溃，则文件系统出现不一致）</p>
+<p>解决方案：设计一个实用程序，当系统再次启动时，运行该程序，检查<strong>磁盘块</strong>和<strong>目录系统</strong></p>
+</blockquote>
+</li>
+<li><p>磁盘块的一致性检查</p>
+<blockquote>
+<p>UNIX一致性检查工作过程：</p>
+<p>​    两张表，每块对应一个表中的计数器，初值为0</p>
+<p>​    表一：记录了每块在文件中出现的次数</p>
+<p>​    表二：记录了每块在空闲块表中出现的次数</p>
+<p>磁盘块的一致性</p>
+<p>​    既没有分配给某个文件，又没有在空闲区，此时把它标记成空闲即可</p>
+<p>​    某个磁盘块在空闲块表中出现了两次，此时把它修改成1即可</p>
+<p>​    某个磁盘块在两个文件中出现，此时，在空闲区找一个新的磁盘块，将相应内容拷贝过去，分配给其    中一个文件，另一个文件用原来的磁盘块存放。</p>
+</blockquote>
+</li>
+<li><p>文件系统的写入策略</p>
+<blockquote>
+<p>考虑文件系统的<strong>一致性</strong>和<strong>速度</strong></p>
+<p>通写：内存的修改立即写入磁盘，完全保持一致性。缺点：速度性能差</p>
+<p>延迟写：利用回写缓存的方法得到高速；可恢复性差（两次写回之间出现系统故障，会导致错误）</p>
+<p>可恢复写：利用事务日志来实现文件系统的写入，既考虑了安全性，又考虑速度性能</p>
+</blockquote>
+</li>
+<li><p>文件系统的安全性</p>
+<blockquote>
+<p>文件保护机制：</p>
+<p>有权限的用户，应该让他进行相应的操作，否则禁止</p>
+<p>防止其他用户冒充对文件进行操作</p>
+</blockquote>
+</li>
+<li><p>文件的访问控制</p>
+<blockquote>
+<p>主动控制：访问控制表</p>
+<p>​    每个文件一个</p>
+<p>​    记录用户ID和访问权限</p>
+<p>​    用户可以是一组用户</p>
+<p>​    文件可以是一组文件</p>
+<p>能力表（权限表）：</p>
+<p>​    每个用户一个</p>
+<p>​    记录文件名和访问权限</p>
+<p>​    用户可以是一组用户</p>
+<p>​    文件可以是一组文件</p>
+</blockquote>
+</li>
+<li><p>UNIX的文件访问控制</p>
+<blockquote>
+<p>采用文件的二级存取控制</p>
+<p>审查用户的身份、审查操作的合法性</p>
+</blockquote>
+</li>
+<li><p>第一级：对访问者的识别对用户分类</p>
+<blockquote>
+<p>对用户分类：</p>
+<p>文件主</p>
+<p>文件主的同组用户</p>
+<p>其他用户</p>
+</blockquote>
+</li>
+<li><p>第二级：对操作权限的识别</p>
+<blockquote>
+<p>对操作分类：</p>
+<p>读操作 r</p>
+<p>写操作 w</p>
+<p>执行操作 x</p>
+<p>不能执行任何操作 -</p>
+</blockquote>
+</li>
+<li><p>文件系统性能问题</p>
+<blockquote>
+<p>磁盘服务：速度成为系统性能的主要瓶颈之一</p>
+<p>合集文件系统时，应尽可能减少磁盘访问次数</p>
+<p>提高文件系统性能的方法：</p>
+<p>目录项（FCB）分解、当前目录、磁盘碎片整理</p>
+<p>块高速缓存、磁盘调度、提前读取、合理分配磁盘空间、信息的优化分布、RAID技术</p>
+</blockquote>
+</li>
+<li><p>块高速缓存</p>
+<blockquote>
+<p>又称：文件缓存、磁盘高速缓存、缓冲区高速缓存</p>
+<p>是指：在内存中为磁盘块设置一个缓冲区，保存了磁盘中某些块的副本（逻辑上属于磁盘，但身处内存）</p>
+<p>检查所有的读请求，看所需块是否在块高速缓存中；</p>
+<p>如果在，则可直接进行读操作；否则，先将数据块读入块高速缓存，再拷贝到所需地方。</p>
+<p>由于访问的局部性原理，当一数据块被读入块高速缓存以满足一个I/O请求时，很可能将来还会再次访问到这一数据块。</p>
+</blockquote>
+</li>
+<li><p>实现块高速缓存</p>
+<blockquote>
+<p>1块高速缓存的组织：</p>
+<p>​    按照双向链表的方式组织成一个链，当要访问一个数据块的时候，把它从链中摘出来，挂接到链尾</p>
+<p>​    当有个读请求来了，要根据块号看这个块是否已经进入到了块高速缓存中，如何快速判断这一点，通过散列函数，把块号按照散列函数进行散列，得到一个散列值，按照散列值组织成一个散列表，任何一个数据块来了，进行散列，在表中寻找对应的那项，如果没有，说明没有进入块高速缓存；如果有，说明进来了，就可以找到块的位置；如果散列值有冲突再进一步通过链解决冲突问题</p>
+<p>2块高速缓存的置换问题（修改LRU）：</p>
+<p>​    块高速缓存空间不大，满了以后把一些数据块置换出去。</p>
+<p>​    方案1：每访问一个数据块，把数据块从链中摘出来放在链尾，符合LRU最近最少使用思想。</p>
+<p>​    考虑该块会否不久后会再次使用？</p>
+<p>3块高速缓存的写入策略</p>
+<p>·该块是否会影响文件系统的一致性</p>
+</blockquote>
+</li>
+<li><p>提前读取</p>
+<blockquote>
+<p><strong>思路：每次访问磁盘，多读入一些磁盘块</strong></p>
+<p>依据：程序执行的空间局部性原理</p>
+<p>开销：较小（只有数据传输时间）</p>
+<p>具有针对性</p>
+</blockquote>
+</li>
+<li><p>Windows的文件访问方式</p>
+<blockquote>
+<p>1</p>
+<p>不使用文件缓存：普通方式；通过Windows提供的flushfilebuffer函数实现</p>
+<p>使用文件缓存：预读取。每次读取的块大小、缓冲区大小、置换方式；写回。写回时机选择、一致性问题</p>
+<p>异步模式：不再等待磁盘操作的完成；使处理器和I/O并发工作</p>
+<p>2</p>
+<p>用户对磁盘的访问通过访问文件缓存来实现</p>
+<p>有Windows的cache manager实现对缓存的控制：读取数据的时候预取；在cache满时，根据LRU原则清楚缓存内容；定期更新磁盘内容使其与cache一致（1秒）</p>
+<p>write-back机制：</p>
+<p>在用户要对磁盘写数据时，只更改cache中的内容，有cache manager决定何时将更新反映到磁盘</p>
+</blockquote>
+</li>
+<li><p>合理分配磁盘空间</p>
+<blockquote>
+<p>分配磁盘块时，把有可能顺序存取的块放在一起（尽量分配在同一柱面上，从而减少磁臂的移动次数和距离</p>
+</blockquote>
+</li>
+<li><p>磁盘调度</p>
+<blockquote>
+<p>当有多个访盘请求等待时，采用一定策略，对这些请求的服务顺序调整安排</p>
+<p>降低平均磁盘服务时间，达到公平、高效</p>
+<p>公平：一个I/O请求在有限时间内满足</p>
+<p>高效：减少设备机械运动带来的时间开销</p>
+<p>一次访盘请求 = 寻道时间 + 旋转延迟时间 + 传输时间</p>
+<p>磁盘调度算法：</p>
+<p>先来先服务：按访问请求到达的先后次序服务。简单公平。效率不高，相邻两次请求可能会造成最内到最外的柱面寻道，使磁头反复移动，增加了服务时间，对机械不利。</p>
+<p>最短寻道时间优先：优先选择距离当前磁头最近的访问请求进行服务，主要考虑寻道优先。改善了磁盘平均服务时间。造成某些访问请求长期得不到服务，产生饥饿现象。</p>
+<p><strong>扫描算法（电梯算法）</strong>：（折中权衡，距离和方向）当设备无访问请求时，磁头不动；当有访问请求时，磁头按一个方向移动，在移动过程中对遇到的访问请求进行服务，然后判断该方向上是否还有访问请求，如果有继续扫描，否则改变移动方向，并未经过的访问请求服务，如此反复。</p>
+<p>单向扫描算法：总是从0号柱面开始向里扫描，按柱面（磁道）位置选择访问者移动臂到达最后一个柱面后，立即带动读写磁头快速返回到0号柱面，返回时不为任何的等待访问者服务，返回后可再次进行扫描。减少了新请求的最大延迟。</p>
+<p>N-step-Scan N步扫描策略：把磁盘请求队列分成长度为N的子队列，每一次用scan处理一个子队列，在处理某一个队列时，新请求添加到其他子队列中，如果最后剩下的请求数小于N，则他们全都将在下一次扫描时处理，N值较大时，性能接近scan，n=1时，相当于fifo。克服”磁头臂的黏性“。</p>
+<p>FSCAN策略：使用两个子队列，扫描开始时，所有请求在一个队列中，而另一个队列为空，扫描过程中，所有新到的请求都放入另一个队列中，对新请求的服务延迟到处理完所有老请求之后。克服”磁头臂的黏性“。</p>
+<p>旋转调度算法：根据延迟时间决定执行次序的调度。三种情形：若干等待访问者请求访问同一磁头上的不同扇区；不同磁头上的不同编号的扇区；不同磁头上相同的扇区。前两种，扇区不同，总是让先到达磁头位置下的扇区先进行传送操作；第三种情况：这些扇区同时到达读写磁头位置下，可任选一个读写磁头进行传送操作。</p>
+</blockquote>
+</li>
+<li><p>信息的优化分布</p>
+<blockquote>
+<p>记录在磁道上的排列方式，也会影响输入输出操作的时间。</p>
+</blockquote>
+</li>
+<li><p>记录的成组与分解</p>
+<blockquote>
+<p>成组：把若干逻辑记录合成一组存放一块的工作。</p>
+</blockquote>
+</li>
+<li><p>RAID（独立的磁盘冗余阵列）</p>
+<blockquote>
+<p>将多块磁盘按照一定要求构成一各独立的存储设备</p>
+<p>目标：提高可靠性和性能</p>
+<p>考虑：磁盘存储系统的速度、容量、容错、数据灾难发生后的数据恢复</p>
+<p>数据是如何组织的？</p>
+<p>​        通过把多个磁盘组织在一起，作为一个逻辑圈提供磁盘跨越功能</p>
+<p>​        通过把数据分成多个数据块，<strong>并行</strong>写入/读出多个磁盘，以提高数据传输率（数据分条<strong>strip</strong>）</p>
+<p>​        通过镜像、校验，提高容错能力（<strong>冗余</strong>）</p>
+<p>最简单的RAID组织方式：镜像</p>
+<p>最简单的RAID组织方式：块交错校验</p>
+<p>典型例子：</p>
+<p>RAID 0 条带化：数据分布在阵列的所有磁盘上，有数据请求时，同时多个磁盘并行操作，充分利用总线带宽，数据吞吐率提高，驱动器负载均衡。无冗余（无差错控制），性能最佳。</p>
+<p>RAID 1 镜像：最大限度保证数据安全及可恢复性；所有数据同时存在于两块磁盘的相同位置；磁盘利用率50%。数据安全性最好，磁盘利用率不高。</p>
+<p>RAID 4 交错块奇偶校验：带奇偶校验，以数据块为单位。既提高了性能，有保证了可靠性。</p>
+</blockquote>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/22/操作系统-文件管理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-操作系统-存储模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1774,759 +2965,9 @@
 
 
   
-    <article id="post-操作系统-进程线程模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/13/操作系统-进程线程模型/">操作系统-进程线程模型</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/13/操作系统-进程线程模型/" class="archive-article-date">
-  	<time datetime="2019-10-13T14:05:59.442Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="操作系统-进程线程模型"><a href="#操作系统-进程线程模型" class="headerlink" title="操作系统-进程线程模型"></a>操作系统-进程线程模型</h3><ol>
-<li><p>多道程序设计</p>
-</li>
-<li><p>并发环境与并发程序</p>
-</li>
-<li><p>进程的定义</p>
-</li>
-<li><p>进程控制块PCB（进程描述符，进程属性），一个专门的数据结构（用于管理控制进程），记录进程的各种属性，描述进程的动态变化过程，PCB是系统感知进程存在的唯一标志，进程与PCB是一一对应的，所有进程的PCB集合是进程表。包括进程描述信息、进程控制信息、CPU现场信息。</p>
-</li>
-<li><p>进程的三种基本状态：运行态、就绪态、等待态；</p>
-<p>进程的其他状态：创建、终止；</p>
-</li>
-<li><p>Linux状态示意图：包括6种：就绪、占有CPU执行、浅度睡眠、深度睡眠、暂停、死亡但户口未注销</p>
-</li>
-<li><p>进程队列：操作系统为每一类进程建立一个或多个队列；队列元素是PCB；伴随进程状态的改变，其PCB从一个队列进入另一个队列</p>
-</li>
-<li><p>进程控制：进程各个状态之间的转换，由原语完成，进程创建原语，进程撤销原语，阻塞原语，唤醒原语，挂起原语，激活原语，改变进程优先级。。。原语是源自操作，执行必须是连续的，执行过程中不允许被中断。</p>
-</li>
-<li><p>进程的创建：给新进程分配一个唯一标识，以及进程控制块；为进程分配地址空间；初始化进程控制块（设置默认值）；设置相应的队列指针（把新进程加到就绪队列链表中）</p>
-</li>
-<li><p>进程的撤销：收回进程所占有的资源（关闭打开的文件，断开网络连接，UI手分配的内存）；撤销该进程的PCB</p>
-</li>
-<li><p>进程阻塞：等待某一事件发生时，进程自己执行阻塞原语</p>
-</li>
-<li><p>UNIX的几个进程控制操作：</p>
-<p>fork()通过<strong>复制调用进程</strong>来创建新的进程，是最基本的进程创建过程；</p>
-<p>exec()包括一系列系统调用，都是通过用一段新的程序代码去覆盖原来的地址空间，实现进程<strong>执行代码的转换</strong>；</p>
-<p>wait()提供初级进程同步操作，能使一个进程等待另一个进程的结束；</p>
-<p>exit()用来终止一个进程的运行；</p>
-</li>
-<li><p>UNIX的fork()实现：</p>
-<p>为子进程分配一个空闲的进程描述符；</p>
-<p>分配给子进程唯一标识pid</p>
-<p><strong>以一次一页的方式复制父进程地址空间</strong>（Linux采用写时复制技术加快创建进程）</p>
-<p>从父进程处继承共享资源，如打开的文件和当前工作目录等</p>
-<p>将子进程的状态设为就绪，插入到就绪队列</p>
-<p>对子进程返回标识符0</p>
-<p>向父进程返回子进程的pid</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/typesh&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> * argv[])</span></span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    pid = fork();<span class="comment">//创建一个子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid&lt;<span class="number">0</span>)&#123;<span class="comment">//出错</span></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"fork failed"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid==<span class="number">0</span>)&#123;<span class="comment">//子进程</span></span><br><span class="line">        execlp(<span class="string">"/bin/ls"</span>,<span class="string">"ls"</span>,<span class="literal">NULL</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">//父进程</span></span><br><span class="line">        wait(<span class="literal">NULL</span>);<span class="comment">//父进程等待子进程结束</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"child complete"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进程分类：系统进程，用户进程；前台进程，后台进程；CPU密集型进程，I/O密集型进程。</p>
-</li>
-<li><p>进程层次结构：UNIX进程家族树：init为跟；Windows：地位相同。</p>
-</li>
-<li><p>进程和程序的区别：</p>
-<p>进程更能准确刻画并发，程序不能；</p>
-<p>程序是静态的，进程是<strong>动态的</strong>；</p>
-<p><strong>进程有生命周期</strong>，有诞生有消亡，是短暂的；而程序是相对长久的；</p>
-<p>一个程序可对应多个进程；</p>
-<p>进程具有创建其他进程的功能。</p>
-</li>
-<li><p>进程地址空间：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> myval;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span>*argv[])</span></span>&#123;</span><br><span class="line">    myval=atoi(argv[<span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"myval is %d,loc 0x%lx\n"</span>,myval,(<span class="keyword">long</span>)&amp;myval);<span class="comment">//./myval 7</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>开启两个终端，一个 ./myval 7   ，另一个./myval 8，运行时发现数字不同，但是地址却相同，因为地址是虚拟地址。</p>
-</li>
-<li><p>进程映像：对进程执行活动全过程的静态描述</p>
-<p>进程地址空间内容、硬件寄存器内容、与该进程相关的内核数据结构、内核栈组成</p>
-<p>用户相关：进程地址空间（包括代码段、数据段、堆、栈、共享库。。。）</p>
-<p>寄存器相关：程序计数器、指令计数器、程序状态寄存器、栈指针、通用寄存器等的值</p>
-<p>内核相关：静态部分：PCB及各种资源数据结构；动态部分：内核栈（不同进程在进入内核后使用不同的内核栈）</p>
-</li>
-<li><p>上下文（context）切换</p>
-<p>将CPU硬件状态从一个进程换到另一个进程的过程，称为上下文切换；</p>
-<p>进程运行时，其硬件状态保存在CPU上的寄存器中，寄存器：程序计数器，程序状态计数器，栈指针，通用寄存器，其他控制寄存器的值</p>
-<p>进程不运行时，这些寄存器的值保存在进程控制块PCB中，因为只有一套寄存器。当操作系统要运行一个新的进程时，将PCB中的相关值送到对应的寄存器中。</p>
-</li>
-<li><p>线程的引入：应用的需要，开销的考虑，性能的考虑</p>
-</li>
-<li><p><strong>多线程web服务器</strong>：分派线程，监听客户端，客户端有请求就把请求读进来，但它不完成客户端的请求，他把请求分派给工作线程去完成，有一堆工作线程在web服务器上，用于完成用户的请求。工作线程收到任务后，去网页缓存里找，看看网页是不是在里面，如果在里面就把这个网页返回给客户端，如果不在里面，就启动磁盘，去磁盘上搜寻网页。去磁盘上搜寻网页，是个阻塞的I/O，他就被阻塞等待了，但是没关系，还有其他的线程可以接其他的活。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//分派线程</span></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    get_next_request(&amp;buf);</span><br><span class="line">    handoff_work(&amp;buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//工作线程</span></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    wait_for_work(&amp;buf);</span><br><span class="line">    look_for_page_in_cache(&amp;buf,&amp;page);</span><br><span class="line">    <span class="keyword">if</span>(page_not_in_cache(&amp;page))&#123;</span><br><span class="line">        read_page_from_disk(&amp;buf,&amp;page);</span><br><span class="line">    &#125;</span><br><span class="line">    return_page(&amp;page);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>构造服务器的三种方法：</p>
-<p><strong>多线程：有并发、阻塞系统调用</strong></p>
-<p>单线程进程：无并发、阻塞系统调用</p>
-<p>有限状态机：有并发、非阻塞系统调用、中断</p>
-</li>
-<li><p>开销的考虑：</p>
-<p>进程相关的操作：创建进程、撤销进程、进程通信、进程切换，时间空间开销大，限制了并发度的提高；</p>
-<p>线程的开销小：创建和撤销一个线程花费时间少，两个线程切换花费时间少，线程之间相互通信无需调用内核（同一进程内的线程共享内存和文件）</p>
-</li>
-<li><p>性能的考虑</p>
-<p>多个线程，有的计算，有的I/O，多个处理器，提高软件运行性能</p>
-</li>
-<li><p>线程的基本概念：进程的两个基本属性：资源的拥有者，CPU的调度单位；有了线程后，进程还是资源的拥有者，线程继承了CPU调度单位这一属性；故，线程是进程中 一个运行实体，是CPU的调度单位，有时将线程称为<strong>轻量级进程</strong>。在同一个进程中增加了多个执行序列（线程）。</p>
-</li>
-<li><p>线程的属性：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">有标识符ID</span><br><span class="line"></span><br><span class="line">有状态及状态转换，需要提供一些操作</span><br><span class="line"></span><br><span class="line">不运行时需要保存的上下文，有上下文环境：程序计数器等寄存器</span><br><span class="line"></span><br><span class="line">有自己的**栈和栈指针**</span><br><span class="line"></span><br><span class="line">**共享所在进程的地址空间和其他资源**</span><br><span class="line"></span><br><span class="line">可以创建、撤销另一个线程。程序开始是以一个单线程进程方式运行的</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>线程机制的实现方式</p>
-<p>用户级线程</p>
-<p>核心级线程</p>
-<p>混合-两者结合方法</p>
-</li>
-<li><p>用户级线程</p>
-<p>在用户空间建立线程库：提供一组管理线程的过程</p>
-<p><strong>运行时系统</strong>：<strong>完成线程的管理工作（操作、线程表）</strong></p>
-<p>内核管理的还是进程，不知道线程的存在（内核只看到进程的数据结构）</p>
-<p>线程切换不需要内核态特权</p>
-<p>例子：UNIX（遵循POSIX规范）</p>
-<p>POSIX线程库——pthread</p>
-<p>多线程编程接口，以线程库方式提供给用户</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pthread_create 创建一个新的线程</span><br><span class="line">pthread_exit  关闭当前线程</span><br><span class="line">pthread_join  等待一个指定的线程退出</span><br><span class="line">pthread_yield 线程自愿让出CPU，线程感受不到时钟中断，时钟中断是针对进程的</span><br><span class="line">pthread_attr_init</span><br><span class="line">pthread_attr_destroy</span><br></pre></td></tr></table></figure>
-
-<p>用户级线程优点：线程切换快；调度算法是应用程序特定的；用户级线程可运行在任何操作系统上（只需要实现线程库）；</p>
-<p>缺点：内核只将处理器（CPU）分配给进程，同一个进程中的两个线程不能同时运行于两个处理器上；大多数系统调用是阻塞的，因此，由于内核阻塞进程，故进程中所有线程也被阻塞（解决方法就是在外面包一层，调用系统调用之前先判断，调用了这个系统调用，是否会导致进程阻塞，如果会阻塞就赶快换一个线程）</p>
-</li>
-<li><p>核心级线程</p>
-<p><strong>内核管理所有线程管理</strong>，并向应用程序提供API接口</p>
-<p>内核维护进程和线程的上下文（内核里既存了进程的数据结构又存了线程的数据结构）</p>
-<p>线程的切换需要内核支持</p>
-<p>以线程为基础进行调度</p>
-<p>例子：Windows</p>
-</li>
-<li><p>混合模型</p>
-<p>线程创建在用户空间完成</p>
-<p>线程调度等在核心态完成</p>
-<p>例子：Solaris</p>
-<p>多个用户级线程，通过多路复用，来复用多个内核级线程（核外的用户空间线程通过一个机制和核内的一个内核线程对应起来，调度内核这个线程上CPU其实就是调度核外对应的线程上CPU。</p>
-</li>
-<li><p>进程：</p>
-<p>并发性：任何进程都可以和其他进程一起向前推进</p>
-<p>动态性：进程是正在执行程序的实例（进程是动态产生动态消亡的，进程在其生命周期内，在三种基本状态之间转换）</p>
-<p>独立性：进程是资源分配的一个独立单位，各进程的地址空间相互独立</p>
-<p>交互性：指进程在执行过程中可能与其他进程产生直接或间接的关系</p>
-<p>异步性：每个进程都以其相对独立的、不可预知的速度向前推进</p>
-<p>进程映像：程序+数据+栈（用户栈、内核栈）+PCB</p>
-</li>
-<li><p>线程：</p>
-<p>多线程应用场景</p>
-<p>线程基本概念、属性</p>
-<p>线程实现机制</p>
-</li>
-<li><p>可再入程序（可重入）：</p>
-<p>可被多个进程同时调用的程序，具有如下性质：它是纯代码的，即在执行过程中自身不改变；调用它的进程应该提供数据区</p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/13/操作系统-进程线程模型/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-操作系统-概述" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/12/操作系统-概述/">操作系统-概述</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/12/操作系统-概述/" class="archive-article-date">
-  	<time datetime="2019-10-12T07:35:41.727Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="1-操作系统做了什么？"><a href="#1-操作系统做了什么？" class="headerlink" title="1 操作系统做了什么？"></a>1 操作系统做了什么？</h3><p>helloworld.c的执行过程：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//程序作用：在显示器上打印hello world</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"hello world"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>(1)启动程序执行（用户要告诉操作系统执行helloworld程序）</p>
-<ul>
-<li>命令行键入执行命令，鼠标双击helloworld程序的图标</li>
-</ul>
-<p>(2)操作系统准备</p>
-<ul>
-<li>操作系统：根据文件名，找到helloworld程序的相关信息，检查类型是否是可执行文件；并通过程序首部信息，确定代码和数据在可执行文件中的位置，并计算出对应的磁盘块地址（可执行文件 ，Windows下是pe格式，Linux下是elf格式）；</li>
-<li>操作系统：<strong>创建一个新的进程</strong>，并将helloworld可执行文件映射到该进程结构，表示由该进程执行helloworld程序；</li>
-<li>操作系统：为helloworld程序设置CPU上下文环境，并跳到程序的开始处（假设调度程序选中helloworld程序）；</li>
-</ul>
-<p>(3)开始执行这个可执行文件</p>
-<ul>
-<li>执行helloworld程序的第一条指令，发生<strong>缺页异常</strong>；</li>
-<li>操作系统：分配一页物理内存，将代码从磁盘读入内存，然后继续执行helloworld程序；</li>
-<li>helloworld程序执行puts函数（系统调用，故而控制权又转回给了操作系统），想在显示器上写出字符串；</li>
-<li>操作系统：找到要将字符串送往的显示设备，通常设备是由一个进程控制的，所以操作系统把要显示的字符串送给该进程；</li>
-</ul>
-<p>(4)字符串显示过程</p>
-<ul>
-<li>操作系统：控制设备的进程告诉设备的窗口系统它要显示字符串，窗口系统确定这是一个合法操作，然后将字符串转换为像素，将像素写入设备的存储映像区；</li>
-<li>视频硬件将像素转换成显示器可以接受的一组控制/数据信号；</li>
-<li>显示器解释信号，激发液晶屏；</li>
-<li>我们在屏幕上看到了hello world。</li>
-</ul>
-<p>角度一：</p>
-<p>用户程序———-创建进程————-OS进程管理</p>
-<p>执行用户程序——-发生缺页异常——-OS存储管理</p>
-<p>用户程序继续执行——-执行puts函数—–OS</p>
-<p>角度二：</p>
-<p>OS进程管理—–调度—-helloworld程序———-程序执行过程中会陷入OS</p>
-<p>OS存储管理——再次调度helloworld程序——程序再次陷入OS</p>
-<p><strong>操作系统负责程序启动、执行过程，在执行过程中提供各种支持。</strong></p>
-<hr>
-<h3 id="2-操作系统的定义与作用"><a href="#2-操作系统的定义与作用" class="headerlink" title="2 操作系统的定义与作用"></a>2 操作系统的定义与作用</h3><h4 id="操作系统是什么？"><a href="#操作系统是什么？" class="headerlink" title="操作系统是什么？"></a>操作系统是什么？</h4><p>操作系统是计算机系统的一个系统软件，是一些程序模块的集合——</p>
-<ul>
-<li>它们能以尽量<strong>有效、合理</strong>的方式组织和管理计算机的软硬件资源；</li>
-<li>合理地组织计算机的工作流程，控制程序的执行并向用户提供各种服务功能；</li>
-<li>使得用户能够灵活、<strong>方便</strong>地使用计算机，使整个计算机系统高效率运行</li>
-</ul>
-<p>解读关键词：</p>
-<ul>
-<li>有效：系统效率，资源利用率（CPU利用率充足与否？I/O设备是否忙碌？）</li>
-<li>合理：各种软硬件资源的管理是否公平合理？（如果不公平不合理，则可能产生什么问题？）</li>
-<li>方便使用：两种角度：用户界面（使用者） 与 程序接口（程序员）</li>
-</ul>
-<h4 id="操作系统三个作用："><a href="#操作系统三个作用：" class="headerlink" title="操作系统三个作用："></a>操作系统三个作用：</h4><ul>
-<li><p>资源的管理者（有效）—有效地管理资源</p>
-</li>
-<li><p>向用户提供各种服务（方便使用）—通过命令接口、编程接口等为用户提供各种功能服务</p>
-</li>
-<li><p>对硬件机器的扩展（扩展能力）—屏蔽硬件细节，为用户提供扩展的虚拟机器</p>
-</li>
-</ul>
-<h4 id="（1）OS是资源的管理者"><a href="#（1）OS是资源的管理者" class="headerlink" title="（1）OS是资源的管理者"></a>（1）OS是资源的管理者</h4><p>自底向上看，就是从OS自身看，OS是资源的管理者</p>
-<p>硬件资源：CPU、内存、设备（I/O设备、磁盘、时钟、网络卡等）</p>
-<p>软件资源：磁盘上的文件、各类管理信息等</p>
-<h5 id="怎样管理资源？"><a href="#怎样管理资源？" class="headerlink" title="怎样管理资源？"></a>怎样管理资源？</h5><ul>
-<li><p>跟踪记录资源的使用状况（用数据结构记录：哪些资源空闲，分配给谁使用，允许用多长时间）</p>
-</li>
-<li><p>确定资源分配策略（算法）</p>
-<p>—静态分配策略（一次性集齐所有的资源，再开始执行，执行过程中不需要其他资源，一次性执行完成；但在执行过程中有时候不需要再用资源，导致资源浪费）</p>
-<p>—动态分配策略（进程执行过程中，何时需要资源何时提出申请，OS根据系统当前资源使用状况，即数据结构决定这个资源是否分配给它，资源利用率得到充分提高）</p>
-</li>
-<li><p>实施资源的分配和回收</p>
-<p>页式存储系统，用位示图Bitmap这个数据结构来记录物理内存的使用情况，一位对应物理内存的一页，如果该页空闲，对应的位记为0，分配出去了，对应的位就记为1；</p>
-<p>分配过程，就是按照资源分配策略，选中要分配资源给哪个进程，决定要分配给它多少，然后修改对应的数据结构，把原来的0改成1；</p>
-<p>回收过程，也要修改相应的数据结构，把1改为0；</p>
-</li>
-<li><p>提高资源利用率</p>
-</li>
-<li><p>保护资源的使用</p>
-</li>
-<li><p>协调多个进程对资源请求的冲突</p>
-</li>
-</ul>
-<h5 id="从资源管理的角度–OS五大基本功能"><a href="#从资源管理的角度–OS五大基本功能" class="headerlink" title="从资源管理的角度–OS五大基本功能"></a>从资源管理的角度–OS五大基本功能</h5><ul>
-<li><p>进程/线程管理（CPU管理）</p>
-<p>进程线程状态、控制、同步互斥、通信、调度</p>
-</li>
-<li><p>存储管理</p>
-<p>分配/回收、地址转换、存储保护、内存扩充</p>
-</li>
-<li><p>文件管理</p>
-<p>文件目录、文件操作、磁盘空间、文件存取控制</p>
-</li>
-<li><p>设备管理</p>
-<p>设备驱动、分配回收、缓冲技术</p>
-</li>
-<li><p>用户接口</p>
-<p>系统命令、典型接口</p>
-</li>
-</ul>
-<h4 id="（2）OS是各种系统服务的提供者"><a href="#（2）OS是各种系统服务的提供者" class="headerlink" title="（2）OS是各种系统服务的提供者"></a>（2）OS是各种系统服务的提供者</h4><ul>
-<li>在操作系统之上，从用户角度看：操作系统为用户提供了一组功能强大、方便易用的<strong>命令或系统调用</strong></li>
-<li>典型的服务：进程的创建、执行；文件和目录的操作；I/O设备的使用；各类统计信息</li>
-</ul>
-<h4 id="（3）OS是对硬件机器的扩展"><a href="#（3）OS是对硬件机器的扩展" class="headerlink" title="（3）OS是对硬件机器的扩展"></a>（3）OS是对硬件机器的扩展</h4><p>os是硬件之上的第一层软件：硬件—（物理机器界面）—-操作系统—–（虚拟机器界面）—-应用程序</p>
-<p>为什么要把硬件屏蔽，因为与硬件相关的工作是复杂、繁琐的</p>
-<ul>
-<li>操作系统在应用程序与硬件之间建立了一个等价的扩展机器（虚拟机）</li>
-<li>对硬件抽象，提高可移植性；比底层硬件更容易编程</li>
-</ul>
-<hr>
-<h3 id="3-操作系统的主要特征"><a href="#3-操作系统的主要特征" class="headerlink" title="3 操作系统的主要特征"></a>3 操作系统的主要特征</h3><p>4个主要特征：并发、共享、虚拟、随机。</p>
-<h4 id="（1）OS特征–并发"><a href="#（1）OS特征–并发" class="headerlink" title="（1）OS特征–并发"></a>（1）OS特征–并发</h4><p><strong>并发</strong>：处理多个同时性活动的能力</p>
-<p>由于并发会引发很多的问题：活动切换、保护、相互依赖的活动间的同步</p>
-<p>在计算机系统中同时存在多个程序运行，单CPU上：</p>
-<p>宏观上，这些程序在同时执行；</p>
-<p>微观上，任何时刻只有一个程序真正在执行，即这些程序在CPU上是轮流执行的</p>
-<p><strong>并行</strong>：与并发相似，但多指不同程序同时在多个硬件部件上执行</p>
-<h4 id="（2）OS特征–共享"><a href="#（2）OS特征–共享" class="headerlink" title="（2）OS特征–共享"></a>（2）OS特征–共享</h4><p>共享：操作系统与多个用户的程序共同使用计算机系统中的资源（共享有限的系统资源）</p>
-<p>操作系统要对系统资源进行合理分配，和使用资源在一个时间段内交替被多个进程所用</p>
-<ul>
-<li>互斥共享（如打印机）</li>
-<li>同时共享（如可重入代码、磁盘文件）</li>
-</ul>
-<p>问题：资源分配难以达到最优化，如何保护资源，使得不同进程之间不会互相干扰？</p>
-<h4 id="（3）OS特征–虚拟"><a href="#（3）OS特征–虚拟" class="headerlink" title="（3）OS特征–虚拟"></a>（3）OS特征–虚拟</h4><ul>
-<li>一个物理实体（CPU或内存）映射为若干个对应的逻辑实体—-分时（把时间分成很多片段）或分空间（把空间分成很多区域）</li>
-<li>虚拟是操作系统管理系统资源的重要手段，可提高资源利用率</li>
-</ul>
-<h5 id="操作系统中的虚拟性体现："><a href="#操作系统中的虚拟性体现：" class="headerlink" title="操作系统中的虚拟性体现："></a>操作系统中的虚拟性体现：</h5><ul>
-<li>CPU——每个进程的”虚处理机“（这是宏观上看到的，其实微观上每个时刻只有一个进程在跑）</li>
-<li>存储器——每个进程都有独立的虚拟地址空间（代码+数据+堆栈）（逻辑上，每个进程都有自己的地址空间，但物理上，进程们共用一块物理内存）</li>
-<li>显示设备——多窗口或虚拟终端</li>
-</ul>
-<h4 id="（4）OS特征–随机"><a href="#（4）OS特征–随机" class="headerlink" title="（4）OS特征–随机"></a>（4）OS特征–随机</h4><p>操作系统必须随时对<strong>以不可预测的次序</strong>发生的事件进行响应并处理</p>
-<ul>
-<li>进程的运行速度不可预知：多个进程并发执行，走走停停，无法预知每个进程的运行推进的快慢</li>
-<li>难以重现系统在某个时刻的状态（包括重现运行中的错误）</li>
-</ul>
-<hr>
-<h3 id="4-典型操作系统的架构"><a href="#4-典型操作系统的架构" class="headerlink" title="4 典型操作系统的架构"></a>4 典型操作系统的架构</h3><h4 id="Windows操作系统的体系架构："><a href="#Windows操作系统的体系架构：" class="headerlink" title="Windows操作系统的体系架构："></a>Windows操作系统的体系架构：</h4><ol>
-<li>用户态：动态链接库（DLL）、系统进程、服务进程、用户进程、环境子系统（如Win32）</li>
-<li>内核态：<strong>硬件抽象层</strong>（HAL）（相同体系结构的不同计算机区分依据）、<strong>内核</strong>（不同体系结构的区分依据），这两层是和硬件相关的；设备驱动程序、执行体、图形与窗口模块、内核态可调用接口、系统服务分发器</li>
-<li>物理硬件：硬件</li>
-</ol>
-<p>Windows操作系统体系架构抽象如下：</p>
-<ul>
-<li>应用程序</li>
-<li>系统功能调用</li>
-<li>操作系统</li>
-<li>计算机硬件</li>
-</ul>
-<h4 id="UNIX操作系统"><a href="#UNIX操作系统" class="headerlink" title="UNIX操作系统"></a>UNIX操作系统</h4><p>同心圆环，从内到外：硬件—-内核—-系统调用接口—-命令和库</p>
-<p>有用户态和内核态</p>
-<p>内核结构：</p>
-<ul>
-<li>进程控制子系统：调度、进程通信、存储管理内存管理</li>
-<li>设备驱动程序：块设备的设备驱动、字符设备的设备驱动</li>
-<li>硬件控制层</li>
-<li>系统调用接口：提供给用户程序，程序可<strong>直接</strong>和系统调用接口打交道，也可以<strong>通过函数库</strong>和系统调用接口打交道</li>
-</ul>
-<h4 id="Linux内核组件"><a href="#Linux内核组件" class="headerlink" title="Linux内核组件"></a>Linux内核组件</h4><ul>
-<li>进程和调度</li>
-<li>虚拟内存管理、物理内存管理</li>
-<li>文件系统</li>
-<li>设备驱动程序（字符、块、网络 设备驱动程序）</li>
-<li>陷入和异常的处理、中断处理（对硬件异常处理）</li>
-<li>系统调用接口</li>
-</ul>
-<h4 id="Android操作系统的架构"><a href="#Android操作系统的架构" class="headerlink" title="Android操作系统的架构"></a>Android操作系统的架构</h4><p>从底到上：Linux内核—-系统库和Android运行时系统—-应用程序框架—-Android应用程序</p>
-<p>其中，内核里包括一些进程管理、内存管理、安全、网络、驱动这些东西</p>
-<hr>
-<h3 id="5-操作系统的分类"><a href="#5-操作系统的分类" class="headerlink" title="5 操作系统的分类"></a>5 操作系统的分类</h3><p>操作系统发展，随着硬件的发展，应用需求的发展，软件新技术的出现而发展，因为操作系统必须要充分利用硬件，给用户提供更好的服务。</p>
-<p>大型计算机——个人计算机——网络——移动计算——-云计算——泛在计算（物联网）——机器人</p>
-<h4 id="传统操作系统分类"><a href="#传统操作系统分类" class="headerlink" title="传统操作系统分类"></a>传统操作系统分类</h4><h4 id="1-批处理操作系统"><a href="#1-批处理操作系统" class="headerlink" title="1 批处理操作系统"></a>1 批处理操作系统</h4><p>大型公司可能会用，<strong>追求目标</strong>：提高资源利用率，增加作业处理吞吐量</p>
-<p><strong>工作方式</strong>：</p>
-<ul>
-<li>用户将作业交给系统操作员</li>
-<li>系统操作员把许多用户的作业组成一批作业，输入到计算机系统中，在系统中形成一个自动转接的连续作业流</li>
-<li>启动操作系统</li>
-<li>由操作员将作业结果交给用户</li>
-</ul>
-<p><strong>简单细节</strong>：</p>
-<p>作业：包括了用户程序，程序中用到的数据，作业说明书，就是说明作业怎么样处理的</p>
-<p>成批：主要是批，就是一批作业由若干个作业组成，用户提交作业后只能等待处理结果，不能干预自己作业的执行</p>
-<p>批作业处理：对一批作业中的每个作业进行相同的处理：从磁带读入用户作业和编译链接程序，编译链接用户作业以生成可执行程序；启动执行；执行并输出结果</p>
-<p><strong>典型的FMS JOB结构</strong></p>
-<h4 id="3-实时操作系统"><a href="#3-实时操作系统" class="headerlink" title="3 实时操作系统"></a>3 实时操作系统</h4><p><strong>概念</strong>：指计算机能及时响应外部事件的请求，在规定的严格时间内，完成对该事件的处理，并控制所有实施设备和实时任务协调一致地工作</p>
-<p><strong>分类</strong>：第一类，实时过程控制（工业控制，航空，军事控制）；第二类，实时通信/信息处理（电讯自动交换机，银行，飞机订票，股市行情）</p>
-<p><strong>追求目标</strong>：对外部请求在<strong>严格时间范围内</strong>做出响应；<strong>高可靠性</strong></p>
-<p><strong>特征</strong>：关键参数是时间，硬实时系统（某个动作必须要在固定时刻或时间范围内完成），软实时系统（接受偶尔违反最终时限，音频视频的播放）</p>
-<h4 id="4-个人计算机操作系统"><a href="#4-个人计算机操作系统" class="headerlink" title="4 个人计算机操作系统"></a>4 个人计算机操作系统</h4><p>计算机在某一时间内为单用户服务</p>
-<p>追求目标：界面友好，使用方便；丰富应用软件</p>
-<h4 id="5-网络操作系统"><a href="#5-网络操作系统" class="headerlink" title="5 网络操作系统"></a>5 网络操作系统</h4><p>计算机联网，各个计算机各有自己的操作系统，这些操作系统必须支持（按网络体系结构协议标准开发的）网络模块</p>
-<p><strong>功能</strong>：网络管理，通信，安全，资源共享，和各种网络应用</p>
-<p><strong>追求</strong>：相互通信，资源共享</p>
-<h4 id="6-分布式操作系统"><a href="#6-分布式操作系统" class="headerlink" title="6 分布式操作系统"></a>6 分布式操作系统</h4><p><strong>分布式系统</strong>：或以计算机网络为基础，或以多处理机为基础，基本特征是处理分布在不同计算机上</p>
-<p><strong>分布式操作系统</strong>：是一个统一的操作系统，允许若干台计算机相互协作，共同完成一项任务。操作系统可将各种系统任务在分布式系统中任何处理机上运行，自动实现全系统范围内的任务分配、自动调度、均衡各个处理机的工作负载。</p>
-<p><strong>特点</strong>：处理能力强，速度更快，可靠性增强，具有透明性</p>
-<h4 id="7-嵌入式操作系统"><a href="#7-嵌入式操作系统" class="headerlink" title="7 嵌入式操作系统"></a>7 嵌入式操作系统</h4><p><strong>嵌入式系统</strong>：在各种设备、装置或系统中，完成特定功能的软硬件系统；大的设备、装置中的一个部分；工作在反应式或对处理时间有严格要求的环境中。</p>
-<p><strong>嵌入式操作系统</strong>：运行在嵌入式系统环境中，对整个嵌入式系统和它所操作、控制的各种部件装置等等资源进行统一协调、调度、指挥和控制的系统软件</p>
-<h4 id="操作系统的另一种分类-TANENBAUM"><a href="#操作系统的另一种分类-TANENBAUM" class="headerlink" title="操作系统的另一种分类 TANENBAUM"></a>操作系统的另一种分类 TANENBAUM</h4><ul>
-<li>大型机操作系统</li>
-<li>服务器操作系统</li>
-<li>多处理机操作系统</li>
-<li>个人计算机操作系统</li>
-<li>掌上计算机操作系统</li>
-<li>嵌入式操作系统</li>
-<li>传感器节点操作系统</li>
-<li>实时操作系统</li>
-<li>智能卡操作系统</li>
-</ul>
-<h5 id="举个小例子：智能卡操作系统"><a href="#举个小例子：智能卡操作系统" class="headerlink" title="举个小例子：智能卡操作系统"></a>举个小例子：智能卡操作系统</h5><p>智能卡：一种包含有一块CPU芯片的卡片</p>
-<ul>
-<li>特点：非常严格的运行能耗和存储空间限制；有些智能卡只有单项功能，如电子支付；</li>
-<li>专用的操作系统</li>
-</ul>
-<p><strong>重点内容</strong>：</p>
-<p>掌握操作系统的概念</p>
-<ul>
-<li>理解操作系统的不同作用</li>
-<li>理解操作系统的主要特征</li>
-</ul>
-<p>掌握重要的操作系统技术Spooling技术</p>
-<p>了解操作系统架构</p>
-<p>了解操作系统的分类</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/12/操作系统-概述/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-C++11新特性" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/07/C++11新特性/">C++11的新特性</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/07/C++11新特性/" class="archive-article-date">
-  	<time datetime="2019-10-07T13:37:10.852Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>C++11的新特性，包括下面四大方面：</p>
-<h2 id="1-语法糖"><a href="#1-语法糖" class="headerlink" title="1.语法糖"></a>1.语法糖</h2><p> <code>auto</code>自动类型推导， lambda表达式，<code>nullptr</code>空指针常量，范围for循环，初始化列表等</p>
-<h3 id="（1）auto自动类型推导"><a href="#（1）auto自动类型推导" class="headerlink" title="（1）auto自动类型推导"></a>（1）auto自动类型推导</h3><p>写一个auto a = 1, 编译器就会自动推导a的类型为int。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> i = <span class="number">1</span>;    <span class="comment">//编译器自动推断i为int类型</span></span><br></pre></td></tr></table></figure>
-
-<p>在遍历某些STL容器的时候，不用去声明那些迭代器的类型，也不用去使用typedef就能很简洁的实现遍历了。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec(<span class="number">6</span>,<span class="number">10</span>);</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator iter = vec.iterator(); <span class="comment">//冗长</span></span><br><span class="line"><span class="keyword">auto</span> iterAuto = vec.iterator(); <span class="comment">//相比较上一句方便很多</span></span><br></pre></td></tr></table></figure>
-
-<p>auto的使用有以下两点必须注意：</p>
-<ul>
-<li>auto声明的变量必须要初始化，否则编译器不能判断变量的类型。</li>
-<li>auto不能被声明为返回值，auto不能作为形参，auto不能被修饰为模板参数</li>
-</ul>
-<p><strong>关于效率</strong>: auto实际上是在<strong>编译时</strong>对变量进行了类型推导，所以不会对程序的运行效率造成不良影响。另外，auto并不会影响编译速度，因为编译时本来也要右侧推导然后判断与左侧是否匹配。</p>
-<h3 id="（2）lambda表达式"><a href="#（2）lambda表达式" class="headerlink" title="（2）lambda表达式"></a>（2）lambda表达式</h3><p>如果代码里面存在大量的小函数，而这些函数一般只被一两处调用，那么不妨将它们重构成Lambda表达式，也就是匿名函数。作用就是当你想用一个函数，但是又不想费神去命名一个函数。</p>
-<p>lambda表达式是匿名函数，可以认为是一个可执行体functor，语法规则如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[捕获区](参数区)&#123;代码区&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>如</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> add = [](<span class="keyword">int</span> a, <span class="keyword">int</span> b) &#123;<span class="keyword">return</span> a + b&#125;;<span class="comment">// 可以体会auto的好处了</span></span><br><span class="line"><span class="built_in">cout</span>&lt;&lt;add(<span class="number">10</span>,<span class="number">20</span>)&lt;&lt;<span class="built_in">endl</span>; <span class="comment">//30</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> func = [](<span class="keyword">int</span> i)&#123; <span class="keyword">return</span> i+<span class="number">4</span>&#125;;<span class="comment">// 可以体会auto的好处了</span></span><br><span class="line"><span class="built_in">cout</span>&lt;&lt; func(<span class="number">10</span>) &lt;&lt; <span class="built_in">endl</span>;           <span class="comment">//输出为14</span></span><br></pre></td></tr></table></figure>
-
-<p>就我的理解而言，捕获的意思就是将一些变量展开使得为lambda内部可见，具体方式有如下几种</p>
-<ul>
-<li><strong>[a,&amp;b]</strong> 其中 a 以复制捕获而 b 以引用捕获。</li>
-<li><strong>[this]</strong> 以引用捕获当前对象（ <code>*this</code> ）</li>
-<li><strong>[&amp;]</strong> 以引用捕获所有用于 lambda 体内的<strong>自动变量</strong>，并以引用捕获当前对象，若存在</li>
-<li><strong>[=]</strong> 以复制捕获所有用于 lambda 体内的<strong>自动变量</strong>，并以引用捕获当前对象，若存在</li>
-<li><strong>[]</strong> 不捕获，大部分情况下不捕获就可以了</li>
-</ul>
-<p><strong>一般使用场景</strong>：sort等自定义比较函数、用thread写简单的线程。</p>
-<h3 id="（3）nullptr空指针常量"><a href="#（3）nullptr空指针常量" class="headerlink" title="（3）nullptr空指针常量"></a>（3）nullptr空指针常量</h3><p>NULL通常在C语言中预处理宏定义为(void*)0或者0，这样0就有int型常量和空指针的双重身份。但是C++03中只允许0宏定义为空指针常量，这就会造成如下的错误：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> n)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">char</span>* cArr)</span></span>;</span><br><span class="line">    </span><br><span class="line">foo(<span class="number">0</span>); <span class="comment">// 在C++98中编译失败，有二义性；在C++11中调用foo（int）</span></span><br><span class="line">foo(<span class="literal">nullptr</span>);</span><br></pre></td></tr></table></figure>
-
-<p>上面声明了两个重载函数，当我调用foo(NULL)，编译器将会调用foo(int)函数，而实际上我是想调用foo(char*)函数的。为了避免这个歧义，C++11重新定义了一个新关键字nullptr，充当单独空指针常量。</p>
-<h3 id="（4）基于范围的for循环"><a href="#（4）基于范围的for循环" class="headerlink" title="（4）基于范围的for循环"></a>（4）基于范围的for循环</h3><p>类似Java中foreach语句，为遍历数组提供了很大方便。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> nums[<span class="number">5</span>] = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> &amp;x : nums)</span><br><span class="line">&#123;</span><br><span class="line">    x *= <span class="number">2</span>;   <span class="comment">//数组中每个元素倍乘</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="（5）初始化列表"><a href="#（5）初始化列表" class="headerlink" title="（5）初始化列表"></a>（5）初始化列表</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">A</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> i,j;</span><br><span class="line">    A (<span class="keyword">int</span> m,<span class="keyword">int</span> n):i(m),j(n)&#123;</span><br><span class="line">        <span class="comment">//构造函数</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-右值引用与移动语义move"><a href="#2-右值引用与移动语义move" class="headerlink" title="2. 右值引用与移动语义move"></a>2. 右值引用与移动语义move</h2><p>一般来说，不能取地址的值是右值，能取地址的是左值。主要目的是提高程序运行效率，减少需要进行深拷贝的对象进行深拷贝的次数。</p>
-<p>左值（赋值操作符“=”的左侧，通常是一个变量）与 右值（赋值操作符“=”的右侧，通常是一个常数、表达式、函数调用）</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span>&#125;;</span><br><span class="line">A &amp; r = A();<span class="comment">//error,A()是无名变量，是右值</span></span><br><span class="line">A &amp;&amp; r = A();<span class="comment">//ok，r是右值引用</span></span><br></pre></td></tr></table></figure>
-
-<p>右值引用是C++11新特性，它实现了转移语义和完美转发，主要目的有两个方面</p>
-<ul>
-<li>消除两个对象交互时不必要的对象拷贝，节省运算存储资源，提高效率</li>
-<li>能够更简洁明确地定义泛型函数<br>C++中的变量要么是左值、要么是右值。通俗的左值定义指的是非临时变量，而左值指的是临时对象。左值引用的符号是一个&amp;，右值引用是两个&amp;&amp;</li>
-</ul>
-<p><strong>移动语义</strong><br>转移语义可以将资源(堆、系统对象等)从一个对象转移到另一个对象，这样可以减少不必要的临时对象的创建、拷贝及销毁。移动语义与拷贝语义是相对的，可以类比文件的剪切和拷贝。在现有的C++机制中，自定义的类要实现转移语义，需要定义移动构造函数，还可以定义转移赋值操作符。<br>以string类的移动构造函数为例</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MyString(MyString&amp;&amp; str) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Move Ctor source from "</span> &lt;&lt; str._data &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    _len = str._len;</span><br><span class="line">    _data = str._data;</span><br><span class="line">    str._len = <span class="number">0</span>;</span><br><span class="line">    str._data = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>和拷贝构造函数类似，有几点需要注意：</p>
-<ol>
-<li>参数(右值)的符号必须是&amp;&amp;</li>
-<li>参数(右值)不可以是常量，因为我们需要修改右值</li>
-<li>参数(右值)的资源链接和标记必须修改，否则，右值的析构函数就会释放资源。转移到新对象的资源也就无效了。</li>
-</ol>
-<h4 id="标准库函数std-move-—-将左值变成一个右值"><a href="#标准库函数std-move-—-将左值变成一个右值" class="headerlink" title="标准库函数std::move — 将左值变成一个右值"></a>标准库函数std::move — 将左值变成一个右值</h4><p>编译器只对右值引用才能调用移动构造函数，那么如果已知一个命名对象不再被使用，此时仍然想调用它的移动构造函数，也就是<strong>把一个左值引用当做右值引用来使用</strong>，该怎么做呢？用std::move，这个函数以非常简单的方式将左值引用转换为右值引用。</p>
-<h4 id="完美转发-Perfect-Forwarding"><a href="#完美转发-Perfect-Forwarding" class="headerlink" title="完美转发 Perfect Forwarding"></a>完美转发 Perfect Forwarding</h4><p>完美转发使用这样的场景：需要将一组参数原封不动地传递给另一个函数。原封不动不仅仅是参数的值不变，在C++中还有以下的两组属性：</p>
-<ul>
-<li>左值/右值</li>
-<li>const / non-const<br>完美转发就是在参数传递过程中，所有这些属性和参数值都不能改变。在泛型函数中，这样的需求十分普遍。<br>为了保证这些属性，泛型函数需要重载各种版本，左值右值不同版本，还要分别对应不同的const关系，但是如果只定义一个右值引用参数的函数版本，这个问题就迎刃而解了，原因在于：<br><strong>C++11对T&amp;&amp;的类型推导： 右值实参为右值引用，左值实参仍然为左值</strong></li>
-</ul>
-<h2 id="3-智能指针"><a href="#3-智能指针" class="headerlink" title="3.智能指针"></a>3.智能指针</h2><p><strong>核心思想：为防止内存泄露等问题，用一个对象来管理野指针，使得在该对象构造时获得该指针管理权，析构时自动释放(delete).</strong><br>基于此思想C++98提供了第一个智能指针：<code>auto_ptr</code><br><code>auto_ptr</code>基于所有权转移的语义，即将一个就的auto_ptr赋值给另外一个新的auto_ptr时，旧的那一个就不再拥有该指针的控制权（内部指针被赋值为null),那么这就会带来一些根本性的破绽：</p>
-<ul>
-<li>函数参数传递时，会有隐式的赋值，那么原来的auto_ptr自动失去了控制权</li>
-<li>自我赋值时，会将自己内部指针赋值为null，造成bug</li>
-</ul>
-<p>因为auto_ptr的各种bug，C++11标准基本废弃了这种类型的智能指针，转而带来了三种全新的智能指针：</p>
-<ul>
-<li><strong>shared_ptr</strong>，基于引用计数的智能指针，会统计当前有多少个对象同时拥有该内部指针；当引用计数降为0时，自动释放</li>
-<li><strong>weak_ptr</strong>，基于引用计数的智能指针在面对<strong>循环引用</strong>的问题将无能为力，因此C++11还引入weak_ptr与之配套使用，weak_ptr只引用，不计数</li>
-<li><strong>unique_ptr</strong>，遵循独占语义的智能指针，在任何时间点，资源智能唯一地被一个unique_ptr所占有，当其离开作用域时自动析构。资源所有权的转移只能通过<code>std::move()</code>而不能通过赋值</li>
-</ul>
-<p>需要记住的事，<strong>在以下三种情况下会引起引用计数的变更</strong>：</p>
-<ol>
-<li>调用构造函数时： SmartPointer p(new Object());</li>
-<li>赋值构造函数时： SmartPointer p(const SmartPointer &amp;p);</li>
-<li>赋值时：SmartPointer p1(new Object()); SmartPointer p2 = p1;</li>
-</ol>
-<h2 id="4-线程支持"><a href="#4-线程支持" class="headerlink" title="4. 线程支持"></a>4. 线程支持</h2><h3 id="（1）线程-include-lt-thread-gt"><a href="#（1）线程-include-lt-thread-gt" class="headerlink" title="（1）线程 #include &lt;thread&gt;"></a>（1）线程 <code>#include &lt;thread&gt;</code></h3><p>std::thread可以和普通函数和lambda表达式搭配使用。它还允许向线程执行函数传递任意多参数。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="comment">// do some work here</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="built_in">std</span>::<span class="function">thread <span class="title">thr</span><span class="params">(func)</span></span>;</span><br><span class="line">   t.join();</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面就是一个最简单的使用std::thread的例子，函数func()在新起的线程中执行。调用join()函数是为了阻塞主线程，直到这个新起的线程执行完毕。线程函数的返回值都会被忽略，但线程函数可以接受任意数目的输入参数。</p>
-<h3 id="（2）std-thread的其他成员函数"><a href="#（2）std-thread的其他成员函数" class="headerlink" title="（2）std::thread的其他成员函数"></a>（2）<code>std::thread</code>的其他成员函数</h3><ul>
-<li><strong>joinable()</strong>: 判断线程对象是否可以join，当线程对象被析构的时候，如果对象``joinable()==true<code>会导致</code>std::terminate`被调用。</li>
-<li><strong>join()</strong>: 阻塞当前进程(通常是主线程)，等待创建的新线程执行完毕被操作系统回收。</li>
-<li><strong>detach()</strong>: 将线程分离，从此，线程对象受操作系统管辖。</li>
-</ul>
-<h3 id="（3）线程管理函数"><a href="#（3）线程管理函数" class="headerlink" title="（3）线程管理函数"></a>（3）线程管理函数</h3><p>除了<code>std::thread</code>的成员函数外，在<code>std::this_thread</code>命名空间也定义了一系列函数用于管理当前线程。</p>
-<table>
-<thead>
-<tr>
-<th>函数名</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>get_id</td>
-<td>返回当前线程的id</td>
-</tr>
-<tr>
-<td>yield</td>
-<td>告知调度器运行其他线程，可用于当前处于繁忙的等待状态。相当于主动让出剩下的执行时间，具体的调度算法取决于实现</td>
-</tr>
-<tr>
-<td>sleep_for</td>
-<td>指定的一段时间内停止当前线程的执行</td>
-</tr>
-<tr>
-<td>sleep_until</td>
-<td>停止当前线程的执行直到指定的时间点</td>
-</tr>
-</tbody></table>
-<h3 id="5-其它新增标准程序库"><a href="#5-其它新增标准程序库" class="headerlink" title="5 其它新增标准程序库"></a>5 其它新增标准程序库</h3><h4 id="1-正则化表达式库-lt-regex-gt"><a href="#1-正则化表达式库-lt-regex-gt" class="headerlink" title="(1)正则化表达式库&lt;regex&gt;"></a>(1)正则化表达式库<code>&lt;regex&gt;</code></h4><h4 id="2-字符串类-lt-string-gt"><a href="#2-字符串类-lt-string-gt" class="headerlink" title="(2)字符串类&lt;string&gt;"></a>(2)字符串类<code>&lt;string&gt;</code></h4><p>新增与其他类型互换的方法，如to_string()，stoi()，stol等；</p>
-<h4 id="3-STL标准模板库"><a href="#3-STL标准模板库" class="headerlink" title="(3)STL标准模板库"></a>(3)STL标准模板库</h4><p>新增unordered_map以及unordered_set，基于hash表的关联容器等等。</p>
-<h4 id="4-面向对象设计"><a href="#4-面向对象设计" class="headerlink" title="(4) 面向对象设计"></a>(4) 面向对象设计</h4><p><code>override</code> 可以帮助程序员的意图更加的清晰的同时让编译器可以为我们发现一些错误。其只能用于覆盖基类的<strong>虚函数</strong>；</p>
-<p><code>final</code> 使得任何尝试覆盖该函数的操作都将引发错误，并不特指虚函数；</p>
-<h4 id="5-泛型"><a href="#5-泛型" class="headerlink" title="(5) 泛型"></a>(5) 泛型</h4><p>允许为模版定义一个类型别名：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">using</span> twin = pair&lt;T, T&gt;;</span><br><span class="line">twin&lt;<span class="built_in">string</span>&gt; authors;</span><br></pre></td></tr></table></figure>
-
-<p>其中，twin是一个 <code>pair&lt;T,T&gt;</code>；</p>
-<p><a href="https://www.kancloud.cn/wangshubo1989/new-characteristics/99703" target="_blank" rel="noopener">更多</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/07/C++11新特性/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-线程池" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/06/线程池/">线程池</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/06/线程池/" class="archive-article-date">
-  	<time datetime="2019-10-06T07:07:28.331Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="1-初始化一些线程"><a href="#1-初始化一些线程" class="headerlink" title="1 初始化一些线程"></a>1 初始化一些线程</h4><ol>
-<li><h5 id="管理者线程"><a href="#管理者线程" class="headerlink" title="管理者线程"></a>管理者线程</h5><p>不处理任务</p>
-</li>
-<li><h5 id="工作的线程"><a href="#工作的线程" class="headerlink" title="工作的线程"></a>工作的线程</h5><p>只负责处理任务</p>
-<p>去任务队列中领任务并处理</p>
-</li>
-<li><h5 id="初始化的时候给定一个最小线程数"><a href="#初始化的时候给定一个最小线程数" class="headerlink" title="初始化的时候给定一个最小线程数"></a>初始化的时候给定一个最小线程数</h5></li>
-</ol>
-<h4 id="2-需要有一个管理者线程"><a href="#2-需要有一个管理者线程" class="headerlink" title="2 需要有一个管理者线程"></a>2 需要有一个管理者线程</h4><ol>
-<li><h5 id="每隔一段时间去判断一次"><a href="#每隔一段时间去判断一次" class="headerlink" title="每隔一段时间去判断一次"></a>每隔一段时间去判断一次</h5></li>
-<li><h5 id="什么时候需要创建"><a href="#什么时候需要创建" class="headerlink" title="什么时候需要创建"></a>什么时候需要创建</h5><p>指定一个峰值：工作的线程超过85%，工作/存活 &gt; 0.85</p>
-<p>超过峰值：创建新的线程 每次创建一部分待用，按照一定的步长和比例去创建</p>
-</li>
-<li><h5 id="什么时候需要销毁"><a href="#什么时候需要销毁" class="headerlink" title="什么时候需要销毁"></a>什么时候需要销毁</h5><p>工作的线程/存活的线程 &lt; 20%，大部分都在歇着</p>
-<p>按照一定比例去杀死不干活的线程</p>
-</li>
-</ol>
-<h4 id="3-线程池API"><a href="#3-线程池API" class="headerlink" title="3 线程池API"></a>3 线程池API</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建线程池，池里最小3个线程，最大100个，队列最大100</span></span><br><span class="line"><span class="keyword">threadpool_t</span> * thp = threadpool_create(<span class="number">3</span>,<span class="number">100</span>,<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//向线程池添加任务；thp是线程池，process是回调函数（模拟处理业务），(void*)&amp;num[i]是给process传参</span></span><br><span class="line">threadpool_add(thp, process, (<span class="keyword">void</span>*) &amp; num[i]);</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/06/线程池/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
