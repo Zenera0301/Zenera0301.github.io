@@ -159,6 +159,400 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-操作系统-处理器调度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/14/操作系统-处理器调度/">操作系统-CPU调度</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/14/操作系统-处理器调度/" class="archive-article-date">
+  	<time datetime="2019-10-14T14:15:06.011Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="操作系统-CPU调度"><a href="#操作系统-CPU调度" class="headerlink" title="操作系统-CPU调度"></a>操作系统-CPU调度</h3><p>主要内容：</p>
+<ul>
+<li><p>CPU调度概念</p>
+</li>
+<li><p>设计调度算法时要考虑的要点</p>
+</li>
+<li><p>批处理系统的调度算法</p>
+</li>
+<li><p>交互式系统的调度算法</p>
+</li>
+<li><p>Windows操作系统的线程调度算法</p>
+</li>
+<li><p>其他</p>
+</li>
+</ul>
+<ol>
+<li><p>CPU调度：控制、协调进程对CPU的竞争；按一定的调度算法，从就绪序列里选一个进程，把CPU的使用权交给被选中的进程；如果没有就绪进程，系统会安排一个系统空闲进程或idle进程；</p>
+</li>
+<li><p>系统场景：N个进程就绪、等待上CPU运行；M个CPU，M&gt;=1；需要决策：给哪个进程分配哪个CPU</p>
+</li>
+<li><p>CPU调度要解决的3个问题：what：按什么原则原则下一个要执行的进程，调度算法；when：合适选择，调度时机；how：如何让被选中的进程上CPU运行，调度过程（进程的上下文切换）</p>
+</li>
+<li><p>CPU调度时机：事件发生—-当前运行的进程暂停—-硬件机制响应后—-进入操作系统，处理相应的事件—-结束处理后：某些进程的状态会发生变化，也可能又创建了一些新的进程—-就绪队列改变了—-需要进程调度根据预设的调度算法从就绪队列选一个进程。包括下面4个情况：</p>
+<p>进程正常终止 或 由于某种错误终止</p>
+<p>新进程创建  或  一个等待进程变成就绪</p>
+<p>当一个进程从运行态进入等待态</p>
+<p>当一个进程从运行态变为就绪态</p>
+</li>
+<li><p>调度过程——进程切换：一个进程让出CPU，另一个进程占用CPU的过程；包括了对原来运行进程各种状态的保存和对新的进程各种状态的恢复。切换时要做的两件事：</p>
+<p>1 切换全局页目录 以 加载一个新的地址空间</p>
+<p>2  切换内核栈和硬件上下文，其中硬件上下文包括了内核执行新进程需要的全部信息，如CPU相关寄存器</p>
+</li>
+<li><p>上下文切换具体步骤：进程a下CPU，进程b上CPU</p>
+<p>保存进程a的上下文环境（程序计数器、程序状态字、其他寄存器）</p>
+<p>用新状态和其他相关信息更新进程a的PCB</p>
+<p>把进程a移至合适的队列（就绪、阻塞。。）</p>
+<p>将进程b的状态设置为运行态</p>
+<p>从进程b的PCB中恢复上下文（程序计数器、程序状态字、其他寄存器。。）</p>
+</li>
+<li><p>上下文切换开销：直接开销：内核完成切换所用的CPU时间；间接开销：高速缓存cache、缓冲区缓存、TLB失效</p>
+</li>
+<li><p>CPU调度算法衡量指标：</p>
+<p>吞吐量：每单位时间完成的进程数目</p>
+<p>周转时间：每个进程从提出请求到运行完成的时间</p>
+<p>响应时间：从提出请求到第一次回应的时间</p>
+<p>其他:CPU利用率，CPU做有效工作的时间比例；等待时间，每个进程在就绪队列中等待的时间</p>
+</li>
+<li><p>进程优先级（数）：</p>
+<p>优先级，反映紧迫程度；</p>
+<p>优先数，反映优先级，UNIX优先数小的优先级高；</p>
+<p>静态、动态优先级。等待久的动态优先级高</p>
+</li>
+<li><p>抢占与非抢占：</p>
+<p>抢占：有高优先级进程就绪时，系统可以强行剥夺优先级低的进程的CPU给高优先级的进程先用</p>
+<p>不可抢占：除非自身放弃CPU，否则一直运行</p>
+</li>
+<li><p>I/O密集型和CPU密集型：</p>
+<p>I/O密集型，I/O型，频繁进行I/O，通常会花很多时间等待I/O操作完成；一般的输入输出程序对i/o更友好</p>
+<p>CPU密集型，需要大量的CPU时间进行计算</p>
+</li>
+<li><p>时间片</p>
+<p>一个时间段，分配给调度上CPU的进程，允许该进程运行的时间长度</p>
+<p>如何选择时间片：考虑进程切换开销、对响应时间的要求、就绪进程个数、CPU能力、进程的行为</p>
+</li>
+<li><p>批处理系统中采用的调度算法：先来先服务、最短作业优先、最短剩余时间优先、最高响应比优先</p>
+<p>算法选择原则：吞吐量、周转时间、CPU利用率、公平服务</p>
+</li>
+<li><p>先来先服务FCFS：先进先出，按照进程就绪的先后顺序使用CPU，非抢占</p>
+<p>公平，实现简单，长进程后的短进程需要等很长时间，不利于用户体验</p>
+</li>
+<li><p>最短作业优先SJF：具有最短完成时间的进程优先执行，非抢占</p>
+</li>
+<li><p>最短剩余时间优先SRTN：就是sjf的抢占式版本，当一个新就绪的进程比当前运行进程具有更短的完成时间时，系统抢占当前进程，选择新就绪的进程执行</p>
+</li>
+<li><p>短作业优先调度算法：最短的平均周转时间（前提是所有进程同时可运行时）；不公平（源源不断的短任务到来，可能使长的任务长时间得不到运行，产生<strong>饥饿现象</strong></p>
+</li>
+<li><p>最高响应比优先HRRN：折中权衡，先来先服务和短作业优先的取长补短</p>
+<p>调度时，先计算每个进程的响应比R；之后，总是选择R最高的进程执行</p>
+<p><strong>响应比R</strong>=周转时间/处理时间=（处理时间+等待时间）/ 处理时间 = 1+（等待时间/处理时间）</p>
+</li>
+<li><p>交互式系统中采用的调度算法：轮转调度、最高优先级调度、多级反馈队列，最短进程优先；追求指标：响应时间、公平平衡；</p>
+</li>
+<li><p><strong>时间片轮转调度算法</strong>：目标：为短任务改善平均响应时间，解决周期性切换，每个进程分配一个时间片，时钟中断–轮换。</p>
+</li>
+<li><p>如何选择合适的时间片：太长–大于典型的交互时间–退化成先来先服务算法，延长短进程的响应时间；太短–小于典型的交互时间–进程切换浪费CPU时间；经验值50ms左右；</p>
+</li>
+<li><p>时间片轮转算法优缺点：公平、有利于交互式计算、响应时间快、由于进程切换，时间片轮转算法要花费较高的开销、RR对不同大小的进程是有利的，但是对于大小相同的进程可能就不利了</p>
+</li>
+<li><p>虚拟轮转算法：所有I/O型进程，从等待变成就绪时，进入辅助队列，调度算法在选择进程时，首先从辅助队列选择进程，直到辅助队列为空，再去执行就绪队列，改善了时间片轮转算法对I/O型进程的不公</p>
+</li>
+<li><p><strong>最高优先级调度算法</strong>：</p>
+<p>选择优先级最高的进程投入运行；</p>
+<p>系统进程一般高于用户进程；前台进程一般高于后台进程；操作系统更偏好i/o型进程；</p>
+<p>优先级可以是静态的，也可以是动态变化的：优先数可以决定优先级</p>
+<p>就绪队列可以安札优先级组织</p>
+<p>实现简单；不公平，容易导致优先级低的进程产生饥饿现象</p>
+</li>
+<li><p>优先级反转问题：</p>
+<p>基于优先级的抢占式：一个低优先级进程占有一个高优先级进程所需要的资源，使得高优先级进程等待低优先级进程运行；</p>
+<p>影响：系统错误；高优先级进程停滞不前，导致系统性能降低</p>
+<p>解决方案：</p>
+<p>（1）设置优先级上限：凡是进入临界区的进程，给它个高的优先级，便于先执行完，把临界区的控制权还回去，不进临界区的，给个低优先级；</p>
+<p>（2）优先级继承：低的阻碍了高的，他可以继承这个高的优先级，先把任务执行完，把临界区还回去</p>
+<p>（3）使用中断禁止：凡是进入临界区的进程就不再响应中断了，直到他出了临界区才响应中断，就保护了这个进程，让他去执行，直到把临界区还回去</p>
+</li>
+<li><p>多级反馈队列调度算法：</p>
+<p>设置<strong>多个</strong>就绪队列，第一级队列优先级最高</p>
+<p>给不同就绪队列中的进程分配长度不同的时间片，第一级队列时间片最小，级别降低，时间片变长</p>
+<p>第一级队列为空是，在第二级队列调度，以此类推</p>
+<p>每个队列都按照<strong>时间片轮转方式</strong>进行调度</p>
+<p>当一个新创建进程就绪后，都进入第一级队列</p>
+<p>当进程用完时间片，而放弃CPU，进入下一级就绪队列</p>
+<p>由于阻塞而放弃CPU的进程进入</p>
+</li>
+<li><p>各种调度算法对比</p>
+<p>FCFS</p>
+<p>Round Robin</p>
+<p>SJF</p>
+<p>SRTN</p>
+<p>HRRN</p>
+<p>Feedback</p>
+</li>
+<li><p>多处理器调度算法设计：</p>
+<p>不仅要决定选择哪个进程执行，还要决定在哪个CPU上执行；</p>
+<p>要考虑进程在多个CPU之间迁移时的开销，应该尽可能使进程总是在同一个CPU上执行，考虑负载均衡问题</p>
+</li>
+<li><p>典型操作系统所采用的的调度算法：</p>
+<p>UNIX：动态优先数法</p>
+<p>5.3BSD：多级反馈队列法</p>
+<p><strong>Linux：抢占式调度</strong></p>
+<p><strong>Windows：基于优先级的抢占式多任务调度</strong></p>
+<p>Solaris：综合调度算法</p>
+</li>
+<li><p>Linux调度算法的演化过程：</p>
+<p>Linux2.4简单的基于优先级调度</p>
+<p>Linux2.6 O（1）调度算法</p>
+<p>Linux2.6 SD调度器补丁</p>
+<p>Linux2.6 RSDL调度器补丁</p>
+<p>Linux2.6 CFS调度算法（完全公平调度算法）</p>
+</li>
+<li><p>Windows的线程调度：</p>
+<p>调度单位是线程（因为Windows系统支持内核级线程）</p>
+<p>采用基于<strong>动态优先级的、抢占式调度</strong>，结合<strong>时间配额</strong>的调整</p>
+<p>基本思想：</p>
+<p><strong>就绪线程</strong>按照优先级进入不同的就绪队列</p>
+<p>操作系统总是选择<strong>优先级最高的就绪线程</strong>运行</p>
+<p>同一优先级的各线程按<strong>时间片轮</strong>转进行调度</p>
+<p>多CPU系统中允许多个线程<strong>并行</strong>运行</p>
+</li>
+<li><p>Windows线程调度：</p>
+<p>引发条线程调度的条件：</p>
+<blockquote>
+<p><strong>一个线程的优先级改变了</strong></p>
+<p><strong>一个线程改变了他的亲和处理机集合</strong></p>
+<p>线程正常终止 或 由于某种错误终止</p>
+<p>新线程创建 或 一个等待线程变成就绪</p>
+<p>当一个线程从运行态进入阻塞态</p>
+<p>当一个线程从运行态变成就绪态</p>
+</blockquote>
+</li>
+<li><p>线程优先级：</p>
+<p>windows使用32个线程优先级，分成3类：</p>
+<p>16-31：实时优先级线程，一旦确定就不改变优先级了</p>
+<p>1-15：可变优先级：可以在一定范围内提升或降低，分为基本优先级、当前优先级</p>
+<p>0：零页线程：用于对系统中空闲物理页面清零</p>
+</li>
+<li><p>时间配额：多给点时间配额，就像是给某个进程多点时间运行</p>
+</li>
+<li><p>Windows线程调度策略：</p>
+<p>主动切换</p>
+<p>抢占：当线程被抢占时，它被放回相应优先级的就绪队列的队首；处于实时优先级的线程被抢占时，时间配额被重置为一个完整的时间配额，再次上CPU运行的时候运行的是一个完整的时间配额；处于可变优先级的线程在被抢占时，时间配额不变，重新得到CPU后将运行剩余的时间配额。区别出两种不同类型的线程</p>
+<p>时间配额用完：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">线程a的优先级没有降低：如果队列中有其他就绪线程，选择下一个线程执行，a回到原来就绪队列末尾；如果队列中没有其他就绪线程，系统给线程a重新分配一个新的时间配额，让他继续运行；</span><br><span class="line"></span><br><span class="line">线程a的优先级降低了：Windows将选择一个更高优先级的线程去运行；</span><br></pre></td></tr></table></figure>
+
+<p>线程优先级提升与时间配额调整：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">提升线程的优先级</span><br><span class="line"></span><br><span class="line">给线程分配一个很大的时间配额</span><br></pre></td></tr></table></figure>
+
+<p>提升线程的优先级：（只针对可变优先级线程）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">I/O操作完成</span><br><span class="line"></span><br><span class="line">信号量或时间等待结束</span><br><span class="line"></span><br><span class="line">前台进程中的线程完成一个等待操作</span><br><span class="line"></span><br><span class="line">由于窗口活动而唤醒窗口线程</span><br><span class="line"></span><br><span class="line">线程处于就绪态超过了一定的时间还没有被调度运行（产生了饥饿现象）</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/14/操作系统-处理器调度/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-操作系统-运行环境与运行机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/13/操作系统-运行环境与运行机制/">操作系统-运行环境与运行机制</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/13/操作系统-运行环境与运行机制/" class="archive-article-date">
+  	<time datetime="2019-10-13T14:05:59.473Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="操作系统-运行环境与运行机制"><a href="#操作系统-运行环境与运行机制" class="headerlink" title="操作系统-运行环境与运行机制"></a>操作系统-运行环境与运行机制</h3><p>和硬件接触的：操作系统运行环境（CPU状态，终端/异常机制）</p>
+<p>和软件接触的：操作胸痛运行机制（系统调用）</p>
+<h4 id="1-处理器状态（模式）："><a href="#1-处理器状态（模式）：" class="headerlink" title="1 处理器状态（模式）："></a>1 处理器状态（模式）：</h4><p>处理器由运算器、控制器、一系列的<strong>寄存器</strong>以及高速缓存构成</p>
+<p>两类寄存器：用户可见寄存器+<strong>控制和状态寄存器</strong>（由操作系统代码使用）</p>
+<p>常见控制和状态寄存器：</p>
+<ul>
+<li>程序计数器，PC，记录将要取出的指令的地址</li>
+<li>指令寄存器，IR，记录最近取出的指令</li>
+<li>程序状态字，PSW，记录处理器的运行状态，包括条件码、模式、控制位等信息</li>
+</ul>
+<h5 id="操作系统的需要–保护"><a href="#操作系统的需要–保护" class="headerlink" title="操作系统的需要–保护"></a>操作系统的需要–保护</h5><p>操作系统要保证：并发和共享时，1用户程序和用户程序之间互不干扰；2用户程序对操作系统不干扰</p>
+<p>需要硬件提供基本运行机制：1处理器具有特权级别，能在不同的特权级运行的不同指令集合；2硬件机制可将OS与用户程序隔离（用户不能访问操作系统空间；操作系统能访问用户空间）</p>
+<p>处理器的状态（模式MODE）：特权指令（只有操作系统能用），非特权指令（操作系统和用户都能使用）</p>
+<p>操作系统需要两种CPU状态：内核态（运行操作系统程序）；用户态（运行用户程序）</p>
+<p>特权指令：启动I/O，内存清零，修改程序状态字，设置时钟，允许/禁止中断，停机</p>
+<p>非特权指令：控制转移，算术运算，取数指令，访管指令（从用户态陷入内核态）</p>
+<h5 id="实例：X86系列处理器"><a href="#实例：X86系列处理器" class="headerlink" title="实例：X86系列处理器"></a>实例：X86系列处理器</h5><p>支持4个处理器特权级别，特权环：R0（内核态）,R1,R2（受保护的共享的代码，语言编译环境）,R3（用户态），不同级别能够运行的指令集不同。</p>
+<p>目前大多数基于X86处理器的操作系统，<strong>只用了R0和R3两个特权级别</strong>。</p>
+<h5 id="CPU状态之间的转换"><a href="#CPU状态之间的转换" class="headerlink" title="CPU状态之间的转换"></a>CPU状态之间的转换</h5><p>用户态—转—-内核态：唯一途径是：中断、异常、陷入机制</p>
+<p>内核态—转—用户态：设置程序状态字PSW；访管指令（陷入指令）用于调用操作系统的功能或服务，int，trap，syscall，sysenter/sysexit</p>
+<h4 id="2-中断与异常机制介绍"><a href="#2-中断与异常机制介绍" class="headerlink" title="2 中断与异常机制介绍"></a>2 中断与异常机制介绍</h4><p>中断/异常对于操作系统来说，像汽车的发动机，像飞机的引擎操作系统是由中断驱动的，或由事件触动的</p>
+<p>概念：中断与异常是CPU对于系统发生的某个事件做出的一种反应。CPU暂停正在执行的程序，保留现场，然后自动转去执行相应事件的处理程序，处理完成后返回断点，继续执行被打断的程序。事件的发生改变了处理器的控制流。</p>
+<p>中断的引入：为了支持CPU和设备之间的并行操作；</p>
+<p>异常的引入：表示CPU执行指令时本身出现的问题。</p>
+<p>事件：</p>
+<p>中断（外中断）：I/O中断、时钟中断、硬件故障；</p>
+<p>异常（内中断）：系统调用、页故障/页错误、保护性异常、断点指令、其他程序性异常(算术溢出等)；</p>
+<p>中断是外部事件，正在运行的程序所不希望的；异常是内部事件，是正在运行的程序所引发的；</p>
+<h4 id="3-中断与异常机制工作原理"><a href="#3-中断与异常机制工作原理" class="headerlink" title="3 中断与异常机制工作原理"></a>3 中断与异常机制工作原理</h4><p>硬件软件相互配合完成。</p>
+<p>硬件：中断异常响应，捕获中断/异常请求，以一定的响应，将处理器控制权交给特定的处理程序。</p>
+<p>软件：中断异常处理程序，识别中断/异常类型，并完成相应的处理。</p>
+<p>中断响应：发现中断，接收中断的过程，由中断硬件部件完成。</p>
+<p>取指令，执行指令，每条指令执行周期的最后扫描中断寄存器，查看是否有中断信号，若有中断，中断硬件将该中断触发器内容按规定内容编码送入PSW的相应位，成为中断码，通过查<strong>中断向量表</strong>引出中断处理程序。</p>
+<p>中断向量表</p>
+<p>中断向量：一个内存单元，存放中断处理程序入口地址和程序运行时所需的处理机状态字。</p>
+<p>执行流程按中断号/异常类型的不同，通过中断向量表转移控制权给中断处理程序。</p>
+<p>硬件部分，中断响应过程：</p>
+<ul>
+<li>设备发送中断信号</li>
+<li>硬件保存现场（PSW，PC）</li>
+<li>根据中断码查表</li>
+<li>把中断处理程序入口地址等推送到响应的寄存器</li>
+<li>执行中断处理程序</li>
+</ul>
+<p>软件部分，中断处理程序：</p>
+<ul>
+<li>设计操作系统时，为每一类中断/异常事件编好响应的处理程序，并设置好中断向量表；</li>
+<li>系统运行时若响应中断，中断硬件部件将CPU控制权转给中断处理程序：保存相关寄存器信息，分析中断异常的具体原因，执行对应的处理功能，恢复现场，返回被事件打断的程序。</li>
+</ul>
+<p>软件提前设置好，硬件部件来执行。</p>
+<p>中断/异常机制：</p>
+<p>以设备输入输出中断为例：</p>
+<ul>
+<li>（硬件）打印机给CPU发出中断信号</li>
+<li>（硬件）CPU处理完当前指令后检测到中断，判断出中断来源并向相关设备发确认信号</li>
+<li>（硬件）CPU开始为软件处理中断做准备：处理器状态被切换到内核态，在系统栈中保存被中断程序的重要的上下文环境，主要是程序计数器PC和程序状态字PSW</li>
+<li>（硬件）CPU根据中断码查询中断向量表，获得与这个中断相关的处理程序的入口地址，并将PC设置成该地址，新的指令周期开始时，CPU控制转移到中断处理程序</li>
+<li>（<strong>软件</strong>）中断处理程序开始工作：在系统栈中保存现场信息；检查I/O设备的状态信息，操纵I/O设备或者在设备和内存之间传送数据等</li>
+<li>（硬件）中断处理结束时，CPU检测到中断返回指令，从系统栈中恢复被中断程序的上下文环境，CPU状态恢复成原来的状态，PSW和PC恢复成中断前的值，CPU开始一个新的指令周期。</li>
+</ul>
+<p>I/O中断处理程序：分为两类：</p>
+<ul>
+<li>I/O操作正常结束，如果有程序等待此次I/O的结果，将其唤醒；如果要继续I/O操作，需要准备好数据重新启动I/O。</li>
+<li>I/O操作出现错误，重复执行数次，次数有上限，达到时系统将判定硬件故障。</li>
+</ul>
+<h4 id="4-系统调用机制"><a href="#4-系统调用机制" class="headerlink" title="4 系统调用机制"></a>4 系统调用机制</h4><p>系统调用：用户在编程时可以调用的操作系统功能</p>
+<p>系统调用作用：是操作系统提供给编程人员的唯一接口，使CPU状态从用户态陷入内核态</p>
+<p>每个操作系统都提供几百种系统调用（进程控制，进程通信，文件使用，目录操作，设备管理，信息维护等）</p>
+<p>区分概念：</p>
+<p><strong>内核函数</strong>是系统调用的处理程序，<strong>C函数库/API接口</strong>是封装起来的函数接口，暴露给<strong>应用程序</strong>供其调用的。</p>
+<p>参数传递，用户程序的参数传递给内核：</p>
+<p>常用3方法：</p>
+<ul>
+<li>由陷入指令自带参数；</li>
+<li>通过寄存器传递参数；</li>
+<li>在内存中开辟专用堆栈区传参；</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(<span class="number">1</span>,<span class="built_in">string</span>,<span class="number">7</span>);<span class="comment">//1表示把结果送到标准输出设备，送的内容放到字符串里头，长度是7</span></span><br></pre></td></tr></table></figure>
+
+<p>系统调用的执行过程：当CPU执行到特殊的陷入指令时：</p>
+<ul>
+<li>中断/异常机制：硬件保护现场，通过查中断向量表把控制权转给系统调用总入口程序</li>
+<li>系统调用总入口程序</li>
+<li>执行系统调用例程</li>
+<li>恢复现场，返回用户程序</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/13/操作系统-运行环境与运行机制/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-操作系统-进程线程模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1243,191 +1637,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/09/30/XML/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-UDP通信" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/Linux网络编程-UDP通信/">Linux网络编程-UDP通信流程</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-UDP通信/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.687Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="服务器端"><a href="#服务器端" class="headerlink" title="服务器端"></a>服务器端</h4><ol>
-<li><p>创建套接字： <code>int fd = socket(af_inet,sock_dgram,0);</code></p>
-</li>
-<li><p>绑定本地IP和端口：<code>bind();</code></p>
-</li>
-<li><p>通信：</p>
-<p>接收数据<code>recvfrom</code>；会保存client的IP和端口</p>
-<p>发送数据<code>sendto</code></p>
-</li>
-<li><p>关闭套接字：<code>close(fd);</code></p>
-</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 创建套接字</span></span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// fd绑定本地的IP和端口</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv, <span class="number">0</span>, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_port = htons(<span class="number">8765</span>);</span><br><span class="line">    serv.sin_addr.s_addr = htonl(INADDR_ANY);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(fd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> cli_len = <span class="keyword">sizeof</span>(client);</span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> recvlen = recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>,                         									(struct sockaddr*)&amp;client, &amp;cli_len);</span><br><span class="line">        <span class="keyword">if</span>(recvlen == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"recvform error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">        <span class="keyword">char</span> ip[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"New Client IP: %s, Port: %d\n"</span>,</span><br><span class="line">            inet_ntop(AF_INET, &amp;client.sin_addr.s_addr, ip, <span class="keyword">sizeof</span>(ip)),</span><br><span class="line">            ntohs(client.sin_port));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 给客户端发送数据</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>, (struct sockaddr*)&amp;client, <span class="keyword">sizeof</span>(client));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><ol>
-<li>创建套接字： <code>int fd = socket(af_inet,sock_dgram,0);</code></li>
-<li>通信：接收数据<code>recvfrom</code>；发送数据<code>sendto</code></li>
-<li>关闭套接字：<code>close(fd);</code></li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// create socket</span></span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化服务器的IP和端口</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serv</span>;</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;serv, <span class="number">0</span>, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    serv.sin_family = AF_INET;</span><br><span class="line">    serv.sin_port = htons(<span class="number">8765</span>);</span><br><span class="line">    inet_pton(AF_INET, <span class="string">"127.0.0.1"</span>, &amp;serv.sin_addr.s_addr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>);</span><br><span class="line">        <span class="comment">// 数据的发送 - server - IP port</span></span><br><span class="line">        sendto(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待服务器发送数据过来</span></span><br><span class="line">        recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/Linux网络编程-UDP通信/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Linux网络编程-本地套接字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/30/Linux网络编程-本地套接字/">Linux网络编程-本地套接字</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/30/Linux网络编程-本地套接字/" class="archive-article-date">
-  	<time datetime="2019-09-30T14:19:31.623Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-文件格式"><a href="#1-文件格式" class="headerlink" title="1 文件格式"></a>1 文件格式</h2><p>管道：p</p>
-<p>套接字：s</p>
-<p>伪文件，不管写什么，大小都是0，其实是保存在内核缓冲区   </p>
-<h2 id="2-服务器端"><a href="#2-服务器端" class="headerlink" title="2 服务器端"></a>2 服务器端</h2><p>创建套接字：socket（AF_LOCKAL，sock_stream,0);</p>
-<p>绑定：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(serv.sun_path,<span class="string">"server.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">bind(lfd,(struct sockaddr8)&amp;serv,len);<span class="comment">//绑定成功套接字文件被创建</span></span><br></pre></td></tr></table></figure>
-
-<p>设置监听：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listen();</span><br></pre></td></tr></table></figure>
-
-<p>等待接收连接请求：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line"><span class="keyword">int</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line"><span class="keyword">int</span> cfd = accept(lfd,&amp;client,&amp;len);</span><br></pre></td></tr></table></figure>
-
-<p>通信：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send</span><br><span class="line">recv</span><br></pre></td></tr></table></figure>
-
-<p>断开连接：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">close(cfd);</span><br><span class="line">close(lfd);</span><br></pre></td></tr></table></figure>
-
-<p>代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> lfd = socket(AF_LOCAL, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(lfd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果套接字文件存在, 删除套接字文件</span></span><br><span class="line">    unlink(<span class="string">"server.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(serv.sun_path, <span class="string">"server.sock"</span>);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(lfd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 监听</span></span><br><span class="line">    ret = listen(lfd, <span class="number">36</span>);</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"listen error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待接收连接请求</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> len = <span class="keyword">sizeof</span>(client);</span><br><span class="line">    <span class="keyword">int</span> cfd = accept(lfd, (struct sockaddr*)&amp;client, &amp;len);</span><br><span class="line">    <span class="keyword">if</span>(cfd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"accept error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"======client bind file: %s\n"</span>, client.sun_path);</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span> recvlen = recv(cfd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span>(recvlen == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            perror(<span class="string">"recv error"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(recvlen == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"clietn disconnect ....\n"</span>);</span><br><span class="line">            close(cfd);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">            send(cfd, buf, recvlen, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(cfd);</span><br><span class="line">    close(lfd);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-客户端"><a href="#3-客户端" class="headerlink" title="3 客户端"></a>3 客户端</h3><p>创建套接字：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> fd = socket(af_local,sock_stream,<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-
-<p>绑定一个套接字文件：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">client.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(client.sun_path,<span class="string">"client.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">bind(fd,(struct sockaddr8)&amp;serv,len);<span class="comment">//绑定成功套接</span></span><br></pre></td></tr></table></figure>
-
-<p>连接服务器</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">serv.sun_family = af_local;</span><br><span class="line"><span class="built_in">strcpy</span>(serv.sun_path,<span class="string">"server.socket"</span>);<span class="comment">//现在还不存在</span></span><br><span class="line">connect(fd,&amp;serv,<span class="keyword">sizeof</span>(server));</span><br></pre></td></tr></table></figure>
-
-<p> 通信：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send</span><br><span class="line">recv</span><br></pre></td></tr></table></figure>
-
-<p>关闭：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">close</span><br></pre></td></tr></table></figure>
-
-<p>代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd = socket(AF_LOCAL, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"socket error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    unlink(<span class="string">"client.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ================================</span></span><br><span class="line">    <span class="comment">// 给客户端绑定一个套接字文件</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">client</span>;</span></span><br><span class="line">    client.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(client.sun_path, <span class="string">"client.sock"</span>);</span><br><span class="line">    <span class="keyword">int</span> ret = bind(fd, (struct sockaddr*)&amp;client, <span class="keyword">sizeof</span>(client));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">"bind error"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化server信息</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serv</span>;</span></span><br><span class="line">    serv.sun_family = AF_LOCAL;</span><br><span class="line">    <span class="built_in">strcpy</span>(serv.sun_path, <span class="string">"server.sock"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连接服务器</span></span><br><span class="line">    connect(fd, (struct sockaddr*)&amp;serv, <span class="keyword">sizeof</span>(serv));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>);</span><br><span class="line">        send(fd, buf, <span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接收数据</span></span><br><span class="line">        recv(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"recv buf: %s\n"</span>, buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/30/Linux网络编程-本地套接字/">展开全文 >></a>
         </p>
       
 
